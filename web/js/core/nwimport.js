@@ -67,10 +67,12 @@ export function parseBatch(xmlText, dialect) {
     for (const c of all) {
       if (!c.categoryInternal && !c.propertyInternal) continue;
       const k = [c.category, c.categoryInternal, c.property, c.propertyInternal].join("\u0001");
-      combos.set(k, (combos.get(k) ?? 0) + 1);
+      const e = combos.get(k) ?? { n: 0, values: new Set() };
+      e.n++; if (c.valueKind === "wstring" && c.value) e.values.add(c.value);
+      combos.set(k, e);
     }
   }
-  return { units: fileUnit, searchSets, tests, combos: [...combos].map(([k, n]) => { const [category, categoryInternal, property, propertyInternal] = k.split("\u0001"); return { category, categoryInternal, property, propertyInternal, n }; }).sort((a, b) => b.n - a.n), issues };
+  return { units: fileUnit, searchSets, tests, combos: [...combos].map(([k, e]) => { const [category, categoryInternal, property, propertyInternal] = k.split("\u0001"); return { category, categoryInternal, property, propertyInternal, n: e.n, values: [...e.values].sort() }; }).sort((a, b) => b.n - a.n), issues };
 }
 
 /** Applies parsed search sets to a project config. Existing sets with the same name keep their id (and their tests). */
@@ -86,9 +88,23 @@ export function applyBatch(cfg, dialect, parsed) {
   }
   // merge the catalog
   const have = new Map(dialect.catalog.combos?.map((c) => [[c.category, c.categoryInternal, c.property, c.propertyInternal].join("\u0001"), c]) ?? []);
-  for (const c of parsed.combos) { const k = [c.category, c.categoryInternal, c.property, c.propertyInternal].join("\u0001"); if (have.has(k)) have.get(k).n += c.n; else have.set(k, { ...c }); }
+  for (const c of parsed.combos) { const k = [c.category, c.categoryInternal, c.property, c.propertyInternal].join("\u0001"); if (have.has(k)) { const h = have.get(k); h.n += c.n; h.values = [...new Set([...(h.values ?? []), ...(c.values ?? [])])].sort(); } else have.set(k, { ...c }); }
   dialect.catalog = { combos: [...have.values()].sort((a, b) => b.n - a.n) };
   return res;
+}
+
+/** Category / property / value choices for the Find-Items style dropdowns, derived from the catalog (one entry per display name). */
+export function catalogChoices(dialect) {
+  const combos = dialect.catalog?.combos ?? [];
+  const cats = new Map();
+  for (const c of combos) {
+    if (!cats.has(c.category)) cats.set(c.category, new Map());
+    const props = cats.get(c.category);
+    const cur = props.get(c.property);
+    if (!cur) props.set(c.property, { ...c, values: [...(c.values ?? [])] });
+    else { cur.n += c.n; cur.values = [...new Set([...cur.values, ...(c.values ?? [])])].sort(); if (c.n > cur.n - c.n) { cur.categoryInternal = c.categoryInternal; cur.propertyInternal = c.propertyInternal; } }
+  }
+  return cats; // Map<category, Map<property, combo>>
 }
 
 /** Best known internal names for a (category, property) display pair. */

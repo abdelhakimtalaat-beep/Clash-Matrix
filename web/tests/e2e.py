@@ -30,6 +30,20 @@ try:
         for s in A.query_selector_all("main select"): s.select_option("profile-hard")
         A.click("button.pri"); A.wait_for_timeout(800)
         n = A.evaluate("__bcm.state.cfg.clashTests.length"); ok(n == 26, f"alice generated {n} tests")
+        # Find-Items style editor: dropdowns from the catalog, custom value, OR block
+        A.click("nav a:text('مجموعات البحث')"); A.wait_for_selector("table.find")
+        cat = A.locator("table.find select").first
+        ok("Element" in cat.inner_text(), "category dropdown lists catalog categories")
+        cat.select_option("Element"); A.wait_for_timeout(200)
+        A.locator("table.find select").nth(1).select_option("Category"); A.wait_for_timeout(200)
+        cond = A.evaluate("__bcm.state.cfg.searchSets[0].root.conditions[0]")
+        ok(cond["categoryInternal"] == "LcSvf_Element" and cond["propertyInternal"].endswith("LcRevitPropertyElementCategory"), "internal names filled from catalog")
+        A.locator("table.find select").nth(3).select_option("__custom__"); A.wait_for_timeout(200)
+        A.locator("table.find input").first.fill("Walls"); A.locator("table.find input").first.dispatch_event("change"); A.wait_for_timeout(200)
+        A.click("text=مجموعة OR جديدة"); A.wait_for_timeout(200)
+        root_ = A.evaluate("__bcm.state.cfg.searchSets[0].root")
+        ok(root_["mode"] == "Any" and len(root_["groups"]) == 2 and root_["groups"][0]["conditions"][0]["value"] == "Walls", "OR block created, value kept")
+        A.screenshot(path=f"{SHOTS}/findsets.png")
         # Alice adds Bob (editor) and Carol (viewer)
         A.click("nav a:text('الفريق')"); A.wait_for_selector("input[placeholder='email@company.com']")
         for email, role in (("bob@x.com", "editor"), ("carol@x.com", "viewer")):

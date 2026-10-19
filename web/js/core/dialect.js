@@ -1,6 +1,7 @@
 // Everything that is a FACT about Navisworks' XML lives here as data. The default is UNVERIFIED:
 // it was written without access to Navisworks Manage 2026. Replace it with a dialect confirmed from genuine exports.
 import { parseXml } from "./xml.js";
+import { CATALOG_SEED } from "./catalog-seed.js";
 
 export function defaultDialect() {
   return {
@@ -32,7 +33,7 @@ export function defaultDialect() {
     unitNames: { Meters: "m", Millimeters: "mm", Centimeters: "cm", Inches: "in", Feet: "ft" },
     selectionLocatorTemplate: "lcop_selection_set_tree/{path}", // {path} = folder/set name
     // Known (display name -> internal name) pairs, used to fill the internal names Navisworks writes. Extend by importing a Navisworks XML.
-    catalog: { categories: [], properties: [] },
+    catalog: { combos: structuredClone(CATALOG_SEED) },
     settings: {
       name: "Xml", testType: "Xml", tolerance: "Xml", selectionA: "Xml", selectionB: "Xml",
       selfIntersectA: "Xml", selfIntersectB: "Xml", mergeComposites: "Xml", priority: "Xml",
@@ -43,9 +44,9 @@ export function defaultDialect() {
 
 /** Dialects stored by older versions lack the genuine-format fields; replace them with the current default, keeping any learned catalog. */
 export function upgradeDialect(d) {
-  if (d && d.orFlag !== undefined && d.catalog?.combos) return d;
+  if (d && d.orFlag !== undefined && d.catalog?.combos?.length) return d;
   const fresh = defaultDialect();
-  if (d?.catalog?.combos) fresh.catalog = d.catalog;
+  if (d?.catalog?.combos?.length) fresh.catalog = d.catalog;
   return fresh;
 }
 
