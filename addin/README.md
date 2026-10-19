@@ -12,3 +12,6 @@ Steps once you have Visual Studio + Navisworks 2026 SDK:
 3. For tests: use `DocumentClash.TestsData.TestsAddCopy(...)` with `ClashTest` properties from `clashTests[]`.
 4. Write results back to `project.json` fields `status.modelHitCount` / `modelVerified`.
 Nothing here is verified; treat as a to-do, not a deliverable.
+
+## ملاحظة (النسخة التعاونية)
+يمكن للإضافة قراءة المشروع من Supabase عبر REST (`/rest/v1/entities?project_id=eq.<id>&deleted=eq.false`) بمفتاح المستخدم نفسه (JWT)، ثم كتابة `status.modelVerified/modelHitCount` على كيانات `searchSet` عبر `rpc/save_entity`. هذا تصميم مقترح غير مُنفَّذ.

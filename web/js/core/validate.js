@@ -1,7 +1,7 @@
 // Validation. Three search-set levels: syntactically valid -> representable in the dialect -> model verified (add-in only).
 import { key } from "./naming.js";
 import { validateName } from "./naming.js";
-import { interpret, disciplineConflict } from "./generate.js";
+import { interpret, disciplineConflict, resolveAllTolerances } from "./generate.js";
 import { parseDecimal, isNegative } from "./units.js";
 
 const walkConds = (g, f) => { g.conditions.forEach(f); g.groups.forEach((s) => walkConds(s, f)); };
@@ -35,6 +35,7 @@ export function syntaxIssues(ss) {
 }
 
 export function validateConfig(cfg, dialect) {
+  resolveAllTolerances(cfg); // derived values are not stored, so always recompute before judging
   const issues = [];
   const add = (severity, code, message, subjectId = null, subjectKind = null) => issues.push({ severity, code, message, subjectId, subjectKind });
   const systems = new Map(cfg.matrix.systems.map((s) => [s.id, s]));

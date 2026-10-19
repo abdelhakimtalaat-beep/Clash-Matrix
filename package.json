@@ -1,0 +1,11 @@
+{
+  "name": "clash-matrix-platform",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test web/tests/*.test.mjs",
+    "test:sql": "bash supabase/tests/run.sh",
+    "dev": "node scripts/devserver.mjs",
+    "build": "node scripts/build.mjs"
+  }
+}
