@@ -1,7 +1,7 @@
 // Application state and project sync. The config object (state.cfg) is edited by the views exactly as before;
 // this module turns edits into per-entity saves (optimistic versions) and applies other people's changes as they arrive.
 import { newConfig } from "./core/model.js";
-import { defaultDialect } from "./core/dialect.js";
+import { defaultDialect, upgradeDialect } from "./core/dialect.js";
 import { cfgToEntities, entitiesToCfg, diffEntities, keyOf, hydrate } from "./core/entities.js";
 import { mergeConfigs } from "./core/merge.js";
 
@@ -27,7 +27,7 @@ export function createStore(initialBackend = null, { flushDelay = 400 } = {}) {
 
   function applyEntity(kind, id, data /* null = removed */) {
     data = data === null ? null : hydrate(kind, clone(data));
-    if (kind === "dialect") { if (data) state.dialect = data; return; }
+    if (kind === "dialect") { if (data) state.dialect = upgradeDialect(data); return; }
     if (kind in COLLECTIONS) {
       const list = state.cfg[COLLECTIONS[kind]], i = list.findIndex((x) => x.id === id);
       if (data === null) { if (i >= 0) list.splice(i, 1); } else if (i >= 0) list[i] = data; else list.push(data);
@@ -50,7 +50,7 @@ export function createStore(initialBackend = null, { flushDelay = 400 } = {}) {
   function revertToServer() {
     const ents = [...known].map(([k, v]) => { const [kind, ...r] = k.split("/"); return { kind, id: r.join("/"), data: clone(v.data) }; });
     state.cfg = entitiesToCfg(ents.filter((e) => e.kind !== "dialect"), newConfig(state.project.name));
-    const d = ents.find((e) => e.kind === "dialect"); if (d) state.dialect = d.data;
+    const d = ents.find((e) => e.kind === "dialect"); if (d) state.dialect = upgradeDialect(d.data);
     state.onRemote?.();
   }
 
@@ -136,7 +136,7 @@ export function createStore(initialBackend = null, { flushDelay = 400 } = {}) {
     // a brand-new project starts from the default config (including the starter profiles)
     state.cfg = ents.length ? entitiesToCfg(clone(ents.filter((e) => e.kind !== "dialect")), newConfig(project.name)) : newConfig(project.name);
     state.cfg.name ||= project.name;
-    state.dialect = clone(dialectEnt?.data) ?? defaultDialect();
+    state.dialect = upgradeDialect(clone(dialectEnt?.data)) ?? defaultDialect();
     state.sync.conflicts = []; status({ status: "saved", pending: 0, error: null });
     unsub = state.backend.subscribe(project.id, (ev) => onEvent(ev).catch((e) => status({ error: e.message })));
     if (state.user) pres = state.backend.presence(project.id, state.user, (list) => { state.presence = list; state.onStatus?.(); });

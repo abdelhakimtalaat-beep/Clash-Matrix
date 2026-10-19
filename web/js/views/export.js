@@ -4,7 +4,7 @@ import { buildExport } from "../core/exporter.js";
 import { signatureOf } from "../core/dialect.js";
 
 export default function render(root, rerender) {
-  const fx = state.fixtures.searchSets && state.fixtures.clashTests ? { searchSets: signatureOf([state.fixtures.searchSets]), clashTests: signatureOf([state.fixtures.clashTests]) } : null;
+  const fx = state.fixtures.searchSets || state.fixtures.clashTests ? { searchSets: state.fixtures.searchSets ? signatureOf([state.fixtures.searchSets]) : null, clashTests: state.fixtures.clashTests ? signatureOf([state.fixtures.clashTests]) : null } : null;
   const ex = buildExport(state.cfg, state.dialect, { fixtures: fx });
   const kind = { Blocked: "bad", Unverified: "warn", StructurallyChecked: "good" }[ex.status];
   root.append(h("h2", {}, t("التصدير", "Export")),
@@ -19,5 +19,5 @@ export default function render(root, rerender) {
       h("p", { class: "Info" }, t("صدّر مجموعة بحث واختباراً من Navisworks نفسه وحمّلهما هنا لتُقارَن بنية ملفاتنا بهما. هذا لا يغني عن الاستيراد الفعلي.", "Export a search set and a clash test from Navisworks itself and load them here to compare our structure. This does not replace a real import.")),
       h("div", { class: "row" },
         h("button", { onclick: async () => { const f = await pickFile(".xml"); if (f) { state.fixtures.searchSets = await f.text(); toast("OK"); rerender(); } } }, `Search sets XML ${state.fixtures.searchSets ? "✓" : ""}`),
-        h("button", { onclick: async () => { const f = await pickFile(".xml"); if (f) { state.fixtures.clashTests = await f.text(); toast("OK"); rerender(); } } }, `Clash tests XML ${state.fixtures.clashTests ? "✓" : ""}`))));
+        h("button", { onclick: async () => { const f = await pickFile(".xml"); if (f) { state.fixtures.clashTests = await f.text(); toast("OK"); rerender(); } } }, `Clash tests (batch) XML ${state.fixtures.clashTests ? "✓" : ""}`))));
 }

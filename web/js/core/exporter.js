@@ -20,7 +20,7 @@ export function buildExport(cfg, dialect, { fixtures = null, allowWithErrors = f
   const blocked = hasErrors(issues) && !allowWithErrors;
   const ss = writeSearchSetsXml(cfg, dialect);
   const ct = writeClashTestsXml(cfg, dialect);
-  const structural = fixtures ? [...compareWithFixtures(ss.xml, fixtures.searchSets), ...compareWithFixtures(ct.xml, fixtures.clashTests)] : [];
+  const structural = fixtures ? [...(fixtures.searchSets ? compareWithFixtures(ss.xml, fixtures.searchSets) : []), ...(fixtures.clashTests ? compareWithFixtures(ct.xml, fixtures.clashTests) : [])] : [];
   const status = exportStatus(dialect, issues, structural);
   const compat = compatibilityReport(cfg, dialect);
   const manifest = {
@@ -48,13 +48,13 @@ function importSteps(m) {
   return [
     "IMPORT STEPS (Navisworks Manage)",
     "1. Open the federated model.",
-    "2. Sets > Manage Sets > Import Search Sets... choose SearchSets.xml.",
-    "3. Clash Detective > Import... choose ClashTests.xml.",
+    "2. Clash Detective > Import... choose ClashTests.xml. (It already carries the search sets it uses; SearchSets.xml is optional and its format is unconfirmed.)",
+    "3. Start with a small test file first.",
     "4. Run each test and check the search sets select the expected objects.",
     "5. Save the file, close it, reopen it and confirm sets and tests are still there.",
     "",
     `STATUS: ${m.status}`,
-    m.dialect.verified ? "" : "WARNING: the XML dialect is NOT verified. These files were not produced from, or tested against, genuine Navisworks 2026 exports. Importing may fail or behave differently.",
+    m.dialect.verified ? "" : "WARNING: the XML structure follows one genuine Navisworks 2026 export but our output has not been imported into Navisworks by this tool. Importing may still fail or behave differently.",
     "Nothing in this package has been imported into Navisworks by this tool.",
   ].join("\r\n");
 }

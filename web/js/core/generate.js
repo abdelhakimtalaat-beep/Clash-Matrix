@@ -1,5 +1,5 @@
 // Matrix interpretation, test generation and tolerance resolution.
-import { key, normalizeLabel, orderPair, searchSetName, testName } from "./naming.js";
+import { key, normalizeLabel, orderPair, searchSetName, testName, disciplinePrefix } from "./naming.js";
 import { compareMeasures } from "./units.js";
 import { uid, newCondition } from "./model.js";
 
@@ -64,7 +64,8 @@ export function interpret(cfg) {
 export function ensureSearchSet(cfg, system) {
   if (cfg.searchSets.some((s) => s.systemId === system.id)) return false;
   cfg.searchSets.push({
-    id: uid(), name: searchSetName(system, cfg.naming), systemId: system.id, folder: null,
+    id: uid(), name: searchSetName(system, cfg.naming), systemId: system.id, guid: null,
+    folder: system.discipline ? `${disciplinePrefix(system.discipline, cfg.naming)}-${normalizeLabel(system.discipline)}` : null,
     // A guess made from the system label. A person must review it; validation warns until they do.
     root: { mode: "All", conditions: [{ ...newCondition(), category: "Item", property: "Name", operator: "Contains", value: system.label, isPlaceholder: true }], groups: [] },
     status: { syntacticallyValid: false, representable: false, modelVerified: false, modelHitCount: null }, nativeObjectId: null,

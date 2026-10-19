@@ -48,6 +48,20 @@ export function convert(valueText, from, to) {
   return { value: decimalToString({ n: N, s: k }) };
 }
 
+/** Like convert(), but when the result cannot be written exactly it is rounded (half away from zero) to `decimals` places.
+ *  Returns { value, rounded } or { error }. Use only where the target format itself limits precision. */
+export function convertRounded(valueText, from, to, decimals) {
+  const exact = convert(valueText, from, to);
+  if (!exact.error) return { value: exact.value, rounded: false };
+  const v = parseDecimal(valueText);
+  if (!v) return { error: exact.error };
+  const f = parseDecimal(M_PER[from]), t = parseDecimal(M_PER[to]);
+  const N = v.n * f.n * 10n ** BigInt(t.s), D = t.n * 10n ** BigInt(v.s + f.s);
+  const sign = N < 0n ? -1n : 1n, A = N < 0n ? -N : N, scale = 10n ** BigInt(decimals);
+  const q = (A * scale * 2n + D) / (2n * D);
+  return { value: decimalToString({ n: sign * q, s: decimals }), rounded: true };
+}
+
 /** Compare two measures exactly (-1, 0, 1), via metres expressed as a common-scale integer. */
 export function compareMeasures(a, b) {
   const toScaled = (m) => {

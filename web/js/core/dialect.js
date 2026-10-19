@@ -5,36 +5,48 @@ import { parseXml } from "./xml.js";
 export function defaultDialect() {
   return {
     version: "2026",
-    verified: false,
-    verificationNote: "UNVERIFIED default. Not yet compared with genuine Navisworks Manage 2026 exports.",
+    verified: false, // becomes true only after a real import + reopen in Navisworks (set by a person)
+    verificationNote: "Structure matches one genuine Navisworks Manage 2026 Clash Detective batch export (674 tests, 65 search sets). NOT yet confirmed by importing our output into Navisworks.",
+    // Only types seen in a genuine file are trusted; the others are remembered from documentation and flagged by validation.
     testTypes: { Hard: "hard", HardConservative: "hard_conservative", Clearance: "clearance", Duplicates: "duplicate" },
+    verifiedTestTypes: ["Hard"],
+    // Condition tests seen in the genuine file. valueType: element <data type="...">, or "none" = empty <value><data/></value> (as in the genuine no_prop conditions).
     operators: {
-      Equals: { test: "equals", flags: 10, negateFlag: 64, valueType: "string" },
-      NotEquals: { test: "equals", flags: 10, negateFlag: 64, valueType: "string" },
-      Contains: { test: "contains", flags: 10, negateFlag: 64, valueType: "string" },
-      NotContains: { test: "contains", flags: 10, negateFlag: 64, valueType: "string" },
-      BeginsWith: { test: "wildcard", flags: 10, negateFlag: 64, valueType: "string" },
-      EndsWith: { test: "wildcard", flags: 10, negateFlag: 64, valueType: "string" },
-      Defined: { test: "defined", flags: 0, negateFlag: 64, valueType: "none" },
-      Undefined: { test: "defined", flags: 0, negateFlag: 64, valueType: "none" },
-      // Numeric comparisons are deliberately absent: not representable until confirmed from fixtures.
+      Equals: { test: "equals", valueType: "wstring" },
+      NotEquals: { test: "not_equals", valueType: "wstring" },
+      Contains: { test: "contains", valueType: "wstring" },
+      GreaterOrEqual: { test: "greater_equal", valueType: "linear" },
+      LessThan: { test: "less_than", valueType: "linear" },
+      Undefined: { test: "no_prop", valueType: "none" },
     },
-    maxGroupDepth: 0,
-    supportsOrGroups: false,
+    // "flags" is a per-condition bit field. Observed values: 0, 16, 64, 80, 400, 464.
+    // Bit 64 marks the START OF A NEW OR-GROUP (conditions are an OR of AND-groups); the other bits (16, 128, 256) are copied as found.
+    orFlag: 64,
+    defaultConditionFlags: 400, // the most common value in the genuine file; editable per condition
+    supportsOrOfAndGroups: true, // root "Any" containing AND-groups; no deeper nesting, no AND-of-ORs
     exchangeSchemaLocation: "http://download.autodesk.com/us/navisworks/schemas/nw-exchange-12.0.xsd",
     batchName: "BIM Clash Matrix",
     clashSelectionPrimTypes: 1,
-    emitSelectionSetGuid: false,
-    xmlLengthUnit: "Meters",
+    xmlLengthUnit: "Feet", // the genuine file uses units="ft" and writes the tolerance in feet
+    toleranceMaxDecimals: 10, // Navisworks wrote 0.0820209974 for 25 mm: 10 decimals
     unitNames: { Meters: "m", Millimeters: "mm", Centimeters: "cm", Inches: "in", Feet: "ft" },
-    selectionLocatorTemplate: "lcop_selection_set_tree/{name}",
-    // Setting -> "Xml" (carried by the XML) | "NativeOnly" (needs the add-in or manual setup)
+    selectionLocatorTemplate: "lcop_selection_set_tree/{path}", // {path} = folder/set name
+    // Known (display name -> internal name) pairs, used to fill the internal names Navisworks writes. Extend by importing a Navisworks XML.
+    catalog: { categories: [], properties: [] },
     settings: {
       name: "Xml", testType: "Xml", tolerance: "Xml", selectionA: "Xml", selectionB: "Xml",
-      selfIntersectA: "Xml", selfIntersectB: "Xml", mergeComposites: "Xml",
-      enabled: "NativeOnly", description: "NativeOnly", group: "NativeOnly", priority: "NativeOnly",
+      selfIntersectA: "Xml", selfIntersectB: "Xml", mergeComposites: "Xml", priority: "Xml",
+      enabled: "NativeOnly", description: "NativeOnly", group: "NativeOnly",
     },
   };
+}
+
+/** Dialects stored by older versions lack the genuine-format fields; replace them with the current default, keeping any learned catalog. */
+export function upgradeDialect(d) {
+  if (d && d.orFlag !== undefined && d.catalog?.combos) return d;
+  const fresh = defaultDialect();
+  if (d?.catalog?.combos) fresh.catalog = d.catalog;
+  return fresh;
 }
 
 export const supportFor = (d, setting) => d.settings?.[setting] ?? "Unknown";

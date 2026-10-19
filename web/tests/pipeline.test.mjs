@@ -56,7 +56,10 @@ test("full pipeline on the sample matrix", async () => {
   const ss = writeSearchSetsXml(cfg, d), ct = writeClashTestsXml(cfg, d);
   assert.equal(ss.skipped.length, 0);
   assert.equal(parseXml(ct.xml).name, "exchange");
-  assert.equal(ct.xml.includes('tolerance="0.001"'), true);
+  const bt = parseXml(ct.xml).children.find((c) => c.name === "batchtest");
+  assert.ok(bt.children.some((c) => c.name === "selectionsets" && c.children.length > 0), "batchtest must contain selectionsets (required by Navisworks)");
+  assert.equal(ct.xml.includes('tolerance="0.0032808399"'), true, "1 mm in feet, 10 decimals");
+  assert.ok(ct.xml.includes('<locator>lcop_selection_set_tree/'), "locator is folder/name");
   // round trip through fixtures built from our own output: must be clean, and an alien element must be flagged
   const sig = signatureOf([ct.xml]);
   assert.equal(compareWithFixtures(ct.xml, sig).filter((f) => f.severity === "Error").length, 0);

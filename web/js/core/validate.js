@@ -3,19 +3,21 @@ import { key } from "./naming.js";
 import { validateName } from "./naming.js";
 import { interpret, disciplineConflict, resolveAllTolerances } from "./generate.js";
 import { parseDecimal, isNegative } from "./units.js";
+import { toDnf } from "./dnf.js";
 
 const walkConds = (g, f) => { g.conditions.forEach(f); g.groups.forEach((s) => walkConds(s, f)); };
-const depth = (g) => (g.groups.length ? 1 + Math.max(...g.groups.map(depth)) : 0);
-const hasOr = (g) => g.mode === "Any" && g.conditions.length + g.groups.length > 1 || g.groups.some(hasOr);
 
 /** Returns the reasons a search set cannot be written in the dialect (empty = representable). */
 export function representability(ss, dialect) {
   const why = [];
-  if (depth(ss.root) > dialect.maxGroupDepth) why.push(`nested groups (depth ${depth(ss.root)}) are not confirmed by the dialect (max ${dialect.maxGroupDepth})`);
-  if (!dialect.supportsOrGroups && hasOr(ss.root)) why.push("OR (Any) groups are not confirmed by the dialect");
+  const dnf = toDnf(ss.root);
+  if (dnf.error) why.push(dnf.error);
+  else if (dnf.terms.length > 1 && !dialect.supportsOrOfAndGroups) why.push("OR groups are not confirmed by the dialect");
   walkConds(ss.root, (c) => {
-    const op = dialect.operators[c.operator];
-    if (!op) why.push(`operator ${c.operator} on ${c.category}/${c.property} is not confirmed by the dialect`);
+    const at = `${c.category}/${c.property}`;
+    if (c.exclude) why.push(`"exclude" on ${at} is not supported (use the "not equals" operator)`);
+    if (c.operator === "Other") { if (!c.rawTest) why.push(`unknown operator on ${at}`); }
+    else if (!dialect.operators[c.operator]) why.push(`operator ${c.operator} on ${at} was never seen in a genuine export`);
   });
   return why;
 }
@@ -26,7 +28,7 @@ export function syntaxIssues(ss) {
   walkConds(ss.root, (c) => {
     n++;
     if (!c.category?.trim() || !c.property?.trim()) out.push("a condition has no category or property");
-    const needsValue = !["Defined", "Undefined"].includes(c.operator);
+    const needsValue = !["Defined", "Undefined"].includes(c.operator) && c.valueKind !== "none";
     if (needsValue && String(c.value ?? "").trim() === "") out.push(`condition ${c.category}/${c.property} has an empty value`);
     if (["GreaterThan", "GreaterOrEqual", "LessThan", "LessOrEqual"].includes(c.operator) && parseDecimal(c.value) === null) out.push(`condition ${c.category}/${c.property}: "${c.value}" is not a number`);
   });
@@ -60,6 +62,10 @@ export function validateConfig(cfg, dialect) {
     let placeholder = false;
     walkConds(ss.root, (c) => { if (c.isPlaceholder) placeholder = true; });
     if (placeholder) add("Warning", "PLACEHOLDER_CONDITION", `Search set "${ss.name}" still uses the automatic guess built from the system label. Replace it with the real model property.`, ss.id, "searchSet");
+    if (!ss.folder) add("Warning", "NO_FOLDER", `Search set "${ss.name}" has no folder. Genuine Navisworks tests refer to sets as folder/name, so set a folder (e.g. the discipline).`, ss.id, "searchSet");
+    let noInternal = false;
+    walkConds(ss.root, (c) => { if (!c.isPlaceholder && (!c.categoryInternal || !c.propertyInternal)) noInternal = true; });
+    if (noInternal) add("Warning", "NO_INTERNAL_NAMES", `Search set "${ss.name}": some conditions have no Navisworks internal name; the display name is written instead and may not match. Import a Navisworks XML to learn internal names.`, ss.id, "searchSet");
     ss.status = { ...ss.status, syntacticallyValid: syn.length === 0, representable: syn.length === 0 && rep.length === 0 };
   }
 
@@ -77,6 +83,7 @@ export function validateConfig(cfg, dialect) {
       if (!a.status.representable || !b.status.representable) add("Warning", "TEST_SELECTION_NOT_EXPORTABLE", `Test "${t.name}" uses a search set that cannot be written in the XML; the test will be skipped.`, t.id, "test");
     }
     if (!dialect.testTypes[t.testType]) add("Error", "TEST_TYPE_UNKNOWN", `Test "${t.name}": test type ${t.testType} is not in the dialect.`, t.id, "test");
+    if (dialect.testTypes[t.testType] && !(dialect.verifiedTestTypes ?? []).includes(t.testType)) add("Warning", "TEST_TYPE_UNCONFIRMED", `Test "${t.name}": test type ${t.testType} was never seen in a genuine export; its XML value is a guess.`, t.id, "test");
     const tol = t.resolvedTolerance;
     if (!tol) add("Error", "NO_TOLERANCE", `Test "${t.name}" has no tolerance.`, t.id, "test");
     else {

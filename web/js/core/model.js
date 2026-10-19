@@ -4,8 +4,7 @@
 export const uid = () => (globalThis.crypto?.randomUUID?.() ?? Math.random().toString(16).slice(2) + Date.now().toString(16)).replaceAll("-", "");
 
 export const TEST_TYPES = ["Hard", "HardConservative", "Clearance", "Duplicates"];
-export const OPERATORS = ["Equals", "NotEquals", "Contains", "NotContains", "BeginsWith", "EndsWith",
-  "GreaterThan", "GreaterOrEqual", "LessThan", "LessOrEqual", "Defined", "Undefined"];
+export const OPERATORS = ["Equals", "NotEquals", "Contains", "GreaterOrEqual", "LessThan", "Undefined"];
 
 export const defaultOptions = () => ({ selfIntersectA: false, selfIntersectB: false, mergeComposites: true, description: null, group: null, priority: null });
 
@@ -17,7 +16,7 @@ export function newConfig(name = "New project") {
     targetNavisworksVersion: "2026",
     generation: { mode: "Symmetric", ignoreDiagonal: true },
     naming: {
-      projectCode: "", separator: "-", searchSetPattern: "{disc}{sep}{system}", testPattern: "{A} vs {B}", zone: null,
+      projectCode: "", separator: "-", searchSetPattern: "{disc}{sep}{system}", testPattern: "{code}_{A} vs {B}", zone: null,
       disciplinePrefixes: {}, disciplineOrder: [], maxNameLength: 120, forbiddenCharacters: "/\\",
     },
     tolerances: { projectDefault: { value: "0", unit: "Millimeters" }, disciplineDefaults: {}, pairDefaults: [] },
@@ -33,8 +32,8 @@ export function newConfig(name = "New project") {
   };
 }
 
-export const newCondition = () => ({ id: uid(), category: "Item", property: "Name", categoryInternal: null, propertyInternal: null, operator: "Contains", value: "", valueKind: "String", exclude: false, isPlaceholder: false });
+export const newCondition = () => ({ id: uid(), category: "Item", property: "Name", categoryInternal: null, propertyInternal: null, operator: "Contains", value: "", valueKind: "String", flags: null, unit: null, exclude: false, isPlaceholder: false });
 export const newSearchSet = (name = "New search set") => ({
-  id: uid(), name, systemId: null, folder: null, root: { mode: "All", conditions: [newCondition()], groups: [] },
+  id: uid(), name, systemId: null, folder: null, guid: null, root: { mode: "All", conditions: [newCondition()], groups: [] },
   status: { syntacticallyValid: false, representable: false, modelVerified: false, modelHitCount: null }, nativeObjectId: null,
 });
