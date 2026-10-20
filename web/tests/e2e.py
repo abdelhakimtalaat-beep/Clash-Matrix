@@ -45,6 +45,17 @@ try:
         ok(root_["mode"] == "Any" and len(root_["groups"]) == 2 and root_["groups"][0]["conditions"][0]["value"] == "Walls", "OR block created, value kept")
         ok(A.locator("details.fold").count() >= 3, "search sets are shown in folders")
         A.screenshot(path=f"{SHOTS}/findsets.png")
+        # Excel-style matrix editing
+        A.click("nav a:text('المصفوفة')"); A.wait_for_selector("input.mcell")
+        n0 = A.evaluate("__bcm.state.cfg.matrix.systems.length")
+        A.click("text=نظام (صف وعمود)"); A.wait_for_timeout(300)
+        ok(A.evaluate("__bcm.state.cfg.matrix.systems.length") == n0 + 1 and A.evaluate("__bcm.state.cfg.matrix.rowSystemIds.length") == A.evaluate("__bcm.state.cfg.matrix.columnSystemIds.length"), "system added as row and column")
+        last = A.evaluate("__bcm.state.cfg.matrix.rowSystemIds.length") - 1
+        A.fill(f"input.mcell[data-r='{last}'][data-c='{last}']", "ZZ9"); A.locator(f"input.mcell[data-r='{last}'][data-c='{last}']").dispatch_event("change"); A.wait_for_timeout(200)
+        ok(A.evaluate("__bcm.state.cfg.matrix.cells.some(c=>c.rawValue==='ZZ9')") and A.evaluate("__bcm.state.cfg.codeMappings.some(m=>m.code==='ZZ9')"), "typed code stored and mapping created")
+        A.fill(f"input.mcell[data-r='{last}'][data-c='{last}']", ""); A.locator(f"input.mcell[data-r='{last}'][data-c='{last}']").dispatch_event("change"); A.wait_for_timeout(200)
+        ok(not A.evaluate("__bcm.state.cfg.matrix.cells.some(c=>c.rawValue==='ZZ9')"), "clearing a cell removes it")
+        A.screenshot(path=f"{SHOTS}/matrix.png")
         # Alice adds Bob (editor) and Carol (viewer)
         A.click("nav a:text('الفريق')"); A.wait_for_selector("input[placeholder='email@company.com']")
         for email, role in (("bob@x.com", "editor"), ("carol@x.com", "viewer")):

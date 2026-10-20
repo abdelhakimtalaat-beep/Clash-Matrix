@@ -9,7 +9,7 @@ const PAGES = [
   ["settings", "الإعدادات", "Settings"], ["help", "المساعدة", "Help"],
 ];
 const OUTSIDE = ["login", "projects"];
-const WRITE_PAGES = new Set(["import", "mappings", "searchsets", "tests", "tolerances", "naming", "settings"]);
+const WRITE_PAGES = new Set(["import", "matrix", "mappings", "searchsets", "tests", "tolerances", "naming", "settings"]);
 const cache = {};
 const save = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
 const load = (k) => { try { return localStorage.getItem(k); } catch { return null; } };

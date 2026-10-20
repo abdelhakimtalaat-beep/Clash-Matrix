@@ -32,3 +32,6 @@ code,pre{font-family:ui-monospace,Consolas,monospace;font-size:12px}pre{backgrou
 
 .find{margin:6px 0}.find select,.find input{max-width:100%}.pick{display:flex;flex-direction:column;gap:4px}.or-sep{margin:8px 0;padding:2px 8px;background:var(--bg);border-inline-start:3px solid var(--line)}details label{display:block;font-size:12px}
 .fold{margin:2px 0}.fold>summary{cursor:pointer}.fold>:not(summary){margin-inline-start:16px}.leaf{margin-inline-start:16px}.fold summary button{padding:0 4px;margin-inline-start:2px;font-size:11px}
+.editable td{padding:0}.editable th{padding:2px 4px;min-width:6em}.mcell{width:5.5em;border:0;background:transparent;text-align:center;padding:4px;border-radius:0}.mcell:focus{outline:2px solid #1f5fbf;outline-offset:-2px;background:#fff}
+.hdr{display:flex;flex-direction:column;gap:2px}.hdr input{width:100%;min-width:5em;padding:2px 4px;font-size:12px}.hdr .hd{font-size:10px;color:var(--muted,#666)}.hdr .tools{display:flex;gap:2px}.hdr .tools button{padding:0 3px;font-size:11px}.dead{background:#eee}
+.editable th.sticky{min-width:11em}.editable th .hl{font-weight:600}
