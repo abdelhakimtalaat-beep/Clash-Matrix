@@ -54,3 +54,13 @@ test("clash tests: locator, tolerance rounding, required selectionsets", () => {
   assert.deepEqual(t.children.map((c) => c.name), s.children.map((c) => c.name));
   assert.equal(find(root, "batchtest")[0].children.map((c) => c.name).join(), "clashtests,selectionsets");
 });
+
+test("same set name in different folders stays two sets", () => {
+  const d = defaultDialect();
+  const one = (folder) => `<viewfolder name="${folder}" guid="g"><selectionset name="Openings" guid="s"><findspec mode="all" disjoint="0"><conditions><condition test="contains" flags="400"><category><name internal="Item">Item</name></category><property><name internal="Name">Name</name></property><value><data type="wstring">x</data></value></condition></conditions><locator>/</locator></findspec></selectionset></viewfolder>`;
+  const xml = `<exchange units="ft"><batchtest name="b" internal_name="b" units="ft"><clashtests/><selectionsets>${one("A")}${one("B")}</selectionsets></batchtest></exchange>`;
+  const cfg = newConfig("x"); applyBatch(cfg, d, parseBatch(xml, d));
+  assert.equal(cfg.searchSets.length, 2);
+  applyBatch(cfg, d, parseBatch(xml, d));
+  assert.equal(cfg.searchSets.length, 2, "re-import updates, does not duplicate");
+});

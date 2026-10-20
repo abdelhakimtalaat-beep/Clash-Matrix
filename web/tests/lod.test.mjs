@@ -15,9 +15,9 @@ test("priority follows the first letter of the test code", () => {
   assert.equal(lodRules(cfg).length, 4);
 });
 
-test("XML priority uses the dialect mapping, default 0 until confirmed", () => {
-  const cfg = newConfig("p"), d = defaultDialect(), t = { sourceCode: "A1" };
-  assert.equal(priorityXml(cfg, t, d), "0");
-  d.priorityValues.High = 3;
-  assert.equal(priorityXml(cfg, t, d), "3");
+test("XML priority uses the dialect mapping (1=High, 2=Medium, 3=Low); unknown letters get the default", () => {
+  const cfg = newConfig("p"), d = defaultDialect();
+  assert.deepEqual(["A1", "B1", "C1", "D1", "Z1"].map((c) => priorityXml(cfg, { sourceCode: c }, d)), ["1", "2", "3", "3", "0"]);
+  d.priorityValues.High = null;
+  assert.equal(priorityXml(cfg, { sourceCode: "A1" }, d), "0", "unmapped priority falls back to the default");
 });

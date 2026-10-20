@@ -2,7 +2,7 @@
 // conditions), tests, and a catalog of (display name -> internal name) pairs. Reading it back is also how we learn the dialect.
 import { parseXml, kid, kids } from "./xml.js";
 import { uid, newSearchSet } from "./model.js";
-import { key, searchSetName } from "./naming.js";
+import { key, searchSetName, disciplinePrefix, normalizeLabel } from "./naming.js";
 
 const unitOf = (dialect, short) => Object.entries(dialect.unitNames).find(([, v]) => v === short)?.[0] ?? null;
 
@@ -78,13 +78,22 @@ export function parseBatch(xmlText, dialect) {
 /** Applies parsed search sets to a project config. Existing sets with the same name keep their id (and their tests). */
 export function applyBatch(cfg, dialect, parsed) {
   const res = { created: 0, updated: 0, linked: 0 };
-  const byName = new Map(cfg.searchSets.map((s) => [key(s.name), s]));
-  const systemByName = new Map(cfg.matrix.systems.map((sys) => [key(searchSetName(sys, cfg.naming)), sys]));
+  const path = (s) => key(s.folder ?? "") + "/" + key(s.name);
+  const byPath = new Map(cfg.searchSets.map((s) => [path(s), s]));
+  const nameCount = new Map();
+  for (const p of parsed.searchSets) nameCount.set(key(p.name), (nameCount.get(key(p.name)) ?? 0) + 1);
+  // a matrix system is linked to the set with its expected name; if several sets share the name, the one in the expected discipline folder
+  const systemFor = (p) => cfg.matrix.systems.find((sys) => {
+    if (key(searchSetName(sys, cfg.naming)) !== key(p.name)) return false;
+    if (nameCount.get(key(p.name)) === 1) return true;
+    const folder = sys.discipline ? `${disciplinePrefix(sys.discipline, cfg.naming)}-${normalizeLabel(sys.discipline)}` : "";
+    return key(folder) === key(p.folder ?? "");
+  });
   for (const p of parsed.searchSets) {
-    const existing = byName.get(key(p.name));
-    const sys = systemByName.get(key(p.name));
+    const existing = byPath.get(path(p));
+    const sys = systemFor(p);
     if (existing) { Object.assign(existing, { folder: p.folder, guid: p.guid, root: p.root, status: { ...existing.status, syntacticallyValid: false, representable: false } }); if (sys && !existing.systemId) { existing.systemId = sys.id; res.linked++; } res.updated++; }
-    else { if (sys) { p.systemId = sys.id; res.linked++; } cfg.searchSets.push(p); byName.set(key(p.name), p); res.created++; }
+    else { if (sys && !cfg.searchSets.some((x) => x.systemId === sys.id)) { p.systemId = sys.id; res.linked++; } cfg.searchSets.push(p); byPath.set(path(p), p); res.created++; }
   }
   // merge the catalog
   const have = new Map(dialect.catalog.combos?.map((c) => [[c.category, c.categoryInternal, c.property, c.propertyInternal].join("\u0001"), c]) ?? []);

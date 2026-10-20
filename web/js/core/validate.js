@@ -53,8 +53,8 @@ export function validateConfig(cfg, dialect) {
   const seenSS = new Map();
   for (const ss of cfg.searchSets) {
     { const p = validateName(ss.name, cfg.naming); if (p) add("Error", "BAD_NAME", `Search set "${ss.name}": ${p}`, ss.id, "searchSet"); }
-    const k = key(ss.name);
-    if (seenSS.has(k)) add("Error", "DUPLICATE_SEARCHSET_NAME", `Two search sets are named "${ss.name}".`, ss.id, "searchSet");
+    const k = key(ss.folder ?? "") + "/" + key(ss.name); // Navisworks allows the same name in different folders
+    if (seenSS.has(k)) add("Error", "DUPLICATE_SEARCHSET_NAME", `Two search sets are named "${ss.folder ? ss.folder + "/" : ""}${ss.name}".`, ss.id, "searchSet");
     seenSS.set(k, ss.id);
     const syn = syntaxIssues(ss);
     for (const s of syn) add("Error", "SEARCHSET_SYNTAX", `Search set "${ss.name}": ${s}.`, ss.id, "searchSet");
