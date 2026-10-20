@@ -9,6 +9,7 @@ import { toDnf } from "../core/dnf.js";
 import { UNITS } from "../core/units.js";
 
 let selected = null;
+const collapsed = new Set();
 const LINEAR = new Set(["GreaterOrEqual", "LessThan"]);
 const OP_LABEL = { Equals: "Equals", NotEquals: "Not equals", Contains: "Contains", GreaterOrEqual: "Greater than or equal", LessThan: "Less than", Undefined: "Undefined" };
 const CUSTOM = "__custom__";
@@ -51,10 +52,42 @@ export default function render(root, rerender) {
     },
   }, t("استيراد من Navisworks XML", "Import from Navisworks XML"));
 
-  const list = h("div", { class: "card", style: { minWidth: "240px" } },
-    h("div", { class: "row" }, h("button", { onclick: () => { const n = newSearchSet(); cfg.searchSets.push(n); selected = n.id; go(); } }, "+ " + t("جديد", "New")), importBtn),
-    cfg.searchSets.map((s) => h("div", {}, h("a", { href: "#", style: { fontWeight: s.id === selected ? "bold" : "normal" }, onclick: (e) => { e.preventDefault(); selected = s.id; rerender(); } }, (s.folder ? s.folder + " / " : "") + s.name), " ",
-      s.status.representable ? h("span", { class: "ok" }, "✓") : h("span", { class: "Warning" }, "!"))));
+  // ---- folder tree (folders are the "/"-separated parts of each set's folder, like Navisworks) ----
+  const tree = { sets: [], kids: new Map() };
+  for (const x of cfg.searchSets) {
+    let n = tree;
+    for (const part of (x.folder ?? "").split("/").filter(Boolean)) { if (!n.kids.has(part)) n.kids.set(part, { sets: [], kids: new Map() }); n = n.kids.get(part); }
+    n.sets.push(x);
+  }
+  const count = (n) => n.sets.length + [...n.kids.values()].reduce((a, k) => a + count(k), 0);
+  const addSet = (folder) => { const n = newSearchSet(); n.folder = folder || null; cfg.searchSets.push(n); selected = n.id; go(); };
+  const renameFolder = (path) => {
+    const to = (prompt(t("الاسم الجديد للمجلد", "New folder name"), path.split("/").pop()) ?? "").trim().replaceAll("/", "-");
+    if (!to) return;
+    const parent = path.split("/").slice(0, -1), np = [...parent, to].join("/");
+    for (const x of cfg.searchSets) if (x.folder === path || x.folder?.startsWith(path + "/")) x.folder = np + x.folder.slice(path.length);
+    go();
+  };
+  const link = (x) => h("div", { class: "leaf" }, h("a", { href: "#", style: { fontWeight: x.id === selected ? "bold" : "normal" }, onclick: (e) => { e.preventDefault(); selected = x.id; rerender(); } }, x.name), " ",
+    x.status.representable ? h("span", { class: "ok" }, "✓") : h("span", { class: "Warning" }, "!"));
+  const draw = (n, path) => [
+    ...[...n.kids].sort((p, q) => p[0].localeCompare(q[0])).map(([name, k]) => {
+      const fp = path ? `${path}/${name}` : name;
+      const d = h("details", { class: "fold", open: !collapsed.has(fp) },
+        h("summary", {}, "📁 ", name, h("span", { class: "Info" }, ` (${count(k)}) `),
+          h("button", { title: t("مجموعة جديدة هنا", "New search set here"), onclick: (e) => { e.preventDefault(); addSet(fp); } }, "+"),
+          h("button", { title: t("مجلد فرعي جديد", "New subfolder"), onclick: (e) => { e.preventDefault(); const sub = (prompt(t("اسم المجلد الفرعي", "Subfolder name")) ?? "").trim().replaceAll("/", "-"); if (sub) addSet(`${fp}/${sub}`); } }, "📁+"),
+          h("button", { title: t("إعادة تسمية المجلد", "Rename folder"), onclick: (e) => { e.preventDefault(); renameFolder(fp); } }, "✎")),
+        draw(k, fp));
+      d.addEventListener("toggle", () => (d.open ? collapsed.delete(fp) : collapsed.add(fp)));
+      return d;
+    }),
+    ...n.sets.sort((p, q) => p.name.localeCompare(q.name)).map(link),
+  ];
+  const list = h("div", { class: "card", style: { minWidth: "280px" } },
+    h("div", { class: "row" }, h("button", { onclick: () => addSet(ss?.folder) }, "+ " + t("جديد", "New")),
+      h("button", { onclick: () => { const f = (prompt(t("اسم المجلد الجديد (استخدم / للمجلدات الفرعية)", "New folder name (use / for subfolders)")) ?? "").trim(); if (f) addSet(f); } }, "📁+ " + t("مجلد", "Folder")), importBtn),
+    draw(tree, ""));
 
   const editor = h("div", { class: "card", style: { flex: 1 } });
   editor.append = (...n) => Element.prototype.append.call(editor, ...n.flat(Infinity).filter((x) => x !== null && x !== undefined && x !== false));
@@ -88,8 +121,9 @@ export default function render(root, rerender) {
     };
 
     editor.append(
+      h("datalist", { id: "folders" }, [...new Set(cfg.searchSets.flatMap((x) => { const p = (x.folder ?? "").split("/").filter(Boolean); return p.map((_, i) => p.slice(0, i + 1).join("/")); }))].map((f) => h("option", { value: f }))),
       h("div", { class: "row" },
-        h("input", { value: ss.folder ?? "", placeholder: t("المجلد (مثل A-Architecture)", "Folder (e.g. A-Architecture)"), onchange: (e) => { ss.folder = e.target.value.trim() || null; go(); } }),
+        h("input", { list: "folders", value: ss.folder ?? "", placeholder: t("المجلد (مثل A-Architecture)", "Folder (e.g. A-Architecture)"), onchange: (e) => { ss.folder = e.target.value.trim() || null; go(); } }),
         h("input", { value: ss.name, onchange: (e) => { ss.name = e.target.value; go(); } }),
         h("button", { onclick: () => { cfg.searchSets = cfg.searchSets.filter((s) => s !== ss); cfg.clashTests = cfg.clashTests.filter((x) => x.searchSetAId !== ss.id && x.searchSetBId !== ss.id); selected = null; go(); } }, t("حذف", "Delete"))),
       choices.size && [...choices.values()].every((m) => [...m.values()].every((p) => !p.values.length))

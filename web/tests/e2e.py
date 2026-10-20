@@ -43,6 +43,7 @@ try:
         A.click("text=مجموعة OR جديدة"); A.wait_for_timeout(200)
         root_ = A.evaluate("__bcm.state.cfg.searchSets[0].root")
         ok(root_["mode"] == "Any" and len(root_["groups"]) == 2 and root_["groups"][0]["conditions"][0]["value"] == "Walls", "OR block created, value kept")
+        ok(A.locator("details.fold").count() >= 3, "search sets are shown in folders")
         A.screenshot(path=f"{SHOTS}/findsets.png")
         # Alice adds Bob (editor) and Carol (viewer)
         A.click("nav a:text('الفريق')"); A.wait_for_selector("input[placeholder='email@company.com']")
