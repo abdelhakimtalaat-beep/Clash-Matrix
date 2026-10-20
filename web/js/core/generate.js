@@ -93,7 +93,7 @@ export function generateTests(cfg, { regenerateNames = false, removeStale = true
         id: uid(), name: testName(ssA.name, ssB.name, r.code, counter, cfg.naming),
         systemAId: r.a.id, systemBId: r.b.id, searchSetAId: ssA.id, searchSetBId: ssB.id,
         testType: r.profile.testType, toleranceOverride: null, resolvedTolerance: null, toleranceSource: null, enabled: true,
-        options: { ...r.profile.options }, profileId: r.profile.id,
+        options: { ...r.profile.options }, profileId: r.profile.id, priorityOverride: null,
         sourceCellKey: r.cellKey, sourceAddress: r.address, mirrorAddress: r.mirrorAddress, sourceCode: r.code,
         locked: false, status: "Unvalidated", nativeObjectId: null,
       });

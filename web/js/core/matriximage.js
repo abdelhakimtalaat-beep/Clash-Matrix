@@ -1,5 +1,6 @@
 // Draws the clash matrix onto a canvas (no editing controls) for use in a BIM Execution Plan.
 import { key } from "./naming.js";
+import { lodRules } from "./lod.js";
 
 const FONT = "system-ui, 'Segoe UI', Arial, sans-serif";
 
@@ -21,7 +22,7 @@ export function drawMatrixCanvas(cfg, doc, o = {}) {
   const wRows = Math.ceil(Math.max(60, ...rows.map((r) => g.measureText(sys.get(r).label).width)) + 16);
   const hCols = Math.ceil(Math.max(60, ...cols.map((c) => g.measureText(sys.get(c).label).width)) + 16);
   const used = [...new Map(m.cells.filter((c) => c.rawValue).map((c) => [key(c.rawValue), c.rawValue])).values()].sort();
-  const legendRows = legend ? used.length : 0, legendH = legend && used.length ? 30 + legendRows * 22 : 0;
+  const lods = lodRules(cfg), legendRows = legend ? used.length + lods.length + 1 : 0, legendH = legend && used.length ? 30 + legendRows * 22 : 0;
   const gridW = wRows + cols.length * cell, gridH = hCols + rows.length * cell;
   const W = Math.max(pad * 2 + gridW, legend ? 360 : 0), H = pad * 2 + titleH + gridH + legendH;
   canvas.width = W * scale; canvas.height = H * scale;
@@ -57,6 +58,12 @@ export function drawMatrixCanvas(cfg, doc, o = {}) {
       const prof = mp ? (mp.generateTest ? cfg.profiles.find((p) => p.id === mp.profileId)?.name ?? "profile not set" : "no test") : "";
       g.fillStyle = "#000"; g.fillText(`${code}${prof ? " — " + prof : ""}`, pad + 32, y);
     }
+  }
+  if (legend && used.length) {
+    let y = y0 + rows.length * cell + 30 + (used.length + 1) * 22 + 8;
+    g.font = `bold 13px ${FONT}`; g.fillStyle = "#000"; g.textAlign = "left"; g.fillText("LOD / priority (by first letter of the test code)", pad, y);
+    g.font = `12px ${FONT}`;
+    for (const r of lods) { y += 22; g.fillText(`${r.letter} — ${r.label} — ${r.priority} priority`, pad, y); }
   }
   return canvas;
 }

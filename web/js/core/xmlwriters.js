@@ -5,6 +5,7 @@ import { convert, convertRounded, parseDecimal, UNIT_SHORT } from "./units.js";
 import { representability } from "./validate.js";
 import { toDnf } from "./dnf.js";
 import { guidFrom } from "./guid.js";
+import { priorityXml } from "./lod.js";
 
 const SCHEMA_NS = "http://www.w3.org/2001/XMLSchema-instance";
 const fileUnit = (d) => d.unitNames[d.xmlLengthUnit];
@@ -74,7 +75,7 @@ export function writeClashTestsXml(cfg, dialect) {
     const type = dialect.testTypes[t.testType];
     const tol = t.resolvedTolerance ? toleranceInXml(t.resolvedTolerance, dialect) : { error: "no tolerance" };
     if (!type || tol.error) { skipped.push({ id: t.id, name: t.name, reason: tol.error ?? "unknown test type" }); continue; }
-    nodes.push(x("clashtest", { name: t.name, test_type: type, status: "new", tolerance: tol.text, merge_composites: t.options.mergeComposites ? "1" : "0", priority: String(t.options.priority ?? 0) },
+    nodes.push(x("clashtest", { name: t.name, test_type: type, status: "new", tolerance: tol.text, merge_composites: t.options.mergeComposites ? "1" : "0", priority: priorityXml(cfg, t, dialect) },
       x("default_assignee", { display_name: "" }),
       x("linkage", { mode: "none" }),
       x("left", {}, x("clashselection", { selfintersect: t.options.selfIntersectA ? "1" : "0", primtypes: String(dialect.clashSelectionPrimTypes) }, x("locator", {}, locatorOf(a, dialect)))),

@@ -22,6 +22,8 @@ export function defaultDialect() {
     },
     // "flags" is a per-condition bit field. Observed values: 0, 16, 64, 80, 400, 464.
     // Bit 64 marks the START OF A NEW OR-GROUP (conditions are an OR of AND-groups); the other bits (16, 128, 256) are copied as found.
+    // Priority is computed in the tool (High/Medium/Low). Its numeric XML encoding was never seen: the genuine file only has priority="0".
+    priorityValues: { High: null, Medium: null, Low: null }, priorityDefault: 0,
     orFlag: 64,
     defaultConditionFlags: 400, // the most common value in the genuine file; editable per condition
     supportsOrOfAndGroups: true, // root "Any" containing AND-groups; no deeper nesting, no AND-of-ORs
@@ -44,7 +46,7 @@ export function defaultDialect() {
 
 /** Dialects stored by older versions lack the genuine-format fields; replace them with the current default, keeping any learned catalog. */
 export function upgradeDialect(d) {
-  if (d && d.orFlag !== undefined && d.catalog?.combos?.length) return d;
+  if (d && d.orFlag !== undefined && d.catalog?.combos?.length) return d.priorityValues ? d : { ...d, priorityValues: { High: null, Medium: null, Low: null }, priorityDefault: 0 };
   const fresh = defaultDialect();
   if (d?.catalog?.combos?.length) fresh.catalog = d.catalog;
   return fresh;

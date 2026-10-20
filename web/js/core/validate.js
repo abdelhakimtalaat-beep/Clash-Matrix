@@ -4,6 +4,7 @@ import { validateName } from "./naming.js";
 import { interpret, disciplineConflict, resolveAllTolerances } from "./generate.js";
 import { parseDecimal, isNegative } from "./units.js";
 import { toDnf } from "./dnf.js";
+import { resolvePriority, PRIORITIES } from "./lod.js";
 
 const walkConds = (g, f) => { g.conditions.forEach(f); g.groups.forEach((s) => walkConds(s, f)); };
 
@@ -100,6 +101,11 @@ export function validateConfig(cfg, dialect) {
   const used = new Set(cfg.clashTests.flatMap((t) => [t.searchSetAId, t.searchSetBId]));
   for (const ss of cfg.searchSets) if (!used.has(ss.id)) add("Info", "UNUSED_SEARCHSET", `Search set "${ss.name}" is not used by any test.`, ss.id, "searchSet");
 
+  const noPrio = new Set(cfg.clashTests.filter((t) => t.enabled !== false).map((t) => resolvePriority(cfg, t).priority).filter((p) => p && (dialect.priorityValues?.[p] ?? null) === null));
+  if (noPrio.size) add("Warning", "PRIORITY_ENCODING_UNKNOWN", `Priority ${[...noPrio].join(", ")} is set in the tool, but its numeric value in the XML is not known (the genuine export only has priority="0"), so the XML writes ${dialect.priorityDefault ?? 0}. Enter the values on the Tests page once you know them.`);
+  const noRule = cfg.clashTests.filter((t) => !resolvePriority(cfg, t).priority).length;
+  if (noRule) add("Info", "TEST_WITHOUT_PRIORITY", `${noRule} test(s) have no priority: their code does not start with a letter that has a LOD rule.`);
+  void PRIORITIES;
   if (!dialect.verified) add("Warning", "DIALECT_UNVERIFIED", dialect.verificationNote || "The XML dialect has not been verified against genuine Navisworks exports.");
   for (const t of cfg.clashTests) t.status = issues.some((i) => i.subjectId === t.id && i.severity === "Error") ? "Invalid" : "Valid";
   return issues;
@@ -115,7 +121,6 @@ export function compatibilityReport(cfg, dialect) {
     ["enabled", cfg.clashTests.some((t) => t.enabled === false)],
     ["description", cfg.clashTests.some((t) => t.options.description)],
     ["group", cfg.clashTests.some((t) => t.options.group)],
-    ["priority", cfg.clashTests.some((t) => t.options.priority)],
   ];
   void used;
   for (const [setting, inUse] of checks) {

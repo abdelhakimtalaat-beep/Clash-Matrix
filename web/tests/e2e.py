@@ -47,6 +47,7 @@ try:
         A.screenshot(path=f"{SHOTS}/findsets.png")
         # Excel-style matrix editing
         A.click("nav a:text('المصفوفة')"); A.wait_for_selector("input.mcell")
+        ok(A.locator(".lod").count() == 4 and "LOD350" in A.inner_text(".lods"), "four LOD boxes shown")
         n0 = A.evaluate("__bcm.state.cfg.matrix.systems.length")
         A.click("text=نظام (صف وعمود)"); A.wait_for_timeout(300)
         ok(A.evaluate("__bcm.state.cfg.matrix.systems.length") == n0 + 1 and A.evaluate("__bcm.state.cfg.matrix.rowSystemIds.length") == A.evaluate("__bcm.state.cfg.matrix.columnSystemIds.length"), "system added as row and column")
@@ -65,6 +66,8 @@ try:
         A.screenshot(path=f"{SHOTS}/team.png")
         ok("carol@x.com" in A.inner_text("main"), "team lists carol")
         A.click("nav a:text('الاختبارات')"); A.wait_for_selector("table input[size='36']")
+        pr = A.evaluate("(()=>{const t=__bcm.state.cfg.clashTests; return t.map(x=>[x.sourceCode, x.name])})()")
+        ok("Priority" in A.inner_text("main") and "High" in A.inner_text("main") or "Medium" in A.inner_text("main") or "Low" in A.inner_text("main"), "tests table shows priority")
         # Bob and Carol open the project
         for pg in (B, C):
             pg.reload(); pg.wait_for_selector("text=Tower"); pg.click("button:text('فتح')"); pg.wait_for_selector("text=لوحة" if False else "nav a")

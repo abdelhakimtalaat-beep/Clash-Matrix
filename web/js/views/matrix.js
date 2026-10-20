@@ -1,6 +1,7 @@
 // Editable matrix, Excel-style: type in cells, paste blocks from Excel, add / insert / delete rows and columns, rename systems.
 import { h, t, toast, download } from "../ui.js";
 import { drawMatrixCanvas } from "../core/matriximage.js";
+import { lodRules, PRIORITIES, letterOf } from "../core/lod.js";
 import { state, changed } from "../store.js";
 import { uid } from "../core/model.js";
 import { key, normalizeLabel } from "../core/naming.js";
@@ -117,7 +118,19 @@ export default function render(root, rerender) {
     h("label", {}, h("input", { type: "checkbox", checked: true, onchange: (e) => (legend = e.target.checked) }), t(" مع مفتاح الرموز", " legend")),
     h("label", {}, h("input", { type: "checkbox", onchange: (e) => (hideEmpty = e.target.checked) }), t(" إخفاء الفارغ", " hide empty rows/columns")),
     h("a", { href: "#mappings" }, t("← تعيين الرموز وتوليد الاختبارات", "→ Codes & generate tests")));
-  root.append(h("h2", {}, t("المصفوفة", "Matrix")),
+  const lod = lodRules(cfg);
+  const setLod = () => { cfg.lod = lod.map((r) => ({ ...r })); changed(); };
+  const lodBoxes = h("div", { class: "lods" }, lod.map((r, i) => {
+    const L = (r.letter ?? "").trim().toUpperCase();
+    const tests = cfg.clashTests.filter((x) => letterOf(x) === L).length, cells = m.cells.filter((c) => (c.rawValue ?? "").trim().toUpperCase().startsWith(L) && L).length;
+    return h("div", { class: `lod p-${r.priority}` },
+      h("b", {}, r.label),
+      h("div", { class: "row" }, t("أكواد تبدأ بـ ", "Codes starting with "),
+        h("input", { value: r.letter, size: 1, maxlength: 1, onchange: (e) => { lod[i].letter = e.target.value.trim().toUpperCase().slice(0, 1); setLod(); rerender(); } })),
+      h("div", { class: "row" }, "Priority ", h("select", { onchange: (e) => { lod[i].priority = e.target.value; setLod(); rerender(); } }, PRIORITIES.map((p) => h("option", { selected: p === r.priority }, p)))),
+      h("span", { class: "Info" }, `${cells} ${t("خلية", "cells")} · ${tests} ${t("اختبار", "tests")}`));
+  }));
+  root.append(h("h2", {}, t("المصفوفة", "Matrix")), lodBoxes,
     h("p", { class: "Info" }, t("اكتب الرمز في أي خلية، أو الصق كتلة من Excel، أو أضف/أدرج/احذف صفوفاً وأعمدة. الرموز الجديدة تُضاف إلى صفحة «الرموز» لتختار لها ملفاً. بعد التعديل اضغط «توليد الاختبارات» هناك.", "Type a code in any cell, paste a block from Excel, or add / insert / delete rows and columns. New codes are added to the Codes page so you can pick a profile. After editing, press Generate tests there.")),
     bar);
   if (!rows.length && !cols.length) root.append(h("p", {}, t("لا توجد مصفوفة بعد. ابدأ بإضافة نظام أو استورد ملف Excel.", "No matrix yet. Add a system or import an Excel file.")));
