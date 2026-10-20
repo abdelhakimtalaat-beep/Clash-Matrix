@@ -3,7 +3,7 @@ import { state, changed } from "../store.js";
 import { TEST_TYPES } from "../core/model.js";
 import { resolveAllTolerances } from "../core/generate.js";
 import { UNITS } from "../core/units.js";
-import { PRIORITIES, resolvePriority } from "../core/lod.js";
+import { PRIORITIES, resolvePriority, lodActive, lodFilter } from "../core/lod.js";
 
 const picked = new Set();
 let filter = "";
@@ -12,13 +12,14 @@ export default function render(root, rerender) {
   const cfg = state.cfg;
   resolveAllTolerances(cfg);
   const ss = new Map(cfg.searchSets.map((s) => [s.id, s.name]));
-  const rows = cfg.clashTests.filter((x) => !filter || x.name.toLowerCase().includes(filter.toLowerCase()));
+  const rows = cfg.clashTests.filter((x) => lodActive(cfg, x)).filter((x) => !filter || x.name.toLowerCase().includes(filter.toLowerCase()));
   const bulkType = h("select", {}, TEST_TYPES.map((x) => h("option", {}, x)));
   const bulkTol = h("input", { size: 6, placeholder: t("تفاوت", "tol") }), bulkUnit = h("select", {}, UNITS.map((u) => h("option", {}, u)));
   const bulkPrio = h("select", {}, h("option", { value: "" }, t("تلقائي (من الكود)", "Auto (from code)")), PRIORITIES.map((x) => h("option", {}, x)));
   const dialect = state.dialect;
   const each = (f) => { cfg.clashTests.filter((x) => picked.has(x.id)).forEach(f); changed(); rerender(); };
   root.append(h("h2", {}, t("اختبارات التصادم", "Clash tests")),
+    lodFilter(cfg).length ? h("div", { class: "banner" }, t(`مفلتر حسب LOD: ${lodFilter(cfg).join(", ")} — بقية الاختبارات مخفية ولا تُصدَّر. ألغِ التصفية من صفحة المصفوفة.`, `LOD filter active: ${lodFilter(cfg).join(", ")} — other tests are hidden and not exported. Clear it on the Matrix page.`)) : null,
     h("div", { class: "row" }, h("input", { placeholder: t("بحث", "Filter"), value: filter, onchange: (e) => { filter = e.target.value; rerender(); } }),
       h("span", {}, `${picked.size} ${t("محدد", "selected")}`),
       h("button", { onclick: () => each((x) => (x.enabled = true)) }, t("تفعيل", "Enable")), h("button", { onclick: () => each((x) => (x.enabled = false)) }, t("تعطيل", "Disable")),

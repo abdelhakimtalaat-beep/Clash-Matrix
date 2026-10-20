@@ -24,3 +24,9 @@ export function priorityXml(cfg, t, dialect) {
   const v = p ? dialect.priorityValues?.[p] : null;
   return String(v !== null && v !== undefined && v !== "" ? v : dialect.priorityDefault ?? 0);
 }
+
+/** Active LOD letters chosen on the Matrix page; empty = no filter (everything is active). */
+export const lodFilter = (cfg) => (cfg.lodFilter ?? []).map((l) => String(l).toUpperCase());
+export const codeActive = (cfg, code) => { const f = lodFilter(cfg); return !f.length || f.includes(String(code ?? "").trim()[0]?.toUpperCase() ?? ""); };
+/** A test outside the active LOD filter is not generated, not listed and not exported. */
+export const lodActive = (cfg, t) => codeActive(cfg, codeOf(t));

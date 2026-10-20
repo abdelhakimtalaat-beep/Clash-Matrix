@@ -21,3 +21,14 @@ test("XML priority uses the dialect mapping (1=High, 2=Medium, 3=Low); unknown l
   d.priorityValues.High = null;
   assert.equal(priorityXml(cfg, { sourceCode: "A1" }, d), "0", "unmapped priority falls back to the default");
 });
+
+import { generateTests } from "../js/core/generate.js";
+import { codeActive, lodActive } from "../js/core/lod.js";
+test("LOD filter limits which codes are active", () => {
+  const cfg = newConfig("p");
+  assert.equal(codeActive(cfg, "H"), true, "no filter = everything");
+  cfg.lodFilter = ["C"];
+  assert.deepEqual(["C2-SH", "A1-AH", "c1"].map((c) => codeActive(cfg, c)), [true, false, true]);
+  assert.equal(lodActive(cfg, { name: "A1_x vs y" }), false);
+  void generateTests;
+});

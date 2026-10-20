@@ -48,6 +48,12 @@ try:
         # Excel-style matrix editing
         A.click("nav a:text('المصفوفة')"); A.wait_for_selector("input.mcell")
         ok(A.locator(".lod").count() == 4 and "LOD350" in A.inner_text(".lods"), "four LOD boxes shown")
+        A.locator(".lod").nth(2).click(); A.wait_for_timeout(300)  # LOD350 = codes starting with C
+        ok(A.evaluate("__bcm.state.cfg.lodFilter.join()") == "C", "clicking a LOD box sets the filter")
+        vals = A.evaluate("[...document.querySelectorAll('input.mcell')].map(i=>i.value).filter(Boolean)")
+        ok(len(vals) > 0 and all(v.startswith("C") for v in vals), "only that level's codes are shown")
+        A.click("text=عرض الكل"); A.wait_for_timeout(300)
+        ok(A.evaluate("__bcm.state.cfg.lodFilter.length") == 0 and any(not v.startswith("C") for v in A.evaluate("[...document.querySelectorAll('input.mcell')].map(i=>i.value).filter(Boolean)")), "show all restores everything")
         n0 = A.evaluate("__bcm.state.cfg.matrix.systems.length")
         A.click("text=نظام (صف وعمود)"); A.wait_for_timeout(300)
         ok(A.evaluate("__bcm.state.cfg.matrix.systems.length") == n0 + 1 and A.evaluate("__bcm.state.cfg.matrix.rowSystemIds.length") == A.evaluate("__bcm.state.cfg.matrix.columnSystemIds.length"), "system added as row and column")

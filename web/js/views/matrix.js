@@ -1,7 +1,7 @@
 // Editable matrix, Excel-style: type in cells, paste blocks from Excel, add / insert / delete rows and columns, rename systems.
 import { h, t, toast, download } from "../ui.js";
 import { drawMatrixCanvas } from "../core/matriximage.js";
-import { lodRules, PRIORITIES, letterOf } from "../core/lod.js";
+import { lodRules, letterOf, lodFilter, codeActive } from "../core/lod.js";
 import { state, changed } from "../store.js";
 import { uid } from "../core/model.js";
 import { key, normalizeLabel } from "../core/naming.js";
@@ -81,12 +81,20 @@ export default function render(root, rerender) {
   }
 
   function draw() {
+    const vis = (x) => !x || !x.rawValue || codeActive(cfg, x.rawValue); // cells outside the LOD filter are hidden
+    const filtered = lodFilter(cfg).length > 0;
+    const coded = (a, b) => { const x = cellMap.get(a + "|" + b) ?? cellMap.get(b + "|" + a); return !!x?.rawValue; };
+    // while filtering, hide rows/columns whose codes are all outside the filter (rows/columns with no codes stay, so new ones remain editable)
+    const shownRow = (rid) => !filtered || !rid || !cols.some((cid) => cellMap.get(rid + "|" + cid)?.rawValue) || cols.some((cid) => { const x = cellMap.get(rid + "|" + cid); return x?.rawValue && vis(x); });
+    const shownCol = (cid) => !filtered || !cid || !rows.some((rid) => cellMap.get(rid + "|" + cid)?.rawValue) || rows.some((rid) => { const x = cellMap.get(rid + "|" + cid); return x?.rawValue && vis(x); });
+    void coded;
     holder.replaceChildren(h("table", {},
-      h("tr", {}, h("th", { class: "sticky" }, ""), cols.map((cid, ci) => h("th", {}, headerInputs(cid, () => delCol(ci), () => { cols.splice(ci, 0, newSystem()); after(); }, () => { cols.splice(ci + 1, 0, newSystem()); after(); }, false)))),
-      rows.slice(0, shown).map((rid, ri) => h("tr", {},
+      h("tr", {}, h("th", { class: "sticky" }, ""), cols.map((cid, ci) => !shownCol(cid) ? null : h("th", {}, headerInputs(cid, () => delCol(ci), () => { cols.splice(ci, 0, newSystem()); after(); }, () => { cols.splice(ci + 1, 0, newSystem()); after(); }, false)))),
+      rows.slice(0, shown).map((rid, ri) => !shownRow(rid) ? null : h("tr", {},
         h("th", { class: "sticky" }, headerInputs(rid, () => delRow(ri), () => { rows.splice(ri, 0, newSystem()); after(); }, () => { rows.splice(ri + 1, 0, newSystem()); after(); }, true)),
         cols.map((cid, ci) => {
-          const x = rid && cid ? cellMap.get(rid + "|" + cid) : null;
+          if (!shownCol(cid)) return null;
+          const x0 = rid && cid ? cellMap.get(rid + "|" + cid) : null, x = x0 && !vis(x0) ? null : x0;
           const colour = x?.colorHex ?? (x?.rawValue ? mappingOf(x.rawValue)?.colorHex : null);
           return h("td", { style: colour ? { background: colour } : {}, class: !rid || !cid ? "dead" : "" },
             rid && cid ? h("input", {
@@ -118,18 +126,23 @@ export default function render(root, rerender) {
     h("label", {}, h("input", { type: "checkbox", checked: true, onchange: (e) => (legend = e.target.checked) }), t(" مع مفتاح الرموز", " legend")),
     h("label", {}, h("input", { type: "checkbox", onchange: (e) => (hideEmpty = e.target.checked) }), t(" إخفاء الفارغ", " hide empty rows/columns")),
     h("a", { href: "#mappings" }, t("← تعيين الرموز وتوليد الاختبارات", "→ Codes & generate tests")));
-  const lod = lodRules(cfg);
-  const setLod = () => { cfg.lod = lod.map((r) => ({ ...r })); changed(); };
-  const lodBoxes = h("div", { class: "lods" }, lod.map((r, i) => {
-    const L = (r.letter ?? "").trim().toUpperCase();
-    const tests = cfg.clashTests.filter((x) => letterOf(x) === L).length, cells = m.cells.filter((c) => (c.rawValue ?? "").trim().toUpperCase().startsWith(L) && L).length;
-    return h("div", { class: `lod p-${r.priority}` },
-      h("b", {}, r.label),
-      h("div", { class: "row" }, t("أكواد تبدأ بـ ", "Codes starting with "),
-        h("input", { value: r.letter, size: 1, maxlength: 1, onchange: (e) => { lod[i].letter = e.target.value.trim().toUpperCase().slice(0, 1); setLod(); rerender(); } })),
-      h("div", { class: "row" }, "Priority ", h("select", { onchange: (e) => { lod[i].priority = e.target.value; setLod(); rerender(); } }, PRIORITIES.map((p) => h("option", { selected: p === r.priority }, p)))),
-      h("span", { class: "Info" }, `${cells} ${t("خلية", "cells")} · ${tests} ${t("اختبار", "tests")}`));
-  }));
+  const lod = lodRules(cfg), active = lodFilter(cfg);
+  const toggleLod = (L) => { const cur = new Set(lodFilter(cfg)); cur.has(L) ? cur.delete(L) : cur.add(L); cfg.lodFilter = [...cur]; changed(); rerender(); };
+  const lodBoxes = h("div", {},
+    h("div", { class: "lods" }, lod.map((r) => {
+      const L = r.letter.toUpperCase(), on = active.includes(L);
+      const tests = cfg.clashTests.filter((x) => letterOf(x) === L).length, cells = m.cells.filter((c) => (c.rawValue ?? "").trim().toUpperCase().startsWith(L)).length;
+      return h("div", { class: `lod p-${r.priority}${on ? " on" : ""}${active.length && !on ? " off" : ""}`, role: "button", tabindex: 0, title: t("اضغط لعرض اختبارات هذا المستوى فقط", "Click to show only this level's tests"),
+        onclick: () => toggleLod(L), onkeydown: (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleLod(L); } } },
+        h("b", {}, r.label), on ? h("span", { class: "badge good" }, "✓") : null,
+        h("div", {}, t("الأكواد التي تبدأ بالحرف: ", "Codes starting with: "), h("b", {}, L)),
+        h("div", {}, "Priority: ", h("b", {}, r.priority)),
+        h("span", { class: "Info" }, `${cells} ${t("خلية", "cells")} · ${tests} ${t("اختبار", "tests")}`));
+    })),
+    h("div", { class: "row" }, active.length
+      ? [h("span", { class: "badge warn" }, t(`مفلتر: ${active.join(", ")} — بقية الاختبارات لا تُولَّد ولا تُعرض ولا تُصدَّر`, `Filter: ${active.join(", ")} — other tests are not generated, shown or exported`)),
+        h("button", { onclick: () => { cfg.lodFilter = []; changed(); rerender(); } }, t("عرض الكل", "Show all"))]
+      : h("span", { class: "Info" }, t("اضغط على مربع لتقييد المصفوفة والتوليد بهذا المستوى فقط.", "Click a box to restrict the matrix and generation to that level."))));
   root.append(h("h2", {}, t("المصفوفة", "Matrix")), lodBoxes,
     h("p", { class: "Info" }, t("اكتب الرمز في أي خلية، أو الصق كتلة من Excel، أو أضف/أدرج/احذف صفوفاً وأعمدة. الرموز الجديدة تُضاف إلى صفحة «الرموز» لتختار لها ملفاً. بعد التعديل اضغط «توليد الاختبارات» هناك.", "Type a code in any cell, paste a block from Excel, or add / insert / delete rows and columns. New codes are added to the Codes page so you can pick a profile. After editing, press Generate tests there.")),
     bar);

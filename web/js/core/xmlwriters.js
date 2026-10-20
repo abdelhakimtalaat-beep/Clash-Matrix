@@ -5,7 +5,7 @@ import { convert, convertRounded, parseDecimal, UNIT_SHORT } from "./units.js";
 import { representability } from "./validate.js";
 import { toDnf } from "./dnf.js";
 import { guidFrom } from "./guid.js";
-import { priorityXml } from "./lod.js";
+import { priorityXml, lodActive } from "./lod.js";
 
 const SCHEMA_NS = "http://www.w3.org/2001/XMLSchema-instance";
 const fileUnit = (d) => d.unitNames[d.xmlLengthUnit];
@@ -70,6 +70,7 @@ export function writeClashTestsXml(cfg, dialect) {
   const nodes = [];
   for (const t of cfg.clashTests) {
     const a = ssById.get(t.searchSetAId), b = ssById.get(t.searchSetBId);
+    if (!lodActive(cfg, t)) { skipped.push({ id: t.id, name: t.name, reason: "outside the active LOD filter" }); continue; }
     if (t.enabled === false) { skipped.push({ id: t.id, name: t.name, reason: "disabled" }); continue; }
     if (!a || !b || !a.status.representable || !b.status.representable) { skipped.push({ id: t.id, name: t.name, reason: "search set not exportable" }); continue; }
     const type = dialect.testTypes[t.testType];

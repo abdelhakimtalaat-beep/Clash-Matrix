@@ -4,7 +4,7 @@ import { validateName } from "./naming.js";
 import { interpret, disciplineConflict, resolveAllTolerances } from "./generate.js";
 import { parseDecimal, isNegative } from "./units.js";
 import { toDnf } from "./dnf.js";
-import { resolvePriority, PRIORITIES } from "./lod.js";
+import { resolvePriority, PRIORITIES, lodActive } from "./lod.js";
 
 const walkConds = (g, f) => { g.conditions.forEach(f); g.groups.forEach((s) => walkConds(s, f)); };
 
@@ -73,6 +73,7 @@ export function validateConfig(cfg, dialect) {
   // tests
   const seenT = new Map();
   for (const t of cfg.clashTests) {
+    if (!lodActive(cfg, t)) continue; // outside the active LOD filter
     { const p = validateName(t.name, cfg.naming); if (p) add("Error", "BAD_NAME", `Test "${t.name}": ${p}`, t.id, "test"); }
     const k = key(t.name);
     if (seenT.has(k)) add("Error", "DUPLICATE_TEST_NAME", `Two tests are named "${t.name}".`, t.id, "test");

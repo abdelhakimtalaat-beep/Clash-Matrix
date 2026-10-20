@@ -80,3 +80,17 @@ test("reimport keeps ids", async () => {
   carryOverIds(cfg, other.matrix);
   assert.deepEqual(other.matrix.systems.map((s) => s.id), ids);
 });
+
+test("LOD filter: only the chosen level's tests are generated and exported", async () => {
+  const cfg = await sample();
+  for (const m of cfg.codeMappings) { m.generateTest = true; m.profileId = "profile-hard"; }
+  generateTests(cfg);
+  const all = cfg.clashTests.length;
+  cfg.lodFilter = ["C"];
+  generateTests(cfg);
+  assert.ok(cfg.clashTests.length > 0 && cfg.clashTests.length < all, `filtered ${cfg.clashTests.length} of ${all}`);
+  assert.ok(cfg.clashTests.every((t) => t.sourceCode.toUpperCase().startsWith("C")));
+  const dd = defaultDialect(); validateConfig(cfg, dd);
+  const ct = writeClashTestsXml(cfg, dd);
+  assert.equal(parseXml(ct.xml).children[0].children.find((c) => c.name === "clashtests").children.length, cfg.clashTests.length);
+});

@@ -2,6 +2,7 @@
 import { key, normalizeLabel, orderPair, searchSetName, testName, disciplinePrefix } from "./naming.js";
 import { compareMeasures } from "./units.js";
 import { uid, newCondition } from "./model.js";
+import { codeActive } from "./lod.js";
 
 const sysById = (cfg) => new Map(cfg.matrix.systems.map((s) => [s.id, s]));
 const cellKey = (c) => `${c.rowSystemId}|${c.columnSystemId}`;
@@ -76,7 +77,7 @@ export function ensureSearchSet(cfg, system) {
 /** Mutates cfg. Keeps user edits (name, enabled, tolerance override); skips locked; removes stale generated; never touches manual tests. */
 export function generateTests(cfg, { regenerateNames = false, removeStale = true } = {}) {
   const res = { created: 0, updated: 0, removedStale: 0, keptLocked: 0, searchSetsCreated: 0, interpretation: interpret(cfg) };
-  const rels = res.interpretation.relationships;
+  const rels = res.interpretation.relationships.filter((r) => codeActive(cfg, r.code)); // LOD filter: other tests are not generated
   const seen = new Set();
   for (const r of rels) for (const s of [r.a, r.b]) if (!seen.has(s.id)) { seen.add(s.id); if (ensureSearchSet(cfg, s)) res.searchSetsCreated++; }
 
