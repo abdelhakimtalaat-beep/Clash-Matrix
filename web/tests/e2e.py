@@ -55,6 +55,8 @@ try:
         ok(A.evaluate("__bcm.state.cfg.matrix.cells.some(c=>c.rawValue==='ZZ9')") and A.evaluate("__bcm.state.cfg.codeMappings.some(m=>m.code==='ZZ9')"), "typed code stored and mapping created")
         A.fill(f"input.mcell[data-r='{last}'][data-c='{last}']", ""); A.locator(f"input.mcell[data-r='{last}'][data-c='{last}']").dispatch_event("change"); A.wait_for_timeout(200)
         ok(not A.evaluate("__bcm.state.cfg.matrix.cells.some(c=>c.rawValue==='ZZ9')"), "clearing a cell removes it")
+        with A.expect_download() as dl: A.click("#export-png")
+        dl.value.save_as(f"{SHOTS}/matrix-export.png"); ok(os.path.getsize(f"{SHOTS}/matrix-export.png") > 5000, "matrix PNG downloaded")
         A.screenshot(path=f"{SHOTS}/matrix.png")
         # Alice adds Bob (editor) and Carol (viewer)
         A.click("nav a:text('الفريق')"); A.wait_for_selector("input[placeholder='email@company.com']")

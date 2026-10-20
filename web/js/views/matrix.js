@@ -1,5 +1,6 @@
 // Editable matrix, Excel-style: type in cells, paste blocks from Excel, add / insert / delete rows and columns, rename systems.
-import { h, t, toast } from "../ui.js";
+import { h, t, toast, download } from "../ui.js";
+import { drawMatrixCanvas } from "../core/matriximage.js";
 import { state, changed } from "../store.js";
 import { uid } from "../core/model.js";
 import { key, normalizeLabel } from "../core/naming.js";
@@ -103,10 +104,18 @@ export default function render(root, rerender) {
 
   rebuild();
   const addBoth = () => { const id = newSystem(); rows.push(id); cols.push(id); after(); };
+  let legend = true, hideEmpty = false;
+  const exportPng = () => {
+    const canvas = drawMatrixCanvas(cfg, document, { legend, hideEmpty, title: state.project?.name ?? cfg.name ?? "" });
+    canvas.toBlob((b) => { if (b) download(`${(cfg.name || "clash-matrix").replace(/[^\w.-]+/g, "_")}-matrix.png`, b, "image/png"); else toast("PNG failed"); }, "image/png");
+  };
   const bar = h("div", { class: "row" },
     h("button", { onclick: addBoth }, "+ " + t("نظام (صف وعمود)", "System (row + column)")),
     h("button", { onclick: () => { rows.push(newSystem()); after(); } }, "+ " + t("صف", "Row")),
     h("button", { onclick: () => { cols.push(newSystem()); after(); } }, "+ " + t("عمود", "Column")),
+    h("button", { class: "pri", id: "export-png", onclick: exportPng }, t("تصدير كصورة PNG", "Export as PNG image")),
+    h("label", {}, h("input", { type: "checkbox", checked: true, onchange: (e) => (legend = e.target.checked) }), t(" مع مفتاح الرموز", " legend")),
+    h("label", {}, h("input", { type: "checkbox", onchange: (e) => (hideEmpty = e.target.checked) }), t(" إخفاء الفارغ", " hide empty rows/columns")),
     h("a", { href: "#mappings" }, t("← تعيين الرموز وتوليد الاختبارات", "→ Codes & generate tests")));
   root.append(h("h2", {}, t("المصفوفة", "Matrix")),
     h("p", { class: "Info" }, t("اكتب الرمز في أي خلية، أو الصق كتلة من Excel، أو أضف/أدرج/احذف صفوفاً وأعمدة. الرموز الجديدة تُضاف إلى صفحة «الرموز» لتختار لها ملفاً. بعد التعديل اضغط «توليد الاختبارات» هناك.", "Type a code in any cell, paste a block from Excel, or add / insert / delete rows and columns. New codes are added to the Codes page so you can pick a profile. After editing, press Generate tests there.")),
