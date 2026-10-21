@@ -2,6 +2,8 @@
 import { h, t, toast, download } from "../ui.js";
 import { drawMatrixCanvas } from "../core/matriximage.js";
 import { lodRules, letterOf, lodFilter, codeActive } from "../core/lod.js";
+import { RESPONSIBILITY } from "../core/codes.js";
+import { TYPE_BY_LAST_LETTER } from "../core/clashtype.js";
 import { state, changed } from "../store.js";
 import { uid } from "../core/model.js";
 import { key, normalizeLabel } from "../core/naming.js";
@@ -143,7 +145,16 @@ export default function render(root, rerender) {
       ? [h("span", { class: "badge warn" }, t(`مفلتر: ${active.join(", ")} — بقية الاختبارات لا تُولَّد ولا تُعرض ولا تُصدَّر`, `Filter: ${active.join(", ")} — other tests are not generated, shown or exported`)),
         h("button", { onclick: () => { cfg.lodFilter = []; changed(); rerender(); } }, t("عرض الكل", "Show all"))]
       : h("span", { class: "Info" }, t("اضغط على مربع لتقييد المصفوفة والتوليد بهذا المستوى فقط.", "Click a box to restrict the matrix and generation to that level."))));
-  root.append(h("h2", {}, t("المصفوفة", "Matrix")), lodBoxes,
+  const seg = (txt, cls, label) => h("div", { class: `seg ${cls}` }, h("div", { class: "ch" }, txt), h("div", { class: "lb" }, label));
+  const convention = h("details", { class: "card conv", open: true }, h("summary", {}, h("b", {}, t("نظام تسمية كود الاختبار (Naming convention)", "Clash test code naming convention"))),
+    h("div", { class: "codedemo" },
+      seg("A", "c1", "LOD code"), seg("4", "c2", "Sub priority"), seg("-", "c3", ""), seg("A", "c4", "Responsibility"), seg("H", "c5", "Clash type")),
+    h("p", { class: "Info" }, t("مثال: A4-AH = LOD200 · أولوية فرعية 4 · مسؤولية Architecture · نوع التصادم Hard. الحرف الأول = LOD والأولوية، الرقم الثاني = الأولوية الفرعية، الحرف الرابع = الجهة المسؤولة، والحرف الأخير = نوع التصادم.", "Example: A4-AH = LOD200 · sub priority 4 · Architecture is responsible · Hard clash. 1st character = LOD & priority, 2nd = sub priority, 4th = responsibility, last = clash type.")),
+    h("div", { class: "convgrid" },
+      h("table", {}, h("tr", {}, h("th", {}, "1st"), h("th", {}, "LOD"), h("th", {}, "Priority")), lod.map((r) => h("tr", {}, h("td", {}, h("b", {}, r.letter)), h("td", {}, r.label), h("td", {}, r.priority)))),
+      h("table", {}, h("tr", {}, h("th", {}, "4th"), h("th", {}, "Responsibility")), RESPONSIBILITY.map(([l, n]) => h("tr", {}, h("td", {}, h("b", {}, l)), h("td", {}, n)))),
+      h("table", {}, h("tr", {}, h("th", {}, "Last"), h("th", {}, "Clash type")), Object.entries(TYPE_BY_LAST_LETTER).map(([l, n]) => h("tr", {}, h("td", {}, h("b", {}, l)), h("td", {}, n))))));
+  root.append(h("h2", {}, t("المصفوفة", "Matrix")), lodBoxes, convention,
     h("p", { class: "Info" }, t("اكتب الرمز في أي خلية، أو الصق كتلة من Excel، أو أضف/أدرج/احذف صفوفاً وأعمدة. الرموز الجديدة تُضاف إلى صفحة «الرموز» لتختار لها ملفاً. بعد التعديل اضغط «توليد الاختبارات» هناك.", "Type a code in any cell, paste a block from Excel, or add / insert / delete rows and columns. New codes are added to the Codes page so you can pick a profile. After editing, press Generate tests there.")),
     bar);
   if (!rows.length && !cols.length) root.append(h("p", {}, t("لا توجد مصفوفة بعد. ابدأ بإضافة نظام أو استورد ملف Excel.", "No matrix yet. Add a system or import an Excel file.")));

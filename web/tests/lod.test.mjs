@@ -46,3 +46,13 @@ test("clash type follows the last letter of the code", () => {
   assert.equal(cfg.clashTests[1].testType, "Hard", "locked test untouched");
   assert.equal(syncClashTypes(cfg), 0, "idempotent");
 });
+
+import { responsibilityOf, subPriorityOf } from "../js/core/codes.js";
+test("responsibility is the 4th character of the code", () => {
+  assert.equal(responsibilityOf("A4-AH"), "A-Architecture");
+  assert.equal(responsibilityOf("B2-SH"), "S-Structure");
+  assert.equal(responsibilityOf("C1-TD"), "T-Telecommunication");
+  assert.equal(responsibilityOf("A1-XH"), null);
+  assert.equal(responsibilityOf("A1"), null);
+  assert.equal(subPriorityOf("A4-AH"), "4");
+});

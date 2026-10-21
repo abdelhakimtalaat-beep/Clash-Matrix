@@ -74,6 +74,24 @@ try:
         A.click("nav a:text('الاختبارات')"); A.wait_for_selector("table input[size='36']")
         pr = A.evaluate("(()=>{const t=__bcm.state.cfg.clashTests; return t.map(x=>[x.sourceCode, x.name])})()")
         ok("Priority" in A.inner_text("main") and "High" in A.inner_text("main") or "Medium" in A.inner_text("main") or "Low" in A.inner_text("main"), "tests table shows priority")
+        # Tests page: multi-select filters + bulk tolerance
+        total = A.locator("table tr").count() - 1
+        A.locator("details.ms summary", has_text="Clash Type").click()
+        A.locator("details.ms[open] label", has_text="Clearance").locator("input").check(); A.wait_for_timeout(300)
+        fewer = A.locator("table tr").count() - 1
+        ok(0 < fewer < total, f"clash type filter narrows {total} -> {fewer}")
+        A.locator("details.ms summary", has_text="Clash Type").click() if A.locator("details.ms[open]").count() else None
+        A.click("text=إلغاء كل الفلاتر"); A.wait_for_timeout(300)
+        ok(A.locator("table tr").count() - 1 == total, "reset filters restores all rows")
+        A.locator("table tr").nth(1).locator("input[type=checkbox]").first.check()
+        A.fill("input[placeholder='قيمة']", "25"); A.click("button.pri >> text=تطبيق"); A.wait_for_timeout(300)
+        ok(A.evaluate("__bcm.state.cfg.clashTests.filter(t=>t.toleranceOverride && t.toleranceOverride.value==='25').length") == 1, "bulk tolerance applied to the selected test only")
+        A.evaluate("(()=>{const w=g=>{g.conditions.forEach(c=>{if(!c.value)c.value='x'});g.groups.forEach(w)};__bcm.state.cfg.searchSets.forEach(s=>w(s.root))})()")
+        A.evaluate("__bcm.state.cfg.codeMappings.forEach(m=>{ if(!/[HCD]$/i.test(m.code)) m.generateTest=false }); __bcm.app.changed()")
+        with A.expect_download() as dl2:
+            A.click("nav a:text('التصدير')"); A.wait_for_selector("#dl-xml"); A.click("#dl-xml")
+        dl2.value.save_as(f"{SHOTS}/export.xml"); ok(open(f"{SHOTS}/export.xml", encoding="utf8").read().lstrip().startswith("<?xml"), "export downloads a .xml file directly")
+        A.click("nav a:text('الاختبارات')"); A.wait_for_selector("table input[size='36']")
         # Bob and Carol open the project
         for pg in (B, C):
             pg.reload(); pg.wait_for_selector("text=Tower"); pg.click("button:text('فتح')"); pg.wait_for_selector("text=لوحة" if False else "nav a")

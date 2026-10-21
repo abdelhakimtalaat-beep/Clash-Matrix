@@ -4,12 +4,12 @@ import { loadBackend } from "./backend/index.js";
 
 const PAGES = [
   ["dashboard", "الرئيسية", "Dashboard"], ["import", "استيراد", "Import"], ["matrix", "المصفوفة", "Matrix"], ["mappings", "الرموز", "Codes"],
-  ["searchsets", "مجموعات البحث", "Search sets"], ["tests", "الاختبارات", "Tests"], ["tolerances", "التفاوتات", "Tolerances"], ["naming", "التسمية", "Naming"],
+  ["searchsets", "مجموعات البحث", "Search sets"], ["tests", "الاختبارات", "Tests"], ["naming", "التسمية", "Naming"],
   ["validation", "التحقق", "Validation"], ["export", "التصدير", "Export"], ["team", "الفريق", "Team"], ["activity", "النشاط", "Activity"],
   ["settings", "الإعدادات", "Settings"], ["help", "المساعدة", "Help"],
 ];
 const OUTSIDE = ["login", "projects"];
-const WRITE_PAGES = new Set(["import", "matrix", "mappings", "searchsets", "tests", "tolerances", "naming", "settings"]);
+const WRITE_PAGES = new Set(["import", "matrix", "mappings", "searchsets", "tests", "naming", "settings"]);
 const cache = {};
 const save = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
 const load = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
@@ -46,7 +46,9 @@ function drawHeader() {
   document.getElementById("top").replaceChildren(...bits.filter((b) => b));
 }
 
+let drawId = 0;
 async function draw() {
+  const mine = ++drawId; // a newer draw supersedes this one (avoids duplicated content when two redraws overlap)
   let page = location.hash.slice(1) || "dashboard";
   if (!state.user) page = "login";
   else if (!state.project && page !== "projects") page = "projects";
@@ -62,6 +64,7 @@ async function draw() {
   app.setPage(page);
   try {
     const mod = (cache[page] ??= await import(`./views/${page}.js`));
+    if (mine !== drawId) return;
     if (state.readOnly && WRITE_PAGES.has(page)) view.append(h("div", { class: "banner" }, t("لديك صلاحية قراءة فقط في هذا المشروع.", "You have read-only access to this project.")));
     mod.default(view, draw, ctx);
     if (state.readOnly && WRITE_PAGES.has(page)) view.querySelectorAll("input,select,textarea,button").forEach((e) => (e.disabled = true));
