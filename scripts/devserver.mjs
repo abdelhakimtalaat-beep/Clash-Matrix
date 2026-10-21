@@ -33,6 +33,7 @@ export function createDevServer() {
       const p = { id: randomUUID(), name, members: new Map([[u.id, "admin"]]), entities: new Map(), audit: [], snaps: [], sse: new Set(), sse2: new Set(), presence: new Map() };
       projects.set(p.id, p); return { id: p.id };
     },
+    loadEntity: ({ pid, kind, id }, u) => { const p = proj(pid); need(p, u); const e = p.entities.get(`${kind}/${id}`); return e && !e.deleted ? { kind: e.kind, id: e.id, data: e.data, version: e.version } : null; },
     loadEntities: ({ pid }, u) => { const p = proj(pid); need(p, u); return [...p.entities.values()].filter((e) => !e.deleted).map(({ kind, id, data, version }) => ({ kind, id, data, version })); },
     saveEntity: ({ pid, kind, id, data, expected, deleted }, u) => {
       const p = proj(pid); need(p, u, ["editor", "admin"]);

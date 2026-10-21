@@ -25,7 +25,7 @@ const ctx = {
 function syncBadge() {
   const s = state.sync;
   const map = { saved: ["good", t("محفوظ", "saved")], saving: ["warn", t("جارٍ الحفظ", "saving")], dirty: ["warn", t("تعديلات غير محفوظة", "unsaved")], error: ["bad", t("تعذر الحفظ", "save failed")] };
-  const [cls, text] = map[s.status] ?? ["", ""];
+  const [cls, text] = s.paused ? ["bad", t("الحفظ التلقائي متوقف — أغلق التبويبات الأخرى وأعد التحميل", "Auto-save paused — close other tabs and reload")] : (map[s.status] ?? ["", ""]);
   return text ? h("span", { class: `badge ${cls}`, title: s.error ?? "" }, text) : null;
 }
 

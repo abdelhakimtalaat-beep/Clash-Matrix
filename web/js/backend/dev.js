@@ -24,6 +24,7 @@ return {
   listProjects: () => call("listProjects"),
   createProject: (name) => call("createProject", { name }).then((r) => r.id),
   loadEntities: (pid) => call("loadEntities", { pid }),
+  loadEntity: (pid, kind, id) => call("loadEntity", { pid, kind, id }),
   saveEntity: (pid, kind, id, data, expected, deleted = false) => call("saveEntity", { pid, kind, id, data, expected, deleted }).then((r) => r.version),
   members: (pid) => call("members", { pid }),
   addMember: (pid, email, role) => call("addMember", { pid, email, role }),

@@ -10,7 +10,7 @@ const SINGLETONS = { meta: null, naming: "naming", tolerances: "tolerances", mat
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const clone = (v) => (v === null || v === undefined ? v : structuredClone(v)); // known[] and cfg must never share objects
 
-export function createStore(initialBackend = null, { flushDelay = 400 } = {}) {
+export function createStore(initialBackend = null, { flushDelay = 400, retryBase = 5000 } = {}) {
   const state = {
     backend: initialBackend, user: null, project: null, // {id,name,role}
     cfg: newConfig(), dialect: defaultDialect(), fixtures: { searchSets: null, clashTests: null },
@@ -20,6 +20,9 @@ export function createStore(initialBackend = null, { flushDelay = 400 } = {}) {
   };
   let known = new Map(); // key -> {version, data}: the last server state we have seen for each entity
   let timer = null, flushing = false, again = false, unsub = null, pres = null;
+  let failures = 0; // consecutive failed flushes: retry delay doubles (5 s ... 5 min)
+  let allConflicts = []; // all conflicts of the last minute, any entity
+  const conflictTimes = new Map(); // key -> recent conflict timestamps, to detect two sessions fighting over the same entity
   const listeners = new Set();
 
   const status = (patch) => { Object.assign(state.sync, patch); state.onStatus?.(); };
@@ -43,6 +46,7 @@ export function createStore(initialBackend = null, { flushDelay = 400 } = {}) {
     for (const f of listeners) f();
     if (state.project && state.readOnly) { revertToServer(); return; } // viewers cannot change anything: show the server's truth again
     if (!state.project) return;
+    if (state.sync.paused) return; // auto-save stopped after a conflict storm; reloading the page resumes it
     status({ status: "dirty" });
     clearTimeout(timer); timer = setTimeout(flush, flushDelay);
   }
@@ -67,10 +71,15 @@ export function createStore(initialBackend = null, { flushDelay = 400 } = {}) {
         const ops = [...upserts.map((e) => ({ ...e, del: false })), ...deletes.map((e) => ({ ...e, del: true }))];
         for (let i = 0; i < ops.length; i += 8) await Promise.all(ops.slice(i, i + 8).map(saveOne));
         status({ status: "saved", pending: 0, lastSaved: new Date() });
+        failures = 0;
       } while (again);
     } catch (e) {
-      status({ status: "error", error: e.message });
-      clearTimeout(timer); timer = setTimeout(flush, 5000); // retry later; edits stay in memory
+      if (e.paused) { status({ status: "error", error: e.message, paused: true }); } // do NOT retry: another open tab/version is fighting with this one
+      else {
+        failures++;
+        status({ status: "error", error: e.message });
+        clearTimeout(timer); timer = setTimeout(flush, Math.min(retryBase * 2 ** (failures - 1), 300000)); // back off; edits stay in memory
+      }
     } finally { flushing = false; }
   }
 
@@ -85,8 +94,12 @@ export function createStore(initialBackend = null, { flushDelay = 400 } = {}) {
         return;
       } catch (e) {
         if (!e.conflict) throw e;
+        // two sessions repeatedly overwriting each other (e.g. two tabs on different app versions): stop instead of hammering the database
+        const now = Date.now(), recent = (conflictTimes.get(k) ?? []).filter((x) => now - x < 60000); recent.push(now); conflictTimes.set(k, recent);
+        allConflicts = allConflicts.filter((x) => now - x < 60000); allConflicts.push(now);
+        if (recent.length > 8 || allConflicts.length > 24) { const pe = new Error("Auto-save paused: another open tab or older app version keeps changing the same data. Close other tabs, reload this page (Ctrl+Shift+R)."); pe.paused = true; throw pe; }
         // someone saved this entity first: fetch it, merge three-way (base = what I last saw), then retry
-        const remote = (await state.backend.loadEntities(state.project.id)).find((r) => r.kind === op.kind && r.id === op.id);
+        const remote = await state.backend.loadEntity(state.project.id, op.kind, op.id);
         if (!remote) { known.delete(k); continue; } // deleted remotely: recreate with my data
         if (op.del) { // I deleted something that changed meanwhile: keep theirs
           known.set(k, { version: remote.version, data: clone(remote.data) }); applyEntity(op.kind, op.id, remote.data);
@@ -137,7 +150,7 @@ export function createStore(initialBackend = null, { flushDelay = 400 } = {}) {
     state.cfg = ents.length ? entitiesToCfg(clone(ents.filter((e) => e.kind !== "dialect")), newConfig(project.name)) : newConfig(project.name);
     state.cfg.name ||= project.name;
     state.dialect = upgradeDialect(clone(dialectEnt?.data)) ?? defaultDialect();
-    state.sync.conflicts = []; status({ status: "saved", pending: 0, error: null });
+    state.sync.conflicts = []; failures = 0; conflictTimes.clear(); allConflicts = []; status({ status: "saved", pending: 0, error: null, paused: false });
     unsub = state.backend.subscribe(project.id, (ev) => onEvent(ev).catch((e) => status({ error: e.message })));
     if (state.user) pres = state.backend.presence(project.id, state.user, (list) => { state.presence = list; state.onStatus?.(); });
     // a brand-new project has nothing on the server yet: the first flush creates the base entities

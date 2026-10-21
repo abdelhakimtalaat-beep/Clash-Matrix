@@ -29,6 +29,12 @@ export const backend = {
   },
   async createProject(name) { const c = await sb(); return must(await c.rpc("create_project", { p_name: name })); },
 
+  /** One entity (used on conflicts, so a conflict never re-downloads the whole project). Returns null when it does not exist. */
+  async loadEntity(pid, kind, id) {
+    const c = await sb();
+    const rows = must(await c.from("entities").select("kind,id,data,version").eq("project_id", pid).eq("kind", kind).eq("id", id).eq("deleted", false).limit(1));
+    return rows[0] ?? null;
+  },
   async loadEntities(pid) {
     const c = await sb(); const out = []; const PAGE = 500;
     for (let from = 0; ; from += PAGE) {

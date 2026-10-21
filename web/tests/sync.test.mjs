@@ -80,3 +80,24 @@ test("offline edits are retried and a stale browser session recovers via merge",
     await Promise.all([A, B].map((x) => x.s.closeProject()));
   } finally { close(); }
 });
+
+test("a conflict storm pauses auto-save instead of hammering the database", async () => {
+  const { dev, close } = await boot();
+  try {
+    const A = await make(dev, "storm@x.com");
+    A.s = (await import("../js/store.js")).createStore(A.b, { flushDelay: 20, retryBase: 20 }); A.s.state.user = A.user;
+    const pid = await A.b.createProject("S");
+    await A.s.openProject({ id: pid, name: "S", role: "admin" });
+    let saves = 0, loads = 0;
+    const real = A.b.saveEntity, realOne = A.b.loadEntity;
+    A.b.saveEntity = async (...a) => { saves++; const e = new Error("conflict"); e.conflict = true; throw e; }; // another session always wins
+    A.b.loadEntity = async (p, kind, id) => { loads++; const r = await realOne(p, kind, id); return r ?? { kind, id, data: {}, version: 99 }; };
+    A.s.state.cfg.clashTests.push(T("t1", "one")); A.s.changed();
+    assert.ok(await until(() => A.s.state.sync.paused === true, 3000), "auto-save pauses");
+    const before = saves;
+    await new Promise((r) => setTimeout(r, 400));
+    assert.equal(saves, before, "no further attempts after pausing");
+    assert.ok(saves <= 40 && loads <= 40, `bounded work (saves ${saves}, single-entity loads ${loads})`);
+    void real;
+  } finally { await close(); }
+});
