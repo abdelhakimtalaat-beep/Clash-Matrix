@@ -3,6 +3,7 @@ import { key, normalizeLabel, orderPair, searchSetName, testName, disciplinePref
 import { compareMeasures } from "./units.js";
 import { uid, newCondition } from "./model.js";
 import { codeActive } from "./lod.js";
+import { typeOfCode, profileForType, syncClashTypes } from "./clashtype.js";
 
 const sysById = (cfg) => new Map(cfg.matrix.systems.map((s) => [s.id, s]));
 const cellKey = (c) => `${c.rowSystemId}|${c.columnSystemId}`;
@@ -34,8 +35,9 @@ export function interpret(cfg) {
     if (a.id === b.id && cfg.generation.ignoreDiagonal) { out.skippedDiagonal++; continue; }
     if (!mapping) { issue("Error", "UNMAPPED_CODE", `Cell ${cell.sourceAddress}: code "${code}" has no mapping.`, cellKey(cell), "cell"); continue; }
     if (!mapping.generateTest) { out.skippedByMapping++; continue; }
-    const profile = cfg.profiles.find((p) => p.id === mapping.profileId);
-    if (!profile) { issue("Error", "MAPPING_WITHOUT_PROFILE", `Cell ${cell.sourceAddress}: code "${code}" generates tests but its mapping has no valid profile.`, cellKey(cell), "cell"); continue; }
+    const ruleType = typeOfCode(code); // last letter of the code decides the clash type
+    const profile = ruleType ? profileForType(cfg, ruleType) : cfg.profiles.find((p) => p.id === mapping.profileId);
+    if (!profile) { issue("Error", "MAPPING_WITHOUT_PROFILE", `Cell ${cell.sourceAddress}: code "${code}" generates tests but has no Clash Type (its last letter is not H, C or D, and none was chosen on the Codes page).`, cellKey(cell), "cell"); continue; }
     resolved.push({ cellKey: cellKey(cell), address: cell.sourceAddress, a, b, code, profile, mirrorAddress: null });
   }
 
@@ -55,7 +57,7 @@ export function interpret(cfg) {
     if (items.every((i) => i.profile.id === items[0].profile.id)) {
       out.relationships.push({ ...reorder(items[0]), mirrorAddress: items.slice(1).map((i) => i.address).join(", ") });
     } else {
-      issue("Warning", "MIRROR_CONFLICT", `Cells ${items.map((i) => i.address).join(" and ")} describe the same pair with different profiles. Both were kept as separate tests; review them or switch the project to directional mode.`, k, "pair");
+      issue("Warning", "MIRROR_CONFLICT", `Cells ${items.map((i) => i.address).join(" and ")} describe the same pair with different clash types. Both were kept as separate tests; review them or switch the project to directional mode.`, k, "pair");
       out.relationships.push(...items.map(reorder));
     }
   }
@@ -76,6 +78,7 @@ export function ensureSearchSet(cfg, system) {
 
 /** Mutates cfg. Keeps user edits (name, enabled, tolerance override); skips locked; removes stale generated; never touches manual tests. */
 export function generateTests(cfg, { regenerateNames = false, removeStale = true } = {}) {
+  syncClashTypes(cfg);
   const res = { created: 0, updated: 0, removedStale: 0, keptLocked: 0, searchSetsCreated: 0, interpretation: interpret(cfg) };
   const rels = res.interpretation.relationships.filter((r) => codeActive(cfg, r.code)); // LOD filter: other tests are not generated
   const seen = new Set();

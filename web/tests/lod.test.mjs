@@ -32,3 +32,17 @@ test("LOD filter limits which codes are active", () => {
   assert.equal(lodActive(cfg, { name: "A1_x vs y" }), false);
   void generateTests;
 });
+
+import { typeOfCode, syncClashTypes } from "../js/core/clashtype.js";
+test("clash type follows the last letter of the code", () => {
+  assert.deepEqual(["A1-AH", "B2-AC", "C1-AD", "a1-ah", "A1", "X"].map(typeOfCode), ["Hard", "Clearance", "Duplicates", "Hard", null, null]);
+  const cfg = newConfig("p");
+  cfg.codeMappings.push({ id: "m1", code: "A1-AD", generateTest: true, profileId: null });
+  cfg.clashTests.push({ id: "t1", name: "x", sourceCode: "A1-AD", testType: "Hard", profileId: "profile-hard", locked: false });
+  cfg.clashTests.push({ id: "t2", name: "y", sourceCode: "A1-AD", testType: "Hard", profileId: "profile-hard", locked: true });
+  assert.ok(syncClashTypes(cfg) > 0);
+  assert.equal(cfg.profiles.some((p) => p.testType === "Duplicates"), true, "Duplicates profile is created");
+  assert.equal(cfg.clashTests[0].testType, "Duplicates", "existing unlocked test follows");
+  assert.equal(cfg.clashTests[1].testType, "Hard", "locked test untouched");
+  assert.equal(syncClashTypes(cfg), 0, "idempotent");
+});

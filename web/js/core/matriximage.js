@@ -1,6 +1,7 @@
 // Draws the clash matrix onto a canvas (no editing controls) for use in a BIM Execution Plan.
 import { key } from "./naming.js";
 import { lodRules } from "./lod.js";
+import { typeOfCode } from "./clashtype.js";
 
 const FONT = "system-ui, 'Segoe UI', Arial, sans-serif";
 
@@ -55,7 +56,7 @@ export function drawMatrixCanvas(cfg, doc, o = {}) {
     for (const code of used) {
       const mp = map(code); y += 22;
       g.fillStyle = mp?.colorHex ?? "#fff"; g.fillRect(pad, y - 8, 22, 16); g.strokeStyle = "#444"; g.strokeRect(pad + .5, y - 7.5, 22, 16);
-      const prof = mp ? (mp.generateTest ? cfg.profiles.find((p) => p.id === mp.profileId)?.name ?? "profile not set" : "no test") : "";
+      const prof = mp ? (mp.generateTest ? typeOfCode(code) ?? cfg.profiles.find((p) => p.id === mp.profileId)?.name ?? "clash type not set" : "no test") : "";
       g.fillStyle = "#000"; g.fillText(`${code}${prof ? " — " + prof : ""}`, pad + 32, y);
     }
   }

@@ -17,7 +17,7 @@ export default function render(root, rerender) {
       discs.map((d) => h("div", { class: "row" }, h("span", { style: { minWidth: "140px" } }, d),
         tol.disciplineDefaults[d] ? [measure(tol.disciplineDefaults[d], (m) => { tol.disciplineDefaults[d] = m; changed(); rerender(); }), h("button", { onclick: () => { delete tol.disciplineDefaults[d]; changed(); rerender(); } }, "×")]
           : h("button", { onclick: () => { tol.disciplineDefaults[d] = { ...tol.projectDefault }; changed(); rerender(); } }, t("تعيين", "Set"))))),
-    h("div", { class: "card" }, h("b", {}, t("ملفات التعريف", "Profiles")),
+    h("div", { class: "card" }, h("b", {}, t("أنواع التصادم", "Clash types")),
       cfg.profiles.map((p) => h("div", { class: "row" }, h("span", { style: { minWidth: "140px" } }, `${p.name} (${p.testType})`),
         p.tolerance ? [measure(p.tolerance, (m) => { p.tolerance = m; changed(); rerender(); }), h("button", { onclick: () => { p.tolerance = null; changed(); rerender(); } }, "×")]
           : h("button", { onclick: () => { p.tolerance = { ...tol.projectDefault }; changed(); rerender(); } }, t("تعيين", "Set"))))));

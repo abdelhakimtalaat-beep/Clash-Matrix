@@ -32,9 +32,9 @@ test("units are exact", () => {
 test("full pipeline on the sample matrix", async () => {
   const cfg = await sample();
   assert.equal(cfg.matrix.cells.length, 27);
-  // decisions are forced: nothing generates until a profile is chosen
+  // codes ending in H/C/D get their clash type from the code; every other code generates nothing until a type is chosen
   let r = generateTests(cfg);
-  assert.equal(cfg.clashTests.length, 0);
+  assert.ok(cfg.clashTests.length > 0 && cfg.clashTests.every((t) => /[HCD]$/i.test(t.sourceCode)), "only rule-typed codes generate by themselves");
   // decide: every suggested code generates with the Hard profile, except X (skip)
   for (const m of cfg.codeMappings) { m.generateTest = m.code !== "X"; m.profileId = "profile-hard"; }
   r = generateTests(cfg);

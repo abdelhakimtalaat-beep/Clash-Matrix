@@ -27,9 +27,9 @@ try:
         with A.expect_file_chooser() as fc: A.click("text=اختر ملف Excel")
         fc.value.set_files(f"{ROOT}/web/tests/sample-matrix.xlsx"); A.click("button.pri >> text=استيراد"); A.wait_for_timeout(600)
         A.click("nav a:text('الرموز')"); A.wait_for_selector("table")
-        for s in A.query_selector_all("main select"): s.select_option("profile-hard")
+        ok(A.evaluate("__bcm.state.cfg.codeMappings.find(m=>m.code==='H').profileId") == "profile-hard", "code ending in H gets the Hard clash type")
         A.click("button.pri"); A.wait_for_timeout(800)
-        n = A.evaluate("__bcm.state.cfg.clashTests.length"); ok(n == 26, f"alice generated {n} tests")
+        n = A.evaluate("__bcm.state.cfg.clashTests.length"); ok(n == 24, f"alice generated {n} tests")
         # Find-Items style editor: dropdowns from the catalog, custom value, OR block
         A.click("nav a:text('مجموعات البحث')"); A.wait_for_selector("table.find")
         cat = A.locator("table.find select").first
@@ -78,7 +78,7 @@ try:
         for pg in (B, C):
             pg.reload(); pg.wait_for_selector("text=Tower"); pg.click("button:text('فتح')"); pg.wait_for_selector("text=لوحة" if False else "nav a")
         B.click("nav a:text('الاختبارات')"); B.wait_for_selector("table input[size='36']")
-        ok(B.evaluate("__bcm.state.cfg.clashTests.length") == 26, "bob sees the 26 tests")
+        ok(B.evaluate("__bcm.state.cfg.clashTests.length") == 24, "bob sees the 24 tests")
         B.wait_for_timeout(1200)
         aud = A.evaluate("__bcm.state.backend.audit(__bcm.state.project.id, 500)")
         ok(not any((a.get('by') or '').startswith('bob') for a in aud), "merely opening pages creates no edits by bob in the audit log")
