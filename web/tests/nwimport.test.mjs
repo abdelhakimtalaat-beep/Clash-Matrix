@@ -64,3 +64,18 @@ test("same set name in different folders stays two sets", () => {
   applyBatch(cfg, d, parseBatch(xml, d));
   assert.equal(cfg.searchSets.length, 2, "re-import updates, does not duplicate");
 });
+
+test("export target: 2026 drops priority and default_assignee, 2027 keeps them", () => {
+  const d = defaultDialect(), p = parseBatch(fx, d);
+  const cfg = newConfig("Mini"); cfg.projectId = "p1"; applyBatch(cfg, d, p);
+  const [a, b] = ["A-Doors", "S-Walls"].map((n) => cfg.searchSets.find((s) => s.name === n));
+  a.status.representable = b.status.representable = true;
+  cfg.clashTests.push({ id: "t", name: "A4-AH_x", sourceCode: "A4-AH", testType: "Hard", searchSetAId: a.id, searchSetBId: b.id, enabled: true, options: { mergeComposites: true }, resolvedTolerance: { value: "25", unit: "Millimeters" } });
+  const get = (target) => find(parseXml(writeClashTestsXml(cfg, d, { target }).xml), "clashtest")[0];
+  const n27 = get("2027"), n26 = get("2026");
+  assert.equal(n27.attrs.priority, "1");
+  assert.ok(n27.children.some((c) => c.name === "default_assignee"));
+  assert.equal("priority" in n26.attrs, false);
+  assert.equal(n26.children.some((c) => c.name === "default_assignee"), false);
+  assert.equal(n26.attrs.tolerance, n27.attrs.tolerance);
+});

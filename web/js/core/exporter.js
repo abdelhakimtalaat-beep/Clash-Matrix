@@ -15,17 +15,17 @@ export function exportStatus(dialect, issues, structural) {
   return "StructurallyChecked"; // "Verified" additionally needs import + reopen evidence from a real Navisworks run.
 }
 
-export function buildExport(cfg, dialect, { fixtures = null, allowWithErrors = false } = {}) {
+export function buildExport(cfg, dialect, { fixtures = null, allowWithErrors = false, target = "2027" } = {}) {
   const issues = validateConfig(cfg, dialect);
   const blocked = hasErrors(issues) && !allowWithErrors;
   const ss = writeSearchSetsXml(cfg, dialect);
-  const ct = writeClashTestsXml(cfg, dialect);
+  const ct = writeClashTestsXml(cfg, dialect, { target });
   const structural = fixtures ? [...(fixtures.searchSets ? compareWithFixtures(ss.xml, fixtures.searchSets) : []), ...(fixtures.clashTests ? compareWithFixtures(ct.xml, fixtures.clashTests) : [])] : [];
   const status = exportStatus(dialect, issues, structural);
   const compat = compatibilityReport(cfg, dialect);
   const manifest = {
     generatedAt: new Date().toISOString(), project: cfg.name, projectId: cfg.projectId, targetNavisworks: cfg.targetNavisworksVersion,
-    status, dialect: { version: dialect.version, verified: dialect.verified, note: dialect.verificationNote },
+    status, navisworksTarget: target === "2026" ? "Navisworks 2026 or older (priority and assigned-to omitted)" : "Navisworks 2027 or later", dialect: { version: dialect.version, verified: dialect.verified, note: dialect.verificationNote },
     counts: { searchSets: cfg.searchSets.length, searchSetsExported: cfg.searchSets.length - ss.skipped.length, tests: cfg.clashTests.length, testsExported: cfg.clashTests.length - ct.skipped.length },
     skipped: { searchSets: ss.skipped, tests: ct.skipped },
     issueCounts: { error: issues.filter((i) => i.severity === "Error").length, warning: issues.filter((i) => i.severity === "Warning").length, info: issues.filter((i) => i.severity === "Info").length },

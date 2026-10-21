@@ -64,7 +64,9 @@ export function toleranceInXml(t, dialect) {
 
 export const locatorOf = (ss, dialect) => dialect.selectionLocatorTemplate.replace("{path}", ss.folder ? `${ss.folder}/${ss.name}` : ss.name);
 
-export function writeClashTestsXml(cfg, dialect) {
+/** target "2027" (default): same output as before. "2026": no priority attribute and no default_assignee element (older Navisworks). */
+export function writeClashTestsXml(cfg, dialect, { target = "2027" } = {}) {
+  const old = target === "2026";
   const skipped = [];
   const ssById = new Map(cfg.searchSets.map((s) => [s.id, s]));
   const nodes = [];
@@ -76,8 +78,8 @@ export function writeClashTestsXml(cfg, dialect) {
     const type = dialect.testTypes[t.testType];
     const tol = t.resolvedTolerance ? toleranceInXml(t.resolvedTolerance, dialect) : { error: "no tolerance" };
     if (!type || tol.error) { skipped.push({ id: t.id, name: t.name, reason: tol.error ?? "unknown test type" }); continue; }
-    nodes.push(x("clashtest", { name: t.name, test_type: type, status: "new", tolerance: tol.text, merge_composites: t.options.mergeComposites ? "1" : "0", priority: priorityXml(cfg, t, dialect) },
-      x("default_assignee", { display_name: "" }),
+    nodes.push(x("clashtest", { name: t.name, test_type: type, status: "new", tolerance: tol.text, merge_composites: t.options.mergeComposites ? "1" : "0", ...(old ? {} : { priority: priorityXml(cfg, t, dialect) }) },
+      old ? null : x("default_assignee", { display_name: "" }),
       x("linkage", { mode: "none" }),
       x("left", {}, x("clashselection", { selfintersect: t.options.selfIntersectA ? "1" : "0", primtypes: String(dialect.clashSelectionPrimTypes) }, x("locator", {}, locatorOf(a, dialect)))),
       x("right", {}, x("clashselection", { selfintersect: t.options.selfIntersectB ? "1" : "0", primtypes: String(dialect.clashSelectionPrimTypes) }, x("locator", {}, locatorOf(b, dialect)))),
