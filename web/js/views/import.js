@@ -28,8 +28,8 @@ export default function render(root, rerender) {
       wb = await loadWorkbook(await f.arrayBuffer()); fileName = f.name;
       sel.replaceChildren(...wb.sheetNames.map((n) => h("option", {}, n))); sheetName = wb.sheetNames[0];
       go.disabled = false;
-      info.replaceChildren(h("p", {}, `${f.name}: ${wb.sheetNames.length} ${t("ورقة", "sheets")}`),
-        wb.unresolvedColors.length ? h("p", { class: "Warning" }, t("ألوان لم يمكن حلّها: ", "Unresolved colours: ") + wb.unresolvedColors.join(", ")) : null);
+      info.replaceChildren(...[h("p", {}, `${f.name}: ${wb.sheetNames.length} ${t("ورقة", "sheets")}`),
+        wb.unresolvedColors.length ? h("p", { class: "Warning" }, t("ألوان لم يمكن حلّها: ", "Unresolved colours: ") + wb.unresolvedColors.join(", ")) : null].filter(Boolean));
     } catch (e) { toast(t("تعذر قراءة الملف: ", "Could not read file: ") + e.message); }
   } }, t("اختر ملف Excel", "Choose Excel file"));
   root.append(h("h2", {}, t("استيراد المصفوفة", "Import matrix")),
