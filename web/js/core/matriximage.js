@@ -1,3 +1,4 @@
+import { paletteColour, textOn } from "./palette.js";
 // Draws the clash matrix onto a canvas (no editing controls) for use in a BIM Execution Plan.
 import { key } from "./naming.js";
 import { lodRules } from "./lod.js";
@@ -11,7 +12,7 @@ export function drawMatrixCanvas(cfg, doc, o = {}) {
   const m = cfg.matrix, sys = new Map(m.systems.map((s) => [s.id, s]));
   const cellMap = new Map(m.cells.map((c) => [c.rowSystemId + "|" + c.columnSystemId, c]));
   const map = (code) => cfg.codeMappings.find((x) => key(x.code) === key(code));
-  const colourOf = (c) => c?.colorHex ?? (c?.rawValue ? map(c.rawValue)?.colorHex : null);
+  const colourOf = (c) => (c?.rawValue ? paletteColour(c.rawValue) : null) ?? c?.colorHex ?? (c?.rawValue ? map(c.rawValue)?.colorHex : null);
   let rows = m.rowSystemIds.filter((id) => sys.has(id)), cols = m.columnSystemIds.filter((id) => sys.has(id));
   if (hideEmpty) {
     const rUsed = new Set(m.cells.filter((c) => c.rawValue).map((c) => c.rowSystemId)), cUsed = new Set(m.cells.filter((c) => c.rawValue).map((c) => c.columnSystemId));
@@ -41,7 +42,7 @@ export function drawMatrixCanvas(cfg, doc, o = {}) {
   rows.forEach((r, j) => cols.forEach((c, i) => {
     const x = cellMap.get(r + "|" + c), col = colourOf(x);
     if (col) { g.fillStyle = col; g.fillRect(x0 + i * cell, y0 + j * cell, cell, cell); }
-    if (x?.rawValue) { g.fillStyle = "#000"; g.font = `12px ${FONT}`; g.textAlign = "center"; g.fillText(x.rawValue, x0 + i * cell + cell / 2, y0 + j * cell + cell / 2); }
+    if (x?.rawValue) { g.fillStyle = textOn(col) || "#000"; g.font = `12px ${FONT}`; g.textAlign = "center"; g.fillText(x.rawValue, x0 + i * cell + cell / 2, y0 + j * cell + cell / 2); }
   }));
   g.strokeStyle = "#444"; g.lineWidth = 1;
   g.beginPath();
@@ -55,7 +56,7 @@ export function drawMatrixCanvas(cfg, doc, o = {}) {
     g.font = `12px ${FONT}`;
     for (const code of used) {
       const mp = map(code); y += 22;
-      g.fillStyle = mp?.colorHex ?? "#fff"; g.fillRect(pad, y - 8, 22, 16); g.strokeStyle = "#444"; g.strokeRect(pad + .5, y - 7.5, 22, 16);
+      g.fillStyle = paletteColour(mp?.code) ?? mp?.colorHex ?? "#fff"; g.fillRect(pad, y - 8, 22, 16); g.strokeStyle = "#444"; g.strokeRect(pad + .5, y - 7.5, 22, 16);
       const prof = mp ? (mp.generateTest ? typeOfCode(code) ?? cfg.profiles.find((p) => p.id === mp.profileId)?.name ?? "clash type not set" : "no test") : "";
       g.fillStyle = "#000"; g.fillText(`${code}${prof ? " — " + prof : ""}`, pad + 32, y);
     }

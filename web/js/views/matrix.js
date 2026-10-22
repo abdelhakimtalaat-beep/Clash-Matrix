@@ -1,6 +1,7 @@
 // Editable matrix, Excel-style: type in cells, paste blocks from Excel, add / insert / delete rows and columns, rename systems.
 import { h, t, toast, download } from "../ui.js";
 import { drawMatrixCanvas } from "../core/matriximage.js";
+import { paletteColour, textOn } from "../core/palette.js";
 import { lodRules, letterOf, lodFilter, codeActive, filterActive, systemActive } from "../core/lod.js";
 import { DISCIPLINE_GROUPS, groupOfSystemLabel, discFilter } from "../core/codes.js";
 import { state, changed } from "../store.js";
@@ -21,12 +22,14 @@ export default function render(root, rerender) {
     m.systems.push({ id, label, discipline: m.systems.at(-1)?.discipline ?? "", order: Math.max(-1, ...m.systems.map((s) => s.order)) + 1 });
     return id;
   };
+  const colourOf = (cell, raw) => { const code = raw ?? cell?.rawValue; return (code ? paletteColour(code) : null) ?? cell?.colorHex ?? (code ? mappingOf(code)?.colorHex : null) ?? null; };
+  const paint = (input, colour) => { const td = input.parentElement; td.style.background = colour ?? ""; input.style.color = colour ? textOn(colour) : ""; };
   const setCell = (rid, cid, raw) => {
     const value = normalizeLabel(raw), k = rid + "|" + cid, ex = cellMap.get(k);
     if (!value && !ex?.colorHex) { if (ex) m.cells = m.cells.filter((c) => c !== ex); }
     else if (ex) ex.rawValue = value;
     else m.cells.push({ rowSystemId: rid, columnSystemId: cid, rawValue: value, formula: null, colorHex: null, sourceAddress: "manual" });
-    if (value && !mappingOf(value)) cfg.codeMappings.push({ id: "map-" + key(value), code: value, colorHex: null, generateTest: true, profileId: null, note: "Added from the matrix editor." });
+    if (value && !mappingOf(value)) cfg.codeMappings.push({ id: "map-" + key(value), code: value, colorHex: paletteColour(value), generateTest: true, profileId: null, note: "Added from the matrix editor." });
     rebuild();
   };
   const tidy = (id) => { // drop a system nobody refers to any more
@@ -96,11 +99,11 @@ export default function render(root, rerender) {
         cols.map((cid, ci) => {
           if (!shownCol(cid)) return null;
           const x0 = rid && cid ? cellMap.get(rid + "|" + cid) : null, x = x0 && !vis(x0) ? null : x0;
-          const colour = x?.colorHex ?? (x?.rawValue ? mappingOf(x.rawValue)?.colorHex : null);
+          const colour = colourOf(x);
           return h("td", { style: colour ? { background: colour } : {}, class: !rid || !cid ? "dead" : "" },
             rid && cid ? h("input", {
-              class: "mcell", value: x?.rawValue ?? "", "data-r": ri, "data-c": ci, title: x?.sourceAddress ?? "",
-              onchange: (e) => { setCell(rid, cid, e.target.value); changed(); const cell = cellMap.get(rid + "|" + cid); e.target.parentElement.style.background = (cell?.colorHex ?? (cell?.rawValue ? mappingOf(cell.rawValue)?.colorHex : null)) ?? ""; },
+              class: "mcell", value: x?.rawValue ?? "", style: colour ? { color: textOn(colour) } : {}, oninput: (e) => paint(e.target, colourOf(null, e.target.value.trim())), "data-r": ri, "data-c": ci, title: x?.sourceAddress ?? "",
+              onchange: (e) => { setCell(rid, cid, e.target.value); changed(); const cell = cellMap.get(rid + "|" + cid); paint(e.target, colourOf(cell)); },
               onpaste: (e) => paste(e, ri, ci),
               onkeydown: (e) => {
                 if (e.key === "ArrowDown" || e.key === "Enter") { e.preventDefault(); focusCell(ri + 1, ci); }
