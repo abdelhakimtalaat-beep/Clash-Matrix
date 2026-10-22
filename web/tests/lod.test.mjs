@@ -57,15 +57,20 @@ test("responsibility is the 4th character of the code", () => {
   assert.equal(subPriorityOf("A4-AH"), "4");
 });
 
-import { groupOfCode } from "../js/core/codes.js";
-test("discipline groups follow the 4th character; LOD and discipline filters combine", () => {
-  assert.deepEqual(["A4-AH", "A1-IH", "B2-SH", "C1-HH", "C1-EH", "C1-FH", "C1-PH", "C1-TH", "A1-LH", "A1-CH", "A1-RH", "A1-XH"].map(groupOfCode),
+import { groupOfSystemLabel } from "../js/core/codes.js";
+import { systemActive } from "../js/core/lod.js";
+test("discipline filter keeps only systems whose name starts with the group's letters; LOD combines", () => {
+  assert.deepEqual(["A-Openings", "I-Furniture", "S-Beams", "H-Duct", "e-Cable", "F-Sprinkler", "P-Pipes", "T-Tel", "L-Trees", "C-Sewer", "R-Road", "X-Misc"].map(groupOfSystemLabel),
     ["Architecture", "Interior Design", "Structure", "MEP", "MEP", "MEP", "MEP", "MEP", "Landscape", "Infrastructure", "Roads", null]);
   const cfg = newConfig("p");
+  assert.equal(systemActive(cfg, "X-Misc"), true, "no filter keeps everything");
   cfg.discFilter = ["MEP"];
-  assert.equal(codeActive(cfg, "B2-HH"), true);
-  assert.equal(codeActive(cfg, "B2-SH"), false);
+  assert.equal(systemActive(cfg, "H-Duct"), true);
+  assert.equal(systemActive(cfg, "S-Beams"), false);
+  cfg.matrix.systems = [{ id: "a", label: "H-Duct" }, { id: "b", label: "P-Pipes" }, { id: "c", label: "S-Beams" }];
+  const T = (x, y, code) => ({ systemAId: x, systemBId: y, code, name: code });
+  assert.equal(lodActive(cfg, T("a", "b", "B2-HH")), true);
+  assert.equal(lodActive(cfg, T("a", "c", "B2-HH")), false, "both systems must be kept");
   cfg.lodFilter = ["C"];
-  assert.equal(codeActive(cfg, "B2-HH"), false, "LOD must match as well");
-  assert.equal(codeActive(cfg, "C3-TD"), true);
+  assert.equal(lodActive(cfg, T("a", "b", "B2-HH")), false, "LOD must match as well");
 });

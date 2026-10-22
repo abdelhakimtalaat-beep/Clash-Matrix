@@ -1,4 +1,4 @@
-import { groupOfCode } from "./codes.js";
+import { groupOfSystemLabel } from "./codes.js";
 // LOD levels and clash-test priority, derived from the first letter of the test code (e.g. "A1-AH" -> A -> LOD200 / High).
 export const PRIORITIES = ["High", "Medium", "Low"];
 export const defaultLod = () => [
@@ -28,10 +28,15 @@ export function priorityXml(cfg, t, dialect) {
 
 /** Active LOD letters chosen on the Matrix page; empty = no filter (everything is active). */
 export const lodFilter = (cfg) => (cfg.lodFilter ?? []).map((l) => String(l).toUpperCase());
-export const codeActive = (cfg, code) => {
-  const f = lodFilter(cfg), d = cfg.discFilter ?? []; // both filters must pass; an empty filter passes everything
-  return (!f.length || f.includes(String(code ?? "").trim()[0]?.toUpperCase() ?? "")) && (!d.length || d.includes(groupOfCode(code)));
-};
+/** LOD part of the filter, decided by the code's first letter. */
+export const codeActive = (cfg, code) => { const f = lodFilter(cfg); return !f.length || f.includes(String(code ?? "").trim()[0]?.toUpperCase() ?? ""); };
+/** Discipline part: with a discipline filter, only systems whose name starts with a selected group's letters stay (rows AND columns). */
+export const systemActive = (cfg, label) => { const d = cfg.discFilter ?? []; return !d.length || d.includes(groupOfSystemLabel(label)); };
 export const filterActive = (cfg) => lodFilter(cfg).length > 0 || (cfg.discFilter ?? []).length > 0;
 /** A test outside the active LOD filter is not generated, not listed and not exported. */
-export const lodActive = (cfg, t) => codeActive(cfg, codeOf(t));
+export const lodActive = (cfg, t) => {
+  if (!codeActive(cfg, codeOf(t))) return false;
+  if (!(cfg.discFilter ?? []).length) return true;
+  const sys = (id) => cfg.matrix.systems.find((s) => s.id === id);
+  return systemActive(cfg, sys(t.systemAId)?.label) && systemActive(cfg, sys(t.systemBId)?.label);
+};

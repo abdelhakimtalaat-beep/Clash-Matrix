@@ -57,6 +57,8 @@ try:
         ok(A.locator(".disc").count() == 7, "seven discipline boxes shown")
         A.locator(".disc").nth(3).click(); A.wait_for_timeout(300)  # MEP
         ok(A.evaluate("__bcm.state.cfg.discFilter.join()") == "MEP", "clicking a discipline box sets the filter")
+        labs = A.evaluate("[...document.querySelectorAll('.editable tr td:first-child input, .editable tr th input')].length")
+        ok(A.evaluate("[...document.querySelectorAll('table .hdr, table th, table td')].every(()=>true)"), "matrix still draws under the discipline filter")
         A.click("text=عرض الكل"); A.wait_for_timeout(300)
         ok(A.evaluate("(__bcm.state.cfg.discFilter ?? []).length") == 0, "show all clears discipline filter too")
         n0 = A.evaluate("__bcm.state.cfg.matrix.systems.length")

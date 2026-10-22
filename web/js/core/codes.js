@@ -16,10 +16,11 @@ export function responsibilityOf(code) {
   return RESPONSIBILITY.find(([l]) => l === c)?.[1] ?? null;
 }
 
-/** Discipline filter groups on the Matrix page, linked to the responsibility letter (4th character of the code). */
+/** Discipline filter groups on the Matrix page. A system belongs to a group by the FIRST letter of its name (e.g. "A-Openings" -> A -> Architecture). */
 export const DISCIPLINE_GROUPS = [
   { id: "Architecture", letters: ["A"] }, { id: "Interior Design", letters: ["I"] }, { id: "Structure", letters: ["S"] },
   { id: "MEP", letters: ["H", "E", "F", "P", "T"] }, { id: "Landscape", letters: ["L"] }, { id: "Infrastructure", letters: ["C"] }, { id: "Roads", letters: ["R"] },
 ];
 export const groupOfCode = (code) => { const c = String(code ?? "").trim()[3]?.toUpperCase(); return DISCIPLINE_GROUPS.find((g) => g.letters.includes(c))?.id ?? null; };
 export const discFilter = (cfg) => cfg.discFilter ?? [];
+export const groupOfSystemLabel = (label) => { const c = String(label ?? "").trim()[0]?.toUpperCase(); return DISCIPLINE_GROUPS.find((g) => g.letters.includes(c))?.id ?? null; };

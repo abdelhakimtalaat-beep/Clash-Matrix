@@ -1,8 +1,8 @@
 // Editable matrix, Excel-style: type in cells, paste blocks from Excel, add / insert / delete rows and columns, rename systems.
 import { h, t, toast, download } from "../ui.js";
 import { drawMatrixCanvas } from "../core/matriximage.js";
-import { lodRules, letterOf, lodFilter, codeActive, filterActive } from "../core/lod.js";
-import { DISCIPLINE_GROUPS, groupOfCode, discFilter, codeText } from "../core/codes.js";
+import { lodRules, letterOf, lodFilter, codeActive, filterActive, systemActive } from "../core/lod.js";
+import { DISCIPLINE_GROUPS, groupOfSystemLabel, discFilter } from "../core/codes.js";
 import { state, changed } from "../store.js";
 import { uid } from "../core/model.js";
 import { key, normalizeLabel } from "../core/naming.js";
@@ -86,8 +86,8 @@ export default function render(root, rerender) {
     const filtered = filterActive(cfg);
     const coded = (a, b) => { const x = cellMap.get(a + "|" + b) ?? cellMap.get(b + "|" + a); return !!x?.rawValue; };
     // while filtering, hide rows/columns whose codes are all outside the filter (rows/columns with no codes stay, so new ones remain editable)
-    const shownRow = (rid) => !filtered || !rid || !cols.some((cid) => cellMap.get(rid + "|" + cid)?.rawValue) || cols.some((cid) => { const x = cellMap.get(rid + "|" + cid); return x?.rawValue && vis(x); });
-    const shownCol = (cid) => !filtered || !cid || !rows.some((rid) => cellMap.get(rid + "|" + cid)?.rawValue) || rows.some((rid) => { const x = cellMap.get(rid + "|" + cid); return x?.rawValue && vis(x); });
+    const shownRow = (rid) => (!rid || systemActive(cfg, sysOf(rid)?.label)) && (!filtered || !rid || !cols.some((cid) => cellMap.get(rid + "|" + cid)?.rawValue) || cols.some((cid) => { const x = cellMap.get(rid + "|" + cid); return x?.rawValue && vis(x); }));
+    const shownCol = (cid) => (!cid || systemActive(cfg, sysOf(cid)?.label)) && (!filtered || !cid || !rows.some((rid) => cellMap.get(rid + "|" + cid)?.rawValue) || rows.some((rid) => { const x = cellMap.get(rid + "|" + cid); return x?.rawValue && vis(x); }));
     void coded;
     holder.replaceChildren(h("table", {},
       h("tr", {}, h("th", { class: "sticky" }, ""), cols.map((cid, ci) => !shownCol(cid) ? null : h("th", {}, headerInputs(cid, () => delCol(ci), () => { cols.splice(ci, 0, newSystem()); after(); }, () => { cols.splice(ci + 1, 0, newSystem()); after(); }, false)))),
@@ -141,15 +141,17 @@ export default function render(root, rerender) {
         h("div", {}, "Priority: ", h("b", {}, r.priority)),
         h("span", { class: "Info" }, `${cells} ${t("خلية", "cells")} · ${tests} ${t("اختبار", "tests")}`));
     })),
-    h("div", { class: "lbl2" }, t("التخصص (الحرف الرابع في الكود)", "Discipline (4th character of the code)")),
+    h("div", { class: "lbl2" }, t("التخصص (الحرف الأول من اسم الصف/العمود)", "Discipline (first letter of the row / column name)")),
     h("div", { class: "discs" }, DISCIPLINE_GROUPS.map((g) => {
       const on = dActive.includes(g.id);
-      const tests = cfg.clashTests.filter((x) => groupOfCode(codeText(x)) === g.id).length, cells = m.cells.filter((c) => groupOfCode(c.rawValue) === g.id).length;
-      return h("div", { class: `lod disc${on ? " on" : ""}${dActive.length && !on ? " off" : ""}`, role: "button", tabindex: 0, title: t("اضغط لعرض اختبارات هذا التخصص فقط", "Click to show only this discipline's tests"),
+      const inG = (id) => groupOfSystemLabel(sysOf(id)?.label) === g.id;
+      const systems = m.systems.filter((x) => groupOfSystemLabel(x.label) === g.id).length, cells = m.cells.filter((c) => c.rawValue && inG(c.rowSystemId) && inG(c.columnSystemId)).length;
+      const tests = cfg.clashTests.filter((x) => inG(x.systemAId) && inG(x.systemBId)).length;
+      return h("div", { class: `lod disc${on ? " on" : ""}${dActive.length && !on ? " off" : ""}`, role: "button", tabindex: 0, title: t("اضغط لإبقاء صفوف وأعمدة هذا التخصص فقط", "Click to keep only this discipline's rows and columns"),
         onclick: () => toggleDisc(g.id), onkeydown: (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleDisc(g.id); } } },
         h("b", {}, g.id), on ? h("span", { class: "badge good" }, "✓") : null,
-        h("div", {}, t("الحرف: ", "Letter: "), h("b", {}, g.letters.join(", "))),
-        h("span", { class: "Info" }, `${cells} ${t("خلية", "cells")} · ${tests} ${t("اختبار", "tests")}`));
+        h("div", {}, t("الحرف الأول: ", "First letter: "), h("b", {}, g.letters.join(", "))),
+        h("span", { class: "Info" }, `${systems} ${t("نظام", "systems")} · ${cells} ${t("خلية", "cells")} · ${tests} ${t("اختبار", "tests")}`));
     })),
     h("div", { class: "row" }, active.length || dActive.length
       ? [h("span", { class: "badge warn" }, t(`مفلتر: ${[...active, ...dActive].join(", ")} — بقية الاختبارات لا تُولَّد ولا تُعرض ولا تُصدَّر`, `Filter: ${[...active, ...dActive].join(", ")} — other tests are not generated, shown or exported`)),
