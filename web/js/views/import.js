@@ -19,9 +19,8 @@ export default function render(root, rerender) {
     toast(t(`تم الاستيراد: ${matrix.systems.length} نظام، ${matrix.cells.length} خلية، ${added} رمز جديد`, `Imported ${matrix.systems.length} systems, ${matrix.cells.length} cells, ${added} new codes`));
     rerender();
   };
-  const disc = h("input", { placeholder: t("تخصص افتراضي (اختياري)", "Default discipline (optional)") });
   const sel = h("select", { onchange: () => (sheetName = sel.value) });
-  const go = h("button", { class: "pri", disabled: true, onclick: () => doImport(disc.value) }, t("استيراد", "Import"));
+  const go = h("button", { class: "pri", disabled: true, onclick: () => doImport("") }, t("استيراد", "Import"));
   const pick = h("button", { onclick: async () => {
     const f = await pickFile(".xlsx,.xlsm"); if (!f) return;
     try {
@@ -33,7 +32,7 @@ export default function render(root, rerender) {
     } catch (e) { toast(t("تعذر قراءة الملف: ", "Could not read file: ") + e.message); }
   } }, t("اختر ملف Excel", "Choose Excel file"));
   root.append(h("h2", {}, t("استيراد المصفوفة", "Import matrix")),
-    h("div", { class: "card" }, h("div", { class: "row" }, pick, sel, disc, go), info,
+    h("div", { class: "card" }, h("div", { class: "row" }, pick, sel, go), info,
       h("p", { class: "Info" }, t("تتم القراءة بالكامل داخل المتصفح ولا يُرفع الملف لأي مكان. إعادة الاستيراد تحافظ على التعديلات للأنظمة المتطابقة.", "Parsing happens entirely in your browser; the file is not uploaded. Re-import keeps your edits for matching systems."))),
     cfg.matrix.systems.length ? h("div", { class: "card" }, `${t("الحالي", "Current")}: ${cfg.matrix.sourceFileName} — ${cfg.matrix.systems.length} ${t("نظام", "systems")}, ${cfg.matrix.cells.length} ${t("خلية", "cells")}`,
       cfg.matrix.importIssues.length ? h("ul", {}, cfg.matrix.importIssues.map((i) => h("li", { class: i.severity }, `${i.code}: ${i.message}`))) : null) : null);
