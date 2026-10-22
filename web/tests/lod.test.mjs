@@ -62,6 +62,7 @@ import { systemActive } from "../js/core/lod.js";
 test("discipline filter keeps only systems whose name starts with the group's letters; LOD combines", () => {
   assert.deepEqual(["A-Openings", "I-Furniture", "S-Beams", "H-Duct", "e-Cable", "F-Sprinkler", "P-Pipes", "T-Tel", "L-Trees", "C-Sewer", "R-Road", "X-Misc"].map(groupOfSystemLabel),
     ["Architecture", "Interior Design", "Structure", "MEP", "MEP", "MEP", "MEP", "MEP", "Landscape", "Infrastructure", "Roads", null]);
+  assert.deepEqual(["A-External Walls", "S-Utilities", "H-external duct", "Utilities"].map(groupOfSystemLabel), ["Infrastructure", "Infrastructure", "Infrastructure", "Infrastructure"], "Utilities/External go to Infrastructure");
   const cfg = newConfig("p");
   assert.equal(systemActive(cfg, "X-Misc"), true, "no filter keeps everything");
   cfg.discFilter = ["MEP"];

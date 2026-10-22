@@ -23,4 +23,6 @@ export const DISCIPLINE_GROUPS = [
 ];
 export const groupOfCode = (code) => { const c = String(code ?? "").trim()[3]?.toUpperCase(); return DISCIPLINE_GROUPS.find((g) => g.letters.includes(c))?.id ?? null; };
 export const discFilter = (cfg) => cfg.discFilter ?? [];
-export const groupOfSystemLabel = (label) => { const c = String(label ?? "").trim()[0]?.toUpperCase(); return DISCIPLINE_GROUPS.find((g) => g.letters.includes(c))?.id ?? null; };
+/** Exception: any system whose name contains "Utilities" or "External" belongs to Infrastructure, whatever its first letter. */
+export const INFRA_KEYWORDS = /utilities|external/i;
+export const groupOfSystemLabel = (label) => { if (INFRA_KEYWORDS.test(String(label ?? ""))) return "Infrastructure"; const c = String(label ?? "").trim()[0]?.toUpperCase(); return DISCIPLINE_GROUPS.find((g) => g.letters.includes(c))?.id ?? null; };
