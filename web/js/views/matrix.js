@@ -1,9 +1,8 @@
 // Editable matrix, Excel-style: type in cells, paste blocks from Excel, add / insert / delete rows and columns, rename systems.
 import { h, t, toast, download } from "../ui.js";
 import { drawMatrixCanvas } from "../core/matriximage.js";
-import { lodRules, letterOf, lodFilter, codeActive } from "../core/lod.js";
-import { RESPONSIBILITY } from "../core/codes.js";
-import { TYPE_BY_LAST_LETTER } from "../core/clashtype.js";
+import { lodRules, letterOf, lodFilter, codeActive, filterActive } from "../core/lod.js";
+import { DISCIPLINE_GROUPS, groupOfCode, discFilter, codeText } from "../core/codes.js";
 import { state, changed } from "../store.js";
 import { uid } from "../core/model.js";
 import { key, normalizeLabel } from "../core/naming.js";
@@ -84,7 +83,7 @@ export default function render(root, rerender) {
 
   function draw() {
     const vis = (x) => !x || !x.rawValue || codeActive(cfg, x.rawValue); // cells outside the LOD filter are hidden
-    const filtered = lodFilter(cfg).length > 0;
+    const filtered = filterActive(cfg);
     const coded = (a, b) => { const x = cellMap.get(a + "|" + b) ?? cellMap.get(b + "|" + a); return !!x?.rawValue; };
     // while filtering, hide rows/columns whose codes are all outside the filter (rows/columns with no codes stay, so new ones remain editable)
     const shownRow = (rid) => !filtered || !rid || !cols.some((cid) => cellMap.get(rid + "|" + cid)?.rawValue) || cols.some((cid) => { const x = cellMap.get(rid + "|" + cid); return x?.rawValue && vis(x); });
@@ -128,7 +127,8 @@ export default function render(root, rerender) {
     h("label", {}, h("input", { type: "checkbox", checked: true, onchange: (e) => (legend = e.target.checked) }), t(" مع مفتاح الرموز", " legend")),
     h("label", {}, h("input", { type: "checkbox", onchange: (e) => (hideEmpty = e.target.checked) }), t(" إخفاء الفارغ", " hide empty rows/columns")),
     h("a", { href: "#mappings" }, t("← تعيين الرموز وتوليد الاختبارات", "→ Codes & generate tests")));
-  const lod = lodRules(cfg), active = lodFilter(cfg);
+  const lod = lodRules(cfg), active = lodFilter(cfg), dActive = discFilter(cfg);
+  const toggleDisc = (id) => { const cur = new Set(discFilter(cfg)); cur.has(id) ? cur.delete(id) : cur.add(id); cfg.discFilter = [...cur]; changed(); rerender(); };
   const toggleLod = (L) => { const cur = new Set(lodFilter(cfg)); cur.has(L) ? cur.delete(L) : cur.add(L); cfg.lodFilter = [...cur]; changed(); rerender(); };
   const lodBoxes = h("div", {},
     h("div", { class: "lods" }, lod.map((r) => {
@@ -141,20 +141,25 @@ export default function render(root, rerender) {
         h("div", {}, "Priority: ", h("b", {}, r.priority)),
         h("span", { class: "Info" }, `${cells} ${t("خلية", "cells")} · ${tests} ${t("اختبار", "tests")}`));
     })),
-    h("div", { class: "row" }, active.length
-      ? [h("span", { class: "badge warn" }, t(`مفلتر: ${active.join(", ")} — بقية الاختبارات لا تُولَّد ولا تُعرض ولا تُصدَّر`, `Filter: ${active.join(", ")} — other tests are not generated, shown or exported`)),
-        h("button", { onclick: () => { cfg.lodFilter = []; changed(); rerender(); } }, t("عرض الكل", "Show all"))]
-      : h("span", { class: "Info" }, t("اضغط على مربع لتقييد المصفوفة والتوليد بهذا المستوى فقط.", "Click a box to restrict the matrix and generation to that level."))));
+    h("div", { class: "lbl2" }, t("التخصص (الحرف الرابع في الكود)", "Discipline (4th character of the code)")),
+    h("div", { class: "discs" }, DISCIPLINE_GROUPS.map((g) => {
+      const on = dActive.includes(g.id);
+      const tests = cfg.clashTests.filter((x) => groupOfCode(codeText(x)) === g.id).length, cells = m.cells.filter((c) => groupOfCode(c.rawValue) === g.id).length;
+      return h("div", { class: `lod disc${on ? " on" : ""}${dActive.length && !on ? " off" : ""}`, role: "button", tabindex: 0, title: t("اضغط لعرض اختبارات هذا التخصص فقط", "Click to show only this discipline's tests"),
+        onclick: () => toggleDisc(g.id), onkeydown: (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleDisc(g.id); } } },
+        h("b", {}, g.id), on ? h("span", { class: "badge good" }, "✓") : null,
+        h("div", {}, t("الحرف: ", "Letter: "), h("b", {}, g.letters.join(", "))),
+        h("span", { class: "Info" }, `${cells} ${t("خلية", "cells")} · ${tests} ${t("اختبار", "tests")}`));
+    })),
+    h("div", { class: "row" }, active.length || dActive.length
+      ? [h("span", { class: "badge warn" }, t(`مفلتر: ${[...active, ...dActive].join(", ")} — بقية الاختبارات لا تُولَّد ولا تُعرض ولا تُصدَّر`, `Filter: ${[...active, ...dActive].join(", ")} — other tests are not generated, shown or exported`)),
+        h("button", { onclick: () => { cfg.lodFilter = []; cfg.discFilter = []; changed(); rerender(); } }, t("عرض الكل", "Show all"))]
+      : h("span", { class: "Info" }, t("اضغط على مربع (LOD و/أو تخصص) لتقييد المصفوفة والتوليد. الفلاتر تعمل معاً.", "Click a box (LOD and/or discipline) to restrict the matrix and generation. Filters combine."))));
   const seg = (txt, cls, label) => h("div", { class: `seg ${cls}` }, h("div", { class: "ch" }, txt), h("div", { class: "lb" }, label));
   const convention = h("details", { class: "card conv", open: true }, h("summary", {}, h("b", {}, t("نظام تسمية كود الاختبار (Naming convention)", "Clash test code naming convention"))),
     h("div", { class: "codedemo" },
-      seg("A", "c1", "LOD code"), seg("4", "c2", "Sub priority"), seg("-", "c3", ""), seg("A", "c4", "Responsibility"), seg("H", "c5", "Clash type")),
-    h("p", { class: "Info" }, t("مثال: A4-AH = LOD200 · أولوية فرعية 4 · مسؤولية Architecture · نوع التصادم Hard. الحرف الأول = LOD والأولوية، الرقم الثاني = الأولوية الفرعية، الحرف الرابع = الجهة المسؤولة، والحرف الأخير = نوع التصادم.", "Example: A4-AH = LOD200 · sub priority 4 · Architecture is responsible · Hard clash. 1st character = LOD & priority, 2nd = sub priority, 4th = responsibility, last = clash type.")),
-    h("div", { class: "convgrid" },
-      h("table", {}, h("tr", {}, h("th", {}, "1st"), h("th", {}, "LOD"), h("th", {}, "Priority")), lod.map((r) => h("tr", {}, h("td", {}, h("b", {}, r.letter)), h("td", {}, r.label), h("td", {}, r.priority)))),
-      h("table", {}, h("tr", {}, h("th", {}, "4th"), h("th", {}, "Responsibility")), RESPONSIBILITY.map(([l, n]) => h("tr", {}, h("td", {}, h("b", {}, l)), h("td", {}, n)))),
-      h("table", {}, h("tr", {}, h("th", {}, "Last"), h("th", {}, "Clash type")), Object.entries(TYPE_BY_LAST_LETTER).map(([l, n]) => h("tr", {}, h("td", {}, h("b", {}, l)), h("td", {}, n))))));
-  root.append(h("h2", {}, t("المصفوفة", "Matrix")), lodBoxes, convention,
+      seg("A", "c1", "LOD code"), seg("4", "c2", "Sub priority"), seg("-", "c3", ""), seg("A", "c4", "Responsibility"), seg("H", "c5", "Clash type")));
+  root.append(h("h2", {}, t("المصفوفة", "Matrix")), convention, lodBoxes,
     h("p", { class: "Info" }, t("اكتب الرمز في أي خلية، أو الصق كتلة من Excel، أو أضف/أدرج/احذف صفوفاً وأعمدة. الرموز الجديدة تُضاف إلى صفحة «الرموز» لتختار لها ملفاً. بعد التعديل اضغط «توليد الاختبارات» هناك.", "Type a code in any cell, paste a block from Excel, or add / insert / delete rows and columns. New codes are added to the Codes page so you can pick a profile. After editing, press Generate tests there.")),
     bar);
   if (!rows.length && !cols.length) root.append(h("p", {}, t("لا توجد مصفوفة بعد. ابدأ بإضافة نظام أو استورد ملف Excel.", "No matrix yet. Add a system or import an Excel file.")));

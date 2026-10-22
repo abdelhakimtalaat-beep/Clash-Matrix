@@ -1,3 +1,4 @@
+import { groupOfCode } from "./codes.js";
 // LOD levels and clash-test priority, derived from the first letter of the test code (e.g. "A1-AH" -> A -> LOD200 / High).
 export const PRIORITIES = ["High", "Medium", "Low"];
 export const defaultLod = () => [
@@ -27,6 +28,10 @@ export function priorityXml(cfg, t, dialect) {
 
 /** Active LOD letters chosen on the Matrix page; empty = no filter (everything is active). */
 export const lodFilter = (cfg) => (cfg.lodFilter ?? []).map((l) => String(l).toUpperCase());
-export const codeActive = (cfg, code) => { const f = lodFilter(cfg); return !f.length || f.includes(String(code ?? "").trim()[0]?.toUpperCase() ?? ""); };
+export const codeActive = (cfg, code) => {
+  const f = lodFilter(cfg), d = cfg.discFilter ?? []; // both filters must pass; an empty filter passes everything
+  return (!f.length || f.includes(String(code ?? "").trim()[0]?.toUpperCase() ?? "")) && (!d.length || d.includes(groupOfCode(code)));
+};
+export const filterActive = (cfg) => lodFilter(cfg).length > 0 || (cfg.discFilter ?? []).length > 0;
 /** A test outside the active LOD filter is not generated, not listed and not exported. */
 export const lodActive = (cfg, t) => codeActive(cfg, codeOf(t));

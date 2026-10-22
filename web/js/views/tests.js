@@ -2,7 +2,7 @@ import { h, t, toast } from "../ui.js";
 import { state, changed } from "../store.js";
 import { resolveAllTolerances } from "../core/generate.js";
 import { UNITS, UNIT_SHORT, parseDecimal } from "../core/units.js";
-import { PRIORITIES, resolvePriority, lodActive, lodFilter } from "../core/lod.js";
+import { PRIORITIES, resolvePriority, lodActive, lodFilter, filterActive } from "../core/lod.js";
 import { RESPONSIBILITY, responsibilityOf, codeText } from "../core/codes.js";
 
 const picked = new Set();
@@ -43,7 +43,7 @@ export default function render(root, rerender) {
   const anyFilter = Object.values(F).some((s) => s.size) || search;
 
   root.append(h("h2", {}, t("اختبارات التصادم", "Clash tests")),
-    lodFilter(cfg).length ? h("div", { class: "banner" }, t(`مفلتر حسب LOD: ${lodFilter(cfg).join(", ")} — بقية الاختبارات مخفية ولا تُصدَّر. ألغِ التصفية من صفحة المصفوفة.`, `LOD filter active: ${lodFilter(cfg).join(", ")} — other tests are hidden and not exported. Clear it on the Matrix page.`)) : null,
+    filterActive(cfg) ? h("div", { class: "banner" }, t(`مفلتر حسب LOD/التخصص: ${[...lodFilter(cfg), ...(cfg.discFilter ?? [])].join(", ")} — بقية الاختبارات مخفية ولا تُصدَّر. ألغِ التصفية من صفحة المصفوفة.`, `LOD / discipline filter active: ${[...lodFilter(cfg), ...(cfg.discFilter ?? [])].join(", ")} — other tests are hidden and not exported. Clear it on the Matrix page.`)) : null,
     // ---- row 1: filters ----
     h("div", { class: "filters" }, h("span", { class: "lbl" }, t("تصفية:", "Filter:")),
       h("input", { placeholder: t("بحث بالاسم", "Search name"), value: search, onchange: (e) => { search = e.target.value; rerender(); } }),
