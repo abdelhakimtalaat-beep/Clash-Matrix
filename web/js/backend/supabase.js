@@ -29,6 +29,12 @@ export const backend = {
   },
   async createProject(name) { const c = await sb(); return must(await c.rpc("create_project", { p_name: name })); },
 
+  /** Admin only (row-level security); everything in the project (entities, members, audit, versions) goes with it. */
+  async deleteProject(id) {
+    const c = await sb(); const rows = must(await c.from("projects").delete().eq("id", id).select("id"));
+    if (!rows?.length) throw new Error("Only a project admin can delete a project.");
+  },
+
   /** One entity (used on conflicts, so a conflict never re-downloads the whole project). Returns null when it does not exist. */
   async loadEntity(pid, kind, id) {
     const c = await sb();

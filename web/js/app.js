@@ -19,6 +19,7 @@ const ctx = {
   async signUp(e, p) { state.user = await state.backend.signUp(e, p); },
   listProjects: () => state.backend.listProjects(),
   createProject: (n) => state.backend.createProject(n),
+  deleteProject: (id) => state.backend.deleteProject(id),
   async open(p) { await app.openProject(p); save("bcm-project", p.id); },
 };
 

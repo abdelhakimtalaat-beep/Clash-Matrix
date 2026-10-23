@@ -129,6 +129,15 @@ try:
         for name, pg in (("alice", A), ("bob", B), ("carol", C)): pg.screenshot(path=f"{SHOTS}/{name}.png")
         # reload keeps session and project
         B.reload(); B.wait_for_selector("nav a"); ok(B.evaluate("!!__bcm.state.project"), "bob reload restores session + project")
+        # project deletion: only an admin sees the button; the name must be typed to confirm
+        B.click("button:text-is('المشاريع')"); B.wait_for_selector(".proj")
+        ok(B.locator(".proj button.danger").count() == 0, "non-admin sees no delete button")
+        A.click("button:text-is('المشاريع')"); A.wait_for_selector(".proj button.danger")
+        dlg = []
+        def on_dialog(d): dlg.append(d.type); d.accept("Tower" if d.type == "prompt" else None)
+        A.on("dialog", on_dialog)
+        A.click(".proj button.danger"); A.wait_for_timeout(800)
+        ok(dlg == ["confirm", "prompt"] and A.locator(".proj").count() == 0, "admin deletes the project after confirm + typing its name")
         br.close()
 finally:
     for pr in procs: pr.terminate()

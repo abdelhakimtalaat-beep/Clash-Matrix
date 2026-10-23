@@ -5,7 +5,12 @@ export default function render(root, rerender, ctx) {
   const list = h("div", {}, t("جارٍ التحميل...", "Loading..."));
   ctx.listProjects().then((ps) => {
     list.replaceChildren(...(ps.length ? ps.map((p) => h("div", { class: "proj" }, h("span", {}, p.name, " ", h("span", { class: "badge" }, p.role)),
-      h("button", { class: "pri", onclick: async () => { try { await ctx.open(p); location.hash = "dashboard"; } catch (e) { toast(e.message); } } }, t("فتح", "Open")))) : [h("p", {}, t("لا توجد مشاريع بعد. أنشئ مشروعاً أو اطلب من مدير مشروع إضافتك.", "No projects yet. Create one or ask a project admin to add you."))]));
+      h("button", { class: "pri", onclick: async () => { try { await ctx.open(p); location.hash = "dashboard"; } catch (e) { toast(e.message); } } }, t("فتح", "Open")),
+        p.role === "admin" ? h("button", { class: "danger", title: t("حذف المشروع نهائياً", "Delete this project permanently"), onclick: async () => {
+          if (!confirm(t(`حذف المشروع "${p.name}" نهائياً مع كل بياناته (المصفوفة والاختبارات والنسخ)؟ لا يمكن التراجع.`, `Delete project "${p.name}" permanently with all its data (matrix, tests, versions)? This cannot be undone.`))) return;
+          if (prompt(t("للتأكيد اكتب اسم المشروع:", "To confirm, type the project name:")) !== p.name) { toast(t("الاسم غير مطابق، لم يُحذف شيء", "Name does not match; nothing was deleted")); return; }
+          try { await ctx.deleteProject(p.id); toast(t("تم حذف المشروع", "Project deleted")); rerender(); } catch (e) { toast(e.message); }
+        } }, t("حذف", "Delete")) : null)) : [h("p", {}, t("لا توجد مشاريع بعد. أنشئ مشروعاً أو اطلب من مدير مشروع إضافتك.", "No projects yet. Create one or ask a project admin to add you."))]));
   }).catch((e) => list.replaceChildren(h("p", { class: "Error" }, e.message)));
   root.append(h("div", { class: "row" }, h("h2", {}, t("المشاريع", "Projects")), h("button", { onclick: rerender }, t("تحديث", "Refresh"))), h("div", { class: "card" }, list),
     h("div", { class: "card row" }, name, h("button", { class: "pri", onclick: async () => {

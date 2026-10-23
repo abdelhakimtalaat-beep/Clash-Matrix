@@ -28,6 +28,7 @@ export function createDevServer() {
     },
     me: (_a, u) => pub(u),
     listProjects: (_a, u) => [...projects.values()].filter((p) => p.members.has(u.id)).map((p) => ({ id: p.id, name: p.name, role: p.members.get(u.id) })),
+    deleteProject: ({ pid }, u) => { const p = proj(pid); need(p, u, ["admin"]); projects.delete(pid); return {}; },
     createProject: ({ name }, u) => {
       if (!name?.trim()) throw fail("23514", "name required");
       const p = { id: randomUUID(), name, members: new Map([[u.id, "admin"]]), entities: new Map(), audit: [], snaps: [], sse: new Set(), sse2: new Set(), presence: new Map() };
