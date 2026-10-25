@@ -4,8 +4,8 @@ import { loadBackend } from "./backend/index.js";
 
 const PAGES = [
   ["dashboard", "الرئيسية", "Dashboard"], ["import", "استيراد", "Import"], ["matrix", "المصفوفة", "Matrix"], ["mappings", "الرموز", "Codes"],
-  ["searchsets", "مجموعات البحث", "Search sets"], ["tests", "الاختبارات", "Tests"], ["reports", "التقارير", "Reports"], ["naming", "التسمية", "Naming"],
-  ["validation", "التحقق", "Validation"], ["export", "التصدير", "Export"], ["team", "الفريق", "Team"], ["activity", "النشاط", "Activity"],
+  ["searchsets", "مجموعات البحث", "Search sets"], ["tests", "الاختبارات", "Tests"], ["naming", "التسمية", "Naming"],
+  ["validation", "التحقق", "Validation"], ["export", "التصدير", "Export"], ["reports", "التقارير", "Reports"], ["team", "الفريق", "Team"], ["activity", "النشاط", "Activity"],
   ["settings", "الإعدادات", "Settings"], ["help", "المساعدة", "Help"],
 ];
 const OUTSIDE = ["login", "projects"];

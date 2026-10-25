@@ -11,6 +11,9 @@ const METRICS = [
   ["approved", "معتمدة", "Approved", "#7030a0"],
 ];
 let staged = [];
+const load = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } };
+const saveLocal = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
+let style = load("bcm-report-style", "line"), donutReport = null; // line | columns | donut
 const shown = new Set(METRICS.map((m) => m[0]));
 const today = () => new Date().toISOString().slice(0, 10);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -34,6 +37,44 @@ export function lineChart(dates, lines) {
     l.values.forEach((v, i) => { s += `<circle cx="${X(i)}" cy="${Y(v)}" r="3.4" fill="${l.color}"><title>${esc(l.label)} · ${esc(dates[i])}: ${v}</title></circle>`; });
   }
   return s + "</svg>";
+}
+
+/** Grouped columns: one cluster per report date, one column per metric. */
+export function columnChart(dates, lines) {
+  const W = 380, H = 220, L = 38, R = 10, T = 12, B = 34;
+  const maxV = Math.max(1, ...lines.flatMap((l) => l.values));
+  const step = Math.pow(10, Math.floor(Math.log10(maxV))); const nice = [1, 2, 5, 10].map((k) => k * step).find((s) => maxV / s <= 5) ?? step * 10;
+  const top = Math.ceil(maxV / nice) * nice, Y = (v) => T + (1 - v / top) * (H - T - B);
+  const cw = (W - L - R) / Math.max(1, dates.length), bw = Math.max(3, Math.min(22, (cw * 0.8) / Math.max(1, lines.length)));
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" style="max-width:${W}px;font:11px system-ui;direction:ltr">`;
+  for (let v = 0; v <= top; v += nice) s += `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" stroke="#d9dde3"/><text x="${L - 6}" y="${Y(v) + 4}" text-anchor="end" fill="#555">${v}</text>`;
+  dates.forEach((d, i) => {
+    const x0 = L + i * cw + (cw - bw * lines.length) / 2;
+    s += `<text x="${L + i * cw + cw / 2}" y="${H - 14}" text-anchor="middle" fill="#555">${esc(d.slice(5))}</text>`;
+    lines.forEach((l, j) => { const v = l.values[i], y = Y(v); s += `<rect x="${x0 + j * bw}" y="${y}" width="${bw - 1}" height="${Math.max(0, H - B - y)}" fill="${l.color}" rx="1.5"><title>${esc(l.label)} · ${esc(d)}: ${v}</title></rect>`; });
+  });
+  return s + "</svg>";
+}
+
+/** Donut of one report's clashes: segments are the shown metrics among open / resolved / approved; the centre shows the total. */
+export function donutChart(parts, total) {
+  const S = 220, c = S / 2, R = 78, r = 50;
+  const sum = parts.reduce((a, p) => a + p.value, 0);
+  let s = `<svg viewBox="0 0 ${S} ${S}" width="100%" role="img" style="max-width:${S}px;font:11px system-ui;direction:ltr;display:block;margin:auto">`;
+  if (!sum) s += `<circle cx="${c}" cy="${c}" r="${(R + r) / 2}" fill="none" stroke="#e3e6ea" stroke-width="${R - r}"/>`;
+  else {
+    let a0 = -Math.PI / 2;
+    for (const p of parts) {
+      if (!p.value) continue;
+      const a1 = a0 + (p.value / sum) * Math.PI * 2 - (parts.filter((q) => q.value).length > 1 ? 0.012 : 0), big = a1 - a0 > Math.PI ? 1 : 0;
+      const pt = (rad, a) => `${(c + rad * Math.cos(a)).toFixed(2)} ${(c + rad * Math.sin(a)).toFixed(2)}`;
+      s += p.value === sum
+        ? `<circle cx="${c}" cy="${c}" r="${(R + r) / 2}" fill="none" stroke="${p.color}" stroke-width="${R - r}"><title>${esc(p.label)}: ${p.value}</title></circle>`
+        : `<path d="M ${pt(R, a0)} A ${R} ${R} 0 ${big} 1 ${pt(R, a1)} L ${pt(r, a1)} A ${r} ${r} 0 ${big} 0 ${pt(r, a0)} Z" fill="${p.color}"><title>${esc(p.label)}: ${p.value} (${Math.round((p.value / sum) * 100)}%)</title></path>`;
+      a0 = a1 + (parts.filter((q) => q.value).length > 1 ? 0.012 : 0);
+    }
+  }
+  return s + `<text x="${c}" y="${c + 4}" text-anchor="middle" font-size="22" font-weight="600" fill="currentColor">${total}</text><text x="${c}" y="${c + 20}" text-anchor="middle" fill="#777">total</text></svg>`;
 }
 
 export default function render(root, rerender) {
@@ -78,19 +119,29 @@ export default function render(root, rerender) {
   let charts = null;
   if (sorted.length) {
     const S = seriesOf(sorted);
+    const S_ = S; const pickedIdx = Math.max(0, donutReport ? sorted.findIndex((r) => r.id === donutReport) : S_.dates.length - 1);
     const chartCard = (name) => {
       const sr = S.series[name], last = (k) => sr[k].at(-1), prev = (k) => (sr[k].length > 1 ? sr[k].at(-2) : null);
       const delta = (k) => { const p = prev(k); if (p === null) return ""; const d = last(k) - p; return d ? ` (${d > 0 ? "+" : ""}${d})` : " (0)"; };
       const lines = METRICS.filter((m) => shown.has(m[0])).map((m) => ({ label: t(m[1], m[2]), color: m[3], values: sr[m[0]] }));
-      const box = h("div", { class: "card chart", "data-discipline": name },
+      const box = h("div", { class: "card chart", "data-discipline": name, "data-style": style },
         h("b", {}, name === "All" ? t("كل التخصصات", "All disciplines") : name),
-        h("div", { class: "Info" }, METRICS.map((m) => `${t(m[1], m[2]).split(" (")[0]}: ${last(m[0])}${delta(m[0])}`).join(" · ")));
-      const svg = h("div", {}); svg.innerHTML = lineChart(S.dates, lines); box.append(svg);
+        h("div", { class: "Info" }, style === "donut"
+          ? METRICS.slice(1).map((m) => `${t(m[1], m[2]).split(" (")[0]}: ${sr[m[0]][pickedIdx]}`).join(" · ")
+          : METRICS.map((m) => `${t(m[1], m[2]).split(" (")[0]}: ${last(m[0])}${delta(m[0])}`).join(" · ")));
+      const svg = h("div", {});
+      svg.innerHTML = style === "columns" ? columnChart(S.dates, lines)
+        : style === "donut" ? donutChart(METRICS.slice(1).filter((m) => shown.has(m[0])).map((m) => ({ label: t(m[1], m[2]), color: m[3], value: sr[m[0]][pickedIdx] })), sr.total[pickedIdx])
+        : lineChart(S.dates, lines);
+      box.append(svg);
       return box;
     };
     const legend = h("div", { class: "row" }, METRICS.map(([k, ar, en, color]) => h("label", {}, h("input", { type: "checkbox", checked: shown.has(k), onchange: (e) => { e.target.checked ? shown.add(k) : shown.delete(k); rerender(); } }),
       " ", h("span", { style: { display: "inline-block", width: "12px", height: "12px", background: color, verticalAlign: "middle", borderRadius: "2px" } }), " ", t(ar, en))));
-    charts = h("div", {}, h("h3", {}, t("المخططات حسب التخصص", "Charts by discipline")), legend,
+    const styleSel = h("div", { class: "row", id: "chart-style" }, h("b", {}, t("نمط المخطط:", "Chart style:")),
+      [["line", "خطي", "Line"], ["columns", "أعمدة", "Columns"], ["donut", "دائري (Donut)", "Donut"]].map(([k, ar, en]) => h("label", {}, h("input", { type: "radio", name: "chart-style", value: k, checked: style === k, onchange: () => { style = k; saveLocal("bcm-report-style", k); rerender(); } }), " ", t(ar, en))),
+      style === "donut" ? h("span", {}, t("التقرير:", "Report:"), " ", h("select", { id: "donut-report", onchange: (e) => { donutReport = e.target.value; rerender(); } }, sorted.map((r, i) => h("option", { value: r.id, selected: i === pickedIdx }, `${r.date} — ${r.name}`)))) : null);
+    charts = h("div", {}, h("h3", {}, t("المخططات حسب التخصص", "Charts by discipline")), styleSel, legend,
       h("p", { class: "Info" }, t("التخصص = المسؤول عن الحل (الحرف الرابع من كود الاختبار). الأرقام بين الأقواس هي الفرق عن التقرير السابق.", "Discipline = Default Assignee (4th character of the test code). Numbers in brackets are the change since the previous report.")),
       h("div", { class: "charts" }, Object.keys(S.series).map(chartCard)));
   }
