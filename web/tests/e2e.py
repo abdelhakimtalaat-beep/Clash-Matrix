@@ -41,6 +41,12 @@ try:
         ok(A.evaluate("__bcm.state.cfg.clashTests.some((t) => t.searchSetAId && t.searchSetBId)"), "tests are linked to the added search sets")
         A.click(".menu summary"); A.once("dialog", lambda d: d.accept()); A.click(".menu-items >> text=ECG-NWC"); A.wait_for_timeout(800)
         ok(A.evaluate("__bcm.state.cfg.searchSets.some((s) => s.library === 'nwc') && !__bcm.state.cfg.searchSets.some((s) => s.library === 'published-views')"), "NWC replaces the Published Views sets")
+        # find & replace over Value cells
+        before = A.evaluate("JSON.stringify(__bcm.state.cfg.searchSets.flatMap((s) => s.root.conditions.concat(...s.root.groups.map((g) => g.conditions))).filter((c) => c.value === 'ZZ-ST').length)")
+        A.fill("#fr-find", "ST-ZZ"); A.fill("#fr-replace", "STR-ZZ"); A.click("#fr-find-btn"); A.wait_for_timeout(200)
+        ok("values" in A.inner_text("#fr-result") or "قيمة" in A.inner_text("#fr-result"), "find shows how many values match")
+        A.once("dialog", lambda d: d.accept()); A.click("#fr-replace-btn"); A.wait_for_timeout(500)
+        ok(A.evaluate("JSON.stringify(__bcm.state.cfg.searchSets).includes('STR-ZZ') && !JSON.stringify(__bcm.state.cfg.searchSets).includes('\"ST-ZZ\"')"), "replace all changed the values")
         cat = A.locator("table.find select").first
         ok("Element" in cat.inner_text(), "category dropdown lists catalog categories")
         cat.select_option("Element"); A.wait_for_timeout(200)

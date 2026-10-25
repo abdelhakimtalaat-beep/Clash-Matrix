@@ -7,9 +7,11 @@ import { validateConfig } from "../core/validate.js";
 import { parseBatch, applyBatch, catalogChoices } from "../core/nwimport.js";
 import { addLibrary, LIBRARIES, linkSearchSets, relinkTests } from "../core/sslink.js";
 import { toDnf } from "../core/dnf.js";
+import { findReplace } from "../core/findreplace.js";
 import { UNITS } from "../core/units.js";
 
 let selected = null;
+const FR = { find: "", replace: "", scope: "all", matchCase: false, whole: false, result: "" };
 const collapsed = new Set();
 const LINEAR = new Set(["GreaterOrEqual", "LessThan"]);
 const OP_LABEL = { Equals: "Equals", NotEquals: "Not equals", Contains: "Contains", GreaterOrEqual: "Greater than or equal", LessThan: "Less than", Undefined: "Undefined" };
@@ -157,5 +159,27 @@ export default function render(root, rerender) {
       blocks ? h("div", {}, h("button", { onclick: () => { const nb = blocks.length ? blocks : []; nb.push([newCondition()]); storeBlocks(ss, nb); go(); } }, "+ " + (blocks.length ? t("مجموعة OR جديدة", "New OR block") : t("شرط", "Condition")))) : null,
       h("p", { class: "Info" }, `${t("صالحة نحوياً", "Syntax OK")}: ${ss.status.syntacticallyValid ? "✓" : "✗"} · ${t("قابلة للتمثيل في XML", "Representable")}: ${ss.status.representable ? "✓" : "✗"} · ${t("مُتحقَّق منها على النموذج", "Model verified")}: ✗ (${t("تحتاج الإضافة داخل Navisworks", "needs the add-in inside Navisworks")})`));
   }
-  root.append(h("h2", {}, t("مجموعات البحث", "Search sets")), h("div", { class: "row", style: { alignItems: "flex-start" } }, list, editor));
+  // ---- find & replace over the Value cells ----
+  const frFind = h("input", { id: "fr-find", placeholder: t("بحث عن", "Find"), value: FR.find, oninput: (e) => (FR.find = e.target.value) });
+  const frRepl = h("input", { id: "fr-replace", placeholder: t("استبدال بـ", "Replace with"), value: FR.replace, oninput: (e) => (FR.replace = e.target.value) });
+  const frScope = h("select", { id: "fr-scope", onchange: (e) => (FR.scope = e.target.value) },
+    h("option", { value: "all", selected: FR.scope === "all" }, t("كل مجموعات البحث", "All search sets")),
+    ss ? h("option", { value: "set", selected: FR.scope === "set" }, t("المجموعة الحالية فقط", "Current set only")) : null,
+    ss?.folder ? h("option", { value: "folder", selected: FR.scope === "folder" }, t("المجلد الحالي", "Current folder") + ` (${ss.folder})`) : null);
+  const frOpts = () => ({ find: FR.find, replace: FR.replace, scope: FR.scope === "set" && !ss ? "all" : FR.scope === "folder" && !ss?.folder ? "all" : FR.scope, setId: ss?.id, folder: ss?.folder, matchCase: FR.matchCase, wholeValue: FR.whole });
+  const frOut = h("span", { class: "Info", id: "fr-result" }, FR.result);
+  const frShow = (r, done) => { FR.result = done
+    ? t(`تم استبدال ${r.values} قيمة في ${r.sets.length} مجموعة`, `Replaced ${r.values} values in ${r.sets.length} sets`)
+    : r.values ? t(`${r.values} قيمة في ${r.sets.length} مجموعة: `, `${r.values} values in ${r.sets.length} sets: `) + r.sets.slice(0, 6).map((x) => `${x.name} (${x.count})`).join("، ") + (r.sets.length > 6 ? " …" : "") : t("لا توجد نتائج", "No matches"); frOut.textContent = FR.result; };
+  const findBox = h("div", { class: "card row" }, h("b", {}, t("بحث واستبدال", "Find & replace")), frFind, frRepl, frScope,
+    h("label", {}, h("input", { type: "checkbox", checked: FR.matchCase, onchange: (e) => (FR.matchCase = e.target.checked) }), " ", t("مطابقة حالة الأحرف", "Match case")),
+    h("label", {}, h("input", { type: "checkbox", checked: FR.whole, onchange: (e) => (FR.whole = e.target.checked) }), " ", t("القيمة كاملة فقط", "Whole value only")),
+    h("button", { id: "fr-find-btn", onclick: () => { if (!FR.find) return toast(t("اكتب ما تبحث عنه", "Type what to find")); frShow(findReplace(cfg, frOpts()), false); } }, t("بحث", "Find")),
+    h("button", { class: "pri", id: "fr-replace-btn", onclick: () => {
+      if (!FR.find) return toast(t("اكتب ما تبحث عنه", "Type what to find"));
+      const r = findReplace(cfg, frOpts()); if (!r.values) { frShow(r, false); return; }
+      if (!confirm(t(`استبدال ${r.values} قيمة في ${r.sets.length} مجموعة؟`, `Replace ${r.values} values in ${r.sets.length} sets?`))) return;
+      const done = findReplace(cfg, { ...frOpts(), apply: true }); frShow(done, true); changed(); rerender();
+    } }, t("استبدال الكل", "Replace all")), frOut);
+  root.append(h("h2", {}, t("مجموعات البحث", "Search sets")), findBox, h("div", { class: "row", style: { alignItems: "flex-start" } }, list, editor));
 }
