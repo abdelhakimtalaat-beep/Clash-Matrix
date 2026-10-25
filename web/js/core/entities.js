@@ -16,7 +16,7 @@ export const keyOf = (kind, id) => `${kind}/${id}`;
 
 export function cfgToEntities(cfg) {
   const out = [];
-  const { naming, tolerances, matrix, profiles, codeMappings, searchSets, clashTests, ...meta } = cfg;
+  const { naming, tolerances, matrix, profiles, codeMappings, searchSets, clashTests, reports = [], ...meta } = cfg;
   out.push({ kind: "meta", id: "meta", data: meta });
   out.push({ kind: "naming", id: "naming", data: naming });
   out.push({ kind: "tolerances", id: "tolerances", data: tolerances });
@@ -25,13 +25,14 @@ export function cfgToEntities(cfg) {
   for (const m of codeMappings) out.push({ kind: "codeMapping", id: m.id, data: m });
   for (const s of searchSets) out.push({ kind: "searchSet", id: s.id, data: strip("searchSet", s) });
   for (const t of clashTests) out.push({ kind: "clashTest", id: t.id, data: strip("clashTest", t) });
+  for (const r of reports) out.push({ kind: "report", id: r.id, data: r });
   return out;
 }
 
 /** Rebuilds a config from entities (deleted ones must already be filtered out). Missing singletons fall back to `fallback`. */
 export function entitiesToCfg(entities, fallback) {
   const cfg = structuredClone(fallback);
-  cfg.profiles = []; cfg.codeMappings = []; cfg.searchSets = []; cfg.clashTests = [];
+  cfg.profiles = []; cfg.codeMappings = []; cfg.searchSets = []; cfg.clashTests = []; cfg.reports = [];
   const dialect = null;
   for (const e of entities) {
     switch (e.kind) {
@@ -43,6 +44,7 @@ export function entitiesToCfg(entities, fallback) {
       case "codeMapping": cfg.codeMappings.push(e.data); break;
       case "searchSet": cfg.searchSets.push(hydrate("searchSet", e.data)); break;
       case "clashTest": cfg.clashTests.push(hydrate("clashTest", e.data)); break;
+      case "report": cfg.reports.push(e.data); break;
     }
   }
   void dialect;

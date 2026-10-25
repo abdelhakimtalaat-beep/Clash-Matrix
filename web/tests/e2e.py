@@ -147,6 +147,18 @@ try:
         for name, pg in (("alice", A), ("bob", B), ("carol", C)): pg.screenshot(path=f"{SHOTS}/{name}.png")
         # reload keeps session and project
         B.reload(); B.wait_for_selector("nav a"); ok(B.evaluate("!!__bcm.state.project"), "bob reload restores session + project")
+        # reports: import two Navisworks reports with dates, charts per discipline
+        A.click("nav a:text('التقارير')"); A.wait_for_selector("#rep-pick")
+        for d in ("2026-10-01", "2026-10-15"):
+            with A.expect_file_chooser() as fc: A.click("#rep-pick")
+            fc.value.set_files(f"{ROOT}/web/tests/fixtures/mini-report.xml"); A.wait_for_selector(".rep-date")
+            ok(A.input_value(".rep-date") == "2026-10-25", "report date is read from the clashes' created date")
+            A.fill(".rep-date", d); A.click("#rep-add"); A.wait_for_timeout(400)
+        ok(A.evaluate("__bcm.state.cfg.reports.length") == 2 and A.locator(".chart svg").count() >= 2, "two reports added and charted per discipline")
+        ok(A.locator(".chart[data-discipline='F-Fire Protection']").count() == 1, "a chart exists for the Fire Protection discipline")
+        A.set_viewport_size({"width": 1300, "height": 1100}); A.screenshot(path=f"{SHOTS}/reports.png", full_page=True)
+        B.click("nav a:text('التقارير')"); B.wait_for_timeout(800)
+        ok(B.evaluate("__bcm.state.cfg.reports.length") == 2, "bob receives the reports live")
         # project deletion: only an admin sees the button; the name must be typed to confirm
         B.click("button:text-is('المشاريع')"); B.wait_for_selector(".proj")
         ok(B.locator(".proj button.danger").count() == 0, "non-admin sees no delete button")

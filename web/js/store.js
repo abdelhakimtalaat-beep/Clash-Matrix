@@ -5,7 +5,7 @@ import { defaultDialect, upgradeDialect } from "./core/dialect.js";
 import { cfgToEntities, entitiesToCfg, diffEntities, keyOf, hydrate } from "./core/entities.js";
 import { mergeConfigs } from "./core/merge.js";
 
-const COLLECTIONS = { profile: "profiles", codeMapping: "codeMappings", searchSet: "searchSets", clashTest: "clashTests" };
+const COLLECTIONS = { profile: "profiles", codeMapping: "codeMappings", searchSet: "searchSets", clashTest: "clashTests", report: "reports" };
 const SINGLETONS = { meta: null, naming: "naming", tolerances: "tolerances", matrix: "matrix" };
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const clone = (v) => (v === null || v === undefined ? v : structuredClone(v)); // known[] and cfg must never share objects

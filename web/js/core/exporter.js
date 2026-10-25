@@ -39,7 +39,7 @@ export function buildExport(cfg, dialect, { fixtures = null, allowWithErrors = f
     })]);
   const html = reportHtml(cfg, manifest, issues, structural, compat);
   const steps = importSteps(manifest);
-  const files = { "manifest.json": JSON.stringify(manifest, null, 2), "report.html": html, "mapping.csv": mapping, "IMPORT-STEPS.txt": steps, "project.json": JSON.stringify(cfg, null, 2) };
+  const files = { "manifest.json": JSON.stringify(manifest, null, 2), "report.html": html, "mapping.csv": mapping, "IMPORT-STEPS.txt": steps, "project.json": JSON.stringify({ ...cfg, reports: undefined }, null, 2) };
   if (!blocked) { files["SearchSets.xml"] = ss.xml; files["ClashTests.xml"] = ct.xml; }
   return { blocked, status, issues, structural, manifest, files, zip: () => writeZip(files) };
 }

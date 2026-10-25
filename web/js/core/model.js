@@ -29,6 +29,7 @@ export function newConfig(name = "New project") {
     ],
     searchSets: [],
     clashTests: [],
+    reports: [], // imported Navisworks clash reports (compact counts per test)
   };
 }
 

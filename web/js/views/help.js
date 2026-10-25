@@ -11,6 +11,7 @@ const STEPS = [
   ["Validate (Validation tab)", "Fix every Error shown here. Warnings and info messages do not block the export."],
   ["Export (Export tab)", "Choose the Navisworks version (2027 or later, or 2026 or older), then download ClashTests.xml. SearchSets.xml is optional."],
   ["Use the file in Navisworks", "Open Clash Detective, choose Import, and select ClashTests.xml. The file stays marked “Unverified” until you have imported it in Navisworks and checked the tests."],
+  ["Track progress (Reports tab)", "After each clash run in Navisworks, write the report as XML and add it in the Reports tab with its date. The platform draws one chart per discipline showing total, open, resolved and approved clashes over time."],
 ];
 
 export default function render(root) {

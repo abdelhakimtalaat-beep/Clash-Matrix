@@ -44,3 +44,4 @@ code,pre{font-family:ui-monospace,Consolas,monospace;font-size:12px}pre{backgrou
 .menu{position:relative;display:inline-block}.menu summary{list-style:none;cursor:pointer;padding:6px 12px;border:1px solid #1f5fbf;border-radius:6px;background:#1f5fbf;color:#fff}.menu summary::-webkit-details-marker{display:none}
 .menu-items{position:absolute;z-index:20;margin-top:4px;min-width:11em;background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 4px 14px #0002;display:flex;flex-direction:column}.menu-items button{border:0;border-radius:0;text-align:start;padding:8px 12px;background:transparent}.menu-items button:hover{background:#eef3fb}
 .steps li{margin:0 0 12px}.steps li b{font-size:1.02em}
+.charts{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}.chart b{font-size:1.05em}.chart .Info{margin:2px 0 6px}

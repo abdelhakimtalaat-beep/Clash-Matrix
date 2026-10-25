@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<exchange xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" units="m" filename="" filepath="">
+  <batchtest name="Report" internal_name="Report" units="m">
+    <clashtests>
+      <clashtest name="B2-AH_A-Furniture vs A-Walls" test_type="hard" status="ok" tolerance="0.050" merge_composites="1">
+        <linkage mode="none"/>
+        <left>
+          <clashselection selfintersect="0" primtypes="1">
+            <locator>lcop_selection_set_tree/A-Architecture/A-Furniture</locator>
+          </clashselection>
+        </left>
+        <right>
+          <clashselection selfintersect="0" primtypes="1">
+            <locator>lcop_selection_set_tree/A-Architecture/A-Walls</locator>
+          </clashselection>
+        </right>
+        <rules/>
+        <summary total="0" new="0" active="0" reviewed="0" approved="0" resolved="0">
+          <testtype>Hard</testtype>
+          <teststatus>OK</teststatus>
+        </summary>
+        <clashresults/>
+      </clashtest>
+      <clashtest name="A5-FH_H-Large Ducts vs F-Main Fire Pipes" test_type="hard" status="ok" tolerance="0.000" merge_composites="1">
+        <linkage mode="none"/>
+        <left>
+          <clashselection selfintersect="0" primtypes="1">
+            <locator>lcop_selection_set_tree/H-HVAC/H-Large Ducts</locator>
+          </clashselection>
+        </left>
+        <right>
+          <clashselection selfintersect="0" primtypes="1">
+            <locator>lcop_selection_set_tree/F-Fire Protection/F-Main Fire Pipes</locator>
+          </clashselection>
+        </right>
+        <rules/>
+        <summary total="111" new="111" active="0" reviewed="0" approved="0" resolved="0">
+          <testtype>Hard</testtype>
+          <teststatus>OK</teststatus>
+        </summary>
+        <clashresults>
+          <clashresult name="Clash1" guid="b4d5aff3-4e3d-4066-a7ca-454736741349" href="Batch 04 -P06_files\cd250001.jpg" distance="-0.157">
+            <createddate>
+              <date year="2026" month="10" day="25" hour="19" minute="44" second="0"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Solid</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Document Title</name>
+                    <value>SMED-BPXX-TMG-SCG-P06-AC-ZZ-M3D-300-RVT22-00</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Element Id</name>
+                    <value>22842861</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Black Steel</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Document Title</name>
+                    <value>SMED-BPXX-TMG-SCG-P06-FP-ZZ-M3D-300-RVT22-00</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Element Id</name>
+                    <value>22673130</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash2" guid="a66b6095-6398-42f3-a92a-aa4fc1ecfba8" href="Batch 04 -P06_files\cd250002.jpg" distance="-0.155">
+            <createddate>
+              <date year="2026" month="10" day="25" hour="19" minute="44" second="0"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Solid</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Document Title</name>
+                    <value>SMED-BPXX-TMG-SCG-P06-AC-ZZ-M3D-300-RVT22-00</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Element Id</name>
+                    <value>22836044</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Black Steel</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Document Title</name>
+                    <value>SMED-BPXX-TMG-SCG-P06-FP-ZZ-M3D-300-RVT22-00</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Element Id</name>
+                    <value>22767867</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+        </clashresults>
+      </clashtest>
+      <clashtest name="A6-EH_H-Large Ducts vs E-Cable Trays and Conduits" test_type="hard" status="ok" tolerance="0.000" merge_composites="1">
+        <linkage mode="none"/>
+        <left>
+          <clashselection selfintersect="0" primtypes="1">
+            <locator>lcop_selection_set_tree/H-HVAC/H-Large Ducts</locator>
+          </clashselection>
+        </left>
+        <right>
+          <clashselection selfintersect="0" primtypes="1">
+            <locator>lcop_selection_set_tree/E-Electrical/E-Cable Trays and Conduits</locator>
+          </clashselection>
+        </right>
+        <rules/>
+        <summary total="73" new="1" active="1" reviewed="0" approved="1" resolved="70">
+          <testtype>Hard</testtype>
+          <teststatus>OK</teststatus>
+        </summary>
+        <clashresults>
+          <clashresult name="Clash1" guid="06aeb266-397a-4880-b027-b6cd9014766a" href="Batch 04 -P06_files\cd310001.jpg" distance="-0.345">
+            <createddate>
+              <date year="2026" month="10" day="25" hour="19" minute="44" second="0"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Solid</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Document Title</name>
+                    <value>SMED-BPXX-TMG-SCG-P06-AC-ZZ-M3D-300-RVT22-00</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Element Id</name>
+                    <value>22836139</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Solid</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Document Title</name>
+                    <value>SMED-BPXX-TMG-SCG-P06-EL-ZZ-M3D-300-RVT22-00</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Element Id</name>
+                    <value>26606894</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash2" guid="5c1e9b04-9f1c-4ea0-8388-33c876d8c42e" href="Batch 04 -P06_files\cd310002.jpg" distance="-0.327">
+            <createddate>
+              <date year="2026" month="10" day="25" hour="19" minute="44" second="0"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Solid</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Document Title</name>
+                    <value>SMED-BPXX-TMG-SCG-P06-AC-ZZ-M3D-300-RVT22-00</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Element Id</name>
+                    <value>22822109</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Solid</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Document Title</name>
+                    <value>SMED-BPXX-TMG-SCG-P06-EL-ZZ-M3D-300-RVT22-00</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Element Id</name>
+                    <value>26616330</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+        </clashresults>
+      </clashtest>
+      <clashtest name="A6-EH_F-Main Fire Pipes vs E-Cable Trays and Conduits" test_type="hard" status="ok" tolerance="0.000" merge_composites="1">
+        <linkage mode="none"/>
+        <left>
+          <clashselection selfintersect="0" primtypes="1">
+            <locator>lcop_selection_set_tree/F-Fire Protection/F-Main Fire Pipes</locator>
+          </clashselection>
+        </left>
+        <right>
+          <clashselection selfintersect="0" primtypes="1">
+            <locator>lcop_selection_set_tree/E-Electrical/E-Cable Trays and Conduits</locator>
+          </clashselection>
+        </right>
+        <rules/>
+        <summary total="37" new="37" active="0" reviewed="0" approved="0" resolved="0">
+          <testtype>Hard</testtype>
+          <teststatus>OK</teststatus>
+        </summary>
+        <clashresults>
+          <clashresult name="Clash1" guid="ce3ac03a-b6b1-445f-a556-3bd9ea4ed7cc" href="Batch 04 -P06_files\cd320001.jpg" distance="-0.050">
+            <createddate>
+              <date year="2026" month="10" day="25" hour="19" minute="44" second="0"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Black Steel</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Document Title</name>
+                    <value>SMED-BPXX-TMG-SCG-P06-FP-ZZ-M3D-300-RVT22-00</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Element Id</name>
+                    <value>22767459</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Solid</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Document Title</name>
+                    <value>SMED-BPXX-TMG-SCG-P06-EL-ZZ-M3D-300-RVT22-00</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Element Id</name>
+                    <value>26602490</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash2" guid="8c50c1f2-8240-4e74-9e56-c580071a59b9" href="Batch 04 -P06_files\cd320002.jpg" distance="-0.050">
+            <createddate>
+              <date year="2026" month="10" day="25" hour="19" minute="44" second="0"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Black Steel</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Document Title</name>
+                    <value>SMED-BPXX-TMG-SCG-P06-FP-ZZ-M3D-300-RVT22-00</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Element Id</name>
+                    <value>22767459</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Solid</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Document Title</name>
+                    <value>SMED-BPXX-TMG-SCG-P06-EL-ZZ-M3D-300-RVT22-00</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Element Id</name>
+                    <value>26601255</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+        </clashresults>
+      </clashtest>
+    </clashtests>
+  </batchtest>
+</exchange>

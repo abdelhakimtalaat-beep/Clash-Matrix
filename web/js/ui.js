@@ -32,9 +32,9 @@ export function download(name, data, type = "application/octet-stream") {
   setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
 export const badge = (text, kind = "") => h("span", { class: `badge ${kind}` }, text);
-export function pickFile(accept) {
+export function pickFile(accept, multiple = false) {
   return new Promise((resolve) => {
-    const i = h("input", { type: "file", accept, onchange: () => resolve(i.files[0] ?? null) });
+    const i = h("input", { type: "file", accept, multiple, onchange: () => resolve(multiple ? [...i.files] : (i.files[0] ?? null)) });
     i.click();
   });
 }

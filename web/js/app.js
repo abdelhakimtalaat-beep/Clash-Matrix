@@ -4,12 +4,12 @@ import { loadBackend } from "./backend/index.js";
 
 const PAGES = [
   ["dashboard", "الرئيسية", "Dashboard"], ["import", "استيراد", "Import"], ["matrix", "المصفوفة", "Matrix"], ["mappings", "الرموز", "Codes"],
-  ["searchsets", "مجموعات البحث", "Search sets"], ["tests", "الاختبارات", "Tests"], ["naming", "التسمية", "Naming"],
+  ["searchsets", "مجموعات البحث", "Search sets"], ["tests", "الاختبارات", "Tests"], ["reports", "التقارير", "Reports"], ["naming", "التسمية", "Naming"],
   ["validation", "التحقق", "Validation"], ["export", "التصدير", "Export"], ["team", "الفريق", "Team"], ["activity", "النشاط", "Activity"],
   ["settings", "الإعدادات", "Settings"], ["help", "المساعدة", "Help"],
 ];
 const OUTSIDE = ["login", "projects"];
-const WRITE_PAGES = new Set(["import", "matrix", "mappings", "searchsets", "tests", "naming", "settings"]);
+const WRITE_PAGES = new Set(["import", "matrix", "mappings", "searchsets", "tests", "reports", "naming", "settings"]);
 const cache = {};
 const save = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
 const load = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
