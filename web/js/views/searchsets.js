@@ -58,8 +58,8 @@ export default function render(root, rerender) {
   const addMenu = h("details", { class: "menu" });
   addMenu.append(h("summary", { class: "btn pri" }, t("إضافة مجموعات البحث ▾", "Add search sets ▾")),
     h("div", { class: "menu-items" },
-      h("button", { onclick: () => addLib("published-views", addMenu) }, "Published Views"),
-      h("button", { onclick: () => addLib("nwc", addMenu) }, "NWC")));
+      h("button", { onclick: () => addLib("published-views", addMenu) }, "ECG-Views"),
+      h("button", { onclick: () => addLib("nwc", addMenu) }, "ECG-NWC")));
   const importBtn = h("button", {
     onclick: async () => {
       const f = await pickFile(".xml"); if (!f) return;

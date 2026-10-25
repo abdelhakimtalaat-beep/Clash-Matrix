@@ -3,8 +3,8 @@
 import { key, searchSetName } from "./naming.js";
 
 export const LIBRARIES = {
-  "published-views": { file: "data/searchsets-published-views.xml", ar: "Published Views", en: "Published Views" },
-  nwc: { file: "data/searchsets-nwc.xml", ar: "NWC", en: "NWC" },
+  "published-views": { file: "data/searchsets-published-views.xml", ar: "ECG-Views", en: "ECG-Views" },
+  nwc: { file: "data/searchsets-nwc.xml", ar: "ECG-NWC", en: "ECG-NWC" },
 };
 const isPlaceholder = (s) => { const all = []; const c = (g) => { all.push(...g.conditions); g.groups.forEach(c); }; c(s.root); return all.length > 0 && all.every((x) => x.isPlaceholder); };
 

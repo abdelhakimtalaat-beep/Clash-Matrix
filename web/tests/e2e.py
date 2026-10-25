@@ -24,19 +24,22 @@ try:
         signup(A, "alice@x.com"); signup(B, "bob@x.com"); signup(C, "carol@x.com")
         # Alice creates a project and imports the matrix
         A.fill("input[placeholder='اسم مشروع جديد']", "Tower"); A.click("text=إنشاء >> nth=-1"); A.wait_for_selector("text=استيراد المصفوفة")
-        with A.expect_file_chooser() as fc: A.click("text=اختر ملف Excel")
+        with A.expect_file_chooser() as fc: A.click("text=اختر ملف آخر")
         fc.value.set_files(f"{ROOT}/web/tests/sample-matrix.xlsx"); A.click("button.pri >> text=استيراد"); A.wait_for_timeout(600)
         A.click("nav a:text('الرموز')"); A.wait_for_selector("table")
         ok(A.evaluate("__bcm.state.cfg.codeMappings.find(m=>m.code==='H').profileId") == "profile-hard", "code ending in H gets the Hard clash type")
-        A.click("button.pri"); A.wait_for_timeout(800)
+        ok(A.locator("button:text-is('توليد الاختبارات')").count() == 0, "Generate tests is no longer on the Codes tab")
+        A.click("nav a:text('الاختبارات')"); A.wait_for_selector("#gen-tests")
+        ok(A.locator("details.card").count() == 0, "the two collapsibles are gone from Tests")
+        A.click("#gen-tests"); A.wait_for_timeout(800)
         n = A.evaluate("__bcm.state.cfg.clashTests.length"); ok(n == 24, f"alice generated {n} tests")
         # Find-Items style editor: dropdowns from the catalog, custom value, OR block
         A.click("nav a:text('مجموعات البحث')"); A.wait_for_selector(".menu summary")
         ok(A.evaluate("__bcm.state.cfg.searchSets.length") == 0, "generating tests did not create search sets")
-        A.click(".menu summary"); A.click(".menu-items >> text=Published Views"); A.wait_for_selector("table.find")
+        A.click(".menu summary"); A.click(".menu-items >> text=ECG-Views"); A.wait_for_selector("table.find")
         ok(A.evaluate("__bcm.state.cfg.searchSets.length") > 40, "Published Views library added by the button")
         ok(A.evaluate("__bcm.state.cfg.clashTests.some((t) => t.searchSetAId && t.searchSetBId)"), "tests are linked to the added search sets")
-        A.click(".menu summary"); A.once("dialog", lambda d: d.accept()); A.click(".menu-items >> text=NWC"); A.wait_for_timeout(800)
+        A.click(".menu summary"); A.once("dialog", lambda d: d.accept()); A.click(".menu-items >> text=ECG-NWC"); A.wait_for_timeout(800)
         ok(A.evaluate("__bcm.state.cfg.searchSets.some((s) => s.library === 'nwc') && !__bcm.state.cfg.searchSets.some((s) => s.library === 'published-views')"), "NWC replaces the Published Views sets")
         cat = A.locator("table.find select").first
         ok("Element" in cat.inner_text(), "category dropdown lists catalog categories")
@@ -147,6 +150,10 @@ try:
         A.on("dialog", on_dialog)
         A.click(".proj button.danger"); A.wait_for_timeout(800)
         ok(dlg == ["confirm", "prompt"] and A.locator(".proj").count() == 0, "admin deletes the project after confirm + typing its name")
+        # bundled default workbook, in a fresh project
+        A.fill("input[placeholder='اسم مشروع جديد']", "ECG"); A.click("text=إنشاء >> nth=-1"); A.wait_for_selector("#use-default")
+        A.click("#use-default"); A.wait_for_selector("text=ECG-BIM-Clash_Matrix.xlsx"); A.click("button.pri >> text=استيراد"); A.wait_for_timeout(800)
+        ok(A.evaluate("__bcm.state.cfg.matrix.systems.length") == 42, "default ECG workbook imports 42 systems")
         br.close()
 finally:
     for pr in procs: pr.terminate()

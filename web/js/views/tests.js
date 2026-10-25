@@ -1,6 +1,6 @@
 import { h, t, toast } from "../ui.js";
 import { state, changed } from "../store.js";
-import { resolveAllTolerances } from "../core/generate.js";
+import { resolveAllTolerances, generateTests } from "../core/generate.js";
 import { UNITS, UNIT_SHORT, parseDecimal } from "../core/units.js";
 import { PRIORITIES, resolvePriority, lodActive, lodFilter, filterActive } from "../core/lod.js";
 import { RESPONSIBILITY, responsibilityOf, codeText } from "../core/codes.js";
@@ -39,11 +39,18 @@ export default function render(root, rerender) {
 
   const bulkPrio = h("select", {}, h("option", { value: "" }, t("تلقائي (من الكود)", "Auto (from code)")), PRIORITIES.map((x) => h("option", {}, x)));
   const bulkTol = h("input", { size: 6, placeholder: t("قيمة", "value") }), bulkUnit = h("select", {}, UNITS.map((u) => h("option", {}, u)));
-  const defTol = h("input", { size: 6, value: cfg.tolerances.projectDefault.value }), defUnit = h("select", {}, UNITS.map((u) => h("option", { selected: u === cfg.tolerances.projectDefault.unit }, u)));
   const anyFilter = Object.values(F).some((s) => s.size) || search;
 
   root.append(h("h2", {}, t("اختبارات التصادم", "Clash tests")),
     filterActive(cfg) ? h("div", { class: "banner" }, t(`مفلتر حسب LOD/التخصص: ${[...lodFilter(cfg), ...(cfg.discFilter ?? [])].join(", ")} — بقية الاختبارات مخفية ولا تُصدَّر. ألغِ التصفية من صفحة المصفوفة.`, `LOD / discipline filter active: ${[...lodFilter(cfg), ...(cfg.discFilter ?? [])].join(", ")} — other tests are hidden and not exported. Clear it on the Matrix page.`)) : null,
+    // ---- generate tests from the matrix (moved here from the Codes tab) ----
+    h("div", { class: "card row" }, h("button", { class: "pri", id: "gen-tests", onclick: () => {
+        const r = generateTests(cfg); changed();
+        const noSets = new Set(cfg.clashTests.flatMap((x) => [x.searchSetAId ? null : x.systemAId, x.searchSetBId ? null : x.systemBId]).filter(Boolean)).size;
+        toast(t(`أُنشئ ${r.created} اختبار، حُدّث ${r.updated}، حُذف ${r.removedStale}` + (noSets ? ` · ${noSets} نظام بلا مجموعة بحث: أضفها من تبويب Search sets` : ""), `Created ${r.created}, updated ${r.updated}, removed ${r.removedStale}` + (noSets ? ` · ${noSets} systems have no search set: add them from the Search sets tab` : "")));
+        rerender();
+      } }, t("توليد الاختبارات", "Generate tests")),
+      h("span", { class: "Info" }, t("يحدّث كل الاختبارات وفق المصفوفة والأكواد والفلاتر الحالية.", "Updates every test from the current matrix, codes and filters."))),
     // ---- row 1: filters ----
     h("div", { class: "filters" }, h("span", { class: "lbl" }, t("تصفية:", "Filter:")),
       h("input", { placeholder: t("بحث بالاسم", "Search name"), value: search, onchange: (e) => { search = e.target.value; rerender(); } }),
@@ -60,10 +67,6 @@ export default function render(root, rerender) {
       h("button", { onclick: () => each((x) => (x.toleranceOverride = null)) }, t("إزالة التجاوز", "Clear override")),
       h("span", { class: "lbl" }, "Priority"), bulkPrio, h("button", { onclick: () => each((x) => (x.priorityOverride = bulkPrio.value || null)) }, t("تطبيق", "Apply")),
       h("button", { onclick: () => each((x) => (x.enabled = true)) }, t("تفعيل", "Enable")), h("button", { onclick: () => each((x) => (x.enabled = false)) }, t("تعطيل", "Disable"))),
-    h("details", { class: "card" }, h("summary", {}, t("تفاوت افتراضي لكل الاختبارات التي بلا تجاوز", "Default tolerance for every test without an override")),
-      h("div", { class: "row" }, defTol, defUnit, h("button", { onclick: () => { if (!parseDecimal(defTol.value.trim())) return toast(t("أدخل رقماً صحيحاً", "Enter a valid number")); cfg.tolerances.projectDefault = { value: defTol.value.trim(), unit: defUnit.value }; changed(); rerender(); } }, t("حفظ", "Save")))),
-    h("details", { class: "card" }, h("summary", {}, t("قيمة الأولوية في ملف XML", "Priority value written to the XML")),
-      h("div", { class: "row" }, PRIORITIES.map((p) => h("label", {}, `${p} = `, h("input", { type: "number", style: { width: "5em" }, value: dialect.priorityValues?.[p] ?? "", placeholder: String(dialect.priorityDefault ?? 0), onchange: (e) => { dialect.priorityValues = { ...(dialect.priorityValues ?? {}), [p]: e.target.value === "" ? null : Number(e.target.value) }; changed(); } }))))),
     h("div", { class: "card", style: { overflow: "auto" } }, h("table", {},
       h("tr", {}, h("th", {}, h("input", { type: "checkbox", checked: rows.length > 0 && rows.every((x) => picked.has(x.id)), onchange: (e) => { rows.forEach((x) => (e.target.checked ? picked.add(x.id) : picked.delete(x.id))); rerender(); } })),
         ["Name", "A", "B", "Clash Type", "Assigned To", "LOD", "Priority", t("التفاوت", "Tolerance"), t("المصدر", "Source"), t("خلية", "Cell"), t("مفعّل", "On")].map((x) => h("th", {}, x))),

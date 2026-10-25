@@ -1,6 +1,5 @@
 import { h, t } from "../ui.js";
 import { state, changed } from "../store.js";
-import { generateTests } from "../core/generate.js";
 import { toast } from "../ui.js";
 import { typeOfCode, syncClashTypes } from "../core/clashtype.js";
 
@@ -17,11 +16,5 @@ export default function render(root, rerender) {
         h("td", {}, h("input", { type: "checkbox", checked: m.generateTest, onchange: (e) => { m.generateTest = e.target.checked; changed(); } })),
         h("td", {}, typeOfCode(m.code)
           ? [h("b", {}, typeOfCode(m.code)), " ", h("span", { class: "Info" }, t("(من آخر حرف)", "(from last letter)"))]
-          : h("span", { class: "Warning" }, t("— آخر حرف ليس H أو C أو D", "— last letter is not H, C or D"))))))),
-    h("button", { class: "pri", onclick: () => {
-      const r = generateTests(cfg); changed();
-      const noSets = new Set(cfg.clashTests.flatMap((x) => [x.searchSetAId ? null : x.systemAId, x.searchSetBId ? null : x.systemBId]).filter(Boolean)).size;
-      toast(t(`أُنشئ ${r.created} اختبار، حُدّث ${r.updated}، حُذف ${r.removedStale}` + (noSets ? ` · ${noSets} نظام بلا مجموعة بحث: أضفها من تبويب Search sets` : ""), `Created ${r.created}, updated ${r.updated}, removed ${r.removedStale}` + (noSets ? ` · ${noSets} systems have no search set: add them from the Search sets tab` : "")));
-      rerender();
-    } }, t("توليد الاختبارات", "Generate tests")));
+          : h("span", { class: "Warning" }, t("— آخر حرف ليس H أو C أو D", "— last letter is not H, C or D"))))))));
 }
