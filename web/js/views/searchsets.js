@@ -5,6 +5,7 @@ import { state, changed } from "../store.js";
 import { newSearchSet, newCondition, OPERATORS } from "../core/model.js";
 import { validateConfig } from "../core/validate.js";
 import { parseBatch, applyBatch, catalogChoices } from "../core/nwimport.js";
+import { addLibrary, LIBRARIES, linkSearchSets, relinkTests } from "../core/sslink.js";
 import { toDnf } from "../core/dnf.js";
 import { UNITS } from "../core/units.js";
 
@@ -42,11 +43,28 @@ export default function render(root, rerender) {
   if (ss) selected = ss.id;
   const go = () => { changed(); rerender(); };
 
+  const addLib = async (id, menu) => {
+    menu.open = false;
+    const other = cfg.searchSets.some((x) => x.library && x.library !== id);
+    if (other && !confirm(t("سيتم استبدال مجموعات البحث المُحمَّلة من المصدر الآخر بمجموعات هذا المصدر. متابعة؟", "Search sets loaded from the other source will be replaced by this source. Continue?"))) return;
+    try {
+      const r = await addLibrary(cfg, dialect, id, { parseBatch, applyBatch, fetchText: async (u) => { const x = await fetch(u, { cache: "no-store" }); if (!x.ok) throw new Error(`${u}: HTTP ${x.status}`); return x.text(); } });
+      changed();
+      toast(t(`أُضيفت ${r.total} مجموعة بحث (${LIBRARIES[id].ar}) · رُبط ${r.linked} نظام · حُدّث ${r.tests} اختبار` + (r.unlinked.length ? ` · بدون مجموعة: ${r.unlinked.join("، ")}` : ""),
+        `Added ${r.total} search sets (${LIBRARIES[id].en}) · ${r.linked} systems linked · ${r.tests} tests updated` + (r.unlinked.length ? ` · no set for: ${r.unlinked.join(", ")}` : "")));
+      rerender();
+    } catch (e) { toast(e.message); }
+  };
+  const addMenu = h("details", { class: "menu" });
+  addMenu.append(h("summary", { class: "btn pri" }, t("إضافة مجموعات البحث ▾", "Add search sets ▾")),
+    h("div", { class: "menu-items" },
+      h("button", { onclick: () => addLib("published-views", addMenu) }, "Published Views"),
+      h("button", { onclick: () => addLib("nwc", addMenu) }, "NWC")));
   const importBtn = h("button", {
     onclick: async () => {
       const f = await pickFile(".xml"); if (!f) return;
       try {
-        const r = applyBatch(cfg, dialect, parseBatch(await f.text(), dialect));
+        const r = applyBatch(cfg, dialect, parseBatch(await f.text(), dialect)); linkSearchSets(cfg); relinkTests(cfg);
         changed(); toast(`${r.created} new, ${r.updated} updated, ${r.linked} linked to matrix systems`); rerender();
       } catch (e) { toast(e.message); }
     },
@@ -85,7 +103,7 @@ export default function render(root, rerender) {
     ...n.sets.sort((p, q) => p.name.localeCompare(q.name)).map(link),
   ];
   const list = h("div", { class: "card", style: { minWidth: "280px" } },
-    h("div", { class: "row" }, h("button", { onclick: () => addSet(ss?.folder) }, "+ " + t("جديد", "New")),
+    h("div", { class: "row" }, addMenu, h("button", { onclick: () => addSet(ss?.folder) }, "+ " + t("جديد", "New")),
       h("button", { onclick: () => { const f = (prompt(t("اسم المجلد الجديد (استخدم / للمجلدات الفرعية)", "New folder name (use / for subfolders)")) ?? "").trim(); if (f) addSet(f); } }, "📁+ " + t("مجلد", "Folder")), importBtn),
     draw(tree, ""));
 

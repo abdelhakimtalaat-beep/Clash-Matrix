@@ -1,3 +1,5 @@
+import { addLibrary } from "../js/core/sslink.js";
+import { parseBatch, applyBatch } from "../js/core/nwimport.js";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -12,6 +14,16 @@ import { readZip, bytesToText } from "../js/core/zip.js";
 import { parseXml } from "../js/core/xml.js";
 import { convert, compareMeasures } from "../js/core/units.js";
 
+import { relinkTests } from "../js/core/sslink.js";
+import { newSearchSet } from "../js/core/model.js";
+import { searchSetName } from "../js/core/naming.js";
+/** A person adds a search set for every system that the library does not cover. */
+function fillSets(cfg) {
+  for (const sys of cfg.matrix.systems) if (!cfg.searchSets.some((x) => x.systemId === sys.id)) {
+    const ss = newSearchSet(searchSetName(sys, cfg.naming)); ss.systemId = sys.id; ss.root.conditions[0] = { ...ss.root.conditions[0], category: "Item", property: "Name", operator: "Contains", value: sys.label, isPlaceholder: false }; cfg.searchSets.push(ss);
+  }
+  relinkTests(cfg);
+}
 async function sample() {
   const buf = readFileSync(new URL("./sample-matrix.xlsx", import.meta.url));
   const wb = await loadWorkbook(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength));
@@ -43,6 +55,15 @@ test("full pipeline on the sample matrix", async () => {
   const again = generateTests(cfg);
   assert.equal(cfg.clashTests.length, n, "idempotent");
   assert.equal(again.created, 0);
+  // search sets are never invented: tests start without Selection A/B until a library is added on purpose
+  assert.equal(cfg.searchSets.length, 0, "generating tests must not create search sets");
+  assert.ok(cfg.clashTests.every((t) => !t.searchSetAId && !t.searchSetBId));
+  assert.ok(validateConfig(cfg, defaultDialect()).some((i) => i.code === "TEST_WITHOUT_SEARCHSET"));
+  const lib = await addLibrary(cfg, defaultDialect(), "published-views", { parseBatch, applyBatch, fetchText: async (f) => (await import("node:fs")).readFileSync(new URL("../" + f, import.meta.url), "utf8") });
+  assert.ok(lib.total > 40 && lib.linked > 0 && lib.tests > 0, "library added, systems linked, tests re-pointed");
+  assert.ok(cfg.clashTests.every((t) => !!t.searchSetAId === !!cfg.searchSets.find((x) => x.systemId === t.systemAId)), "Selection A follows the system's set");
+  assert.equal(generateTests(cfg).created, 0, "regenerating keeps the links");
+  fillSets(cfg);
   // tolerance hierarchy
   cfg.tolerances.projectDefault = { value: "5", unit: "Millimeters" };
   cfg.clashTests[0].toleranceOverride = { value: "1", unit: "Millimeters" };
@@ -52,7 +73,6 @@ test("full pipeline on the sample matrix", async () => {
   const d = defaultDialect();
   const issues = validateConfig(cfg, d);
   assert.ok(issues.some((i) => i.code === "DIALECT_UNVERIFIED"));
-  assert.ok(issues.some((i) => i.code === "PLACEHOLDER_CONDITION"));
   const ss = writeSearchSetsXml(cfg, d), ct = writeClashTestsXml(cfg, d);
   assert.equal(ss.skipped.length, 0);
   assert.equal(parseXml(ct.xml).name, "exchange");
@@ -87,7 +107,7 @@ test("LOD filter: only the chosen level's tests are generated and exported", asy
   generateTests(cfg);
   const all = cfg.clashTests.length;
   cfg.lodFilter = ["C"];
-  generateTests(cfg);
+  generateTests(cfg); fillSets(cfg);
   assert.ok(cfg.clashTests.length > 0 && cfg.clashTests.length < all, `filtered ${cfg.clashTests.length} of ${all}`);
   assert.ok(cfg.clashTests.every((t) => t.sourceCode.toUpperCase().startsWith("C")));
   const dd = defaultDialect(); validateConfig(cfg, dd);

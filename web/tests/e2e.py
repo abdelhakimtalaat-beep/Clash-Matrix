@@ -13,7 +13,7 @@ def ok(c, m):
     if not c: errs.append(m)
 def person(br):
     ctx = br.new_context(viewport={"width": 1300, "height": 800}); ctx.route("**/config.js", lambda r: r.fulfill(body=CFG, content_type="text/javascript"))
-    pg = ctx.new_page(); pg.on("pageerror", lambda e: errs.append("pageerror " + str(e))); return pg
+    pg = ctx.new_page(); pg.on("pageerror", lambda e: errs.append("pageerror " + str(e) + " | " + str(getattr(e, "stack", ""))[:600])); return pg
 def signup(pg, email):
     pg.goto("http://localhost:8765/"); pg.wait_for_selector("input[type=email]")
     pg.fill("input[type=email]", email); pg.fill("input[type=password]", "secret1"); pg.click("text=إنشاء حساب"); pg.wait_for_selector("text=المشاريع >> nth=0")
@@ -31,7 +31,13 @@ try:
         A.click("button.pri"); A.wait_for_timeout(800)
         n = A.evaluate("__bcm.state.cfg.clashTests.length"); ok(n == 24, f"alice generated {n} tests")
         # Find-Items style editor: dropdowns from the catalog, custom value, OR block
-        A.click("nav a:text('مجموعات البحث')"); A.wait_for_selector("table.find")
+        A.click("nav a:text('مجموعات البحث')"); A.wait_for_selector(".menu summary")
+        ok(A.evaluate("__bcm.state.cfg.searchSets.length") == 0, "generating tests did not create search sets")
+        A.click(".menu summary"); A.click(".menu-items >> text=Published Views"); A.wait_for_selector("table.find")
+        ok(A.evaluate("__bcm.state.cfg.searchSets.length") > 40, "Published Views library added by the button")
+        ok(A.evaluate("__bcm.state.cfg.clashTests.some((t) => t.searchSetAId && t.searchSetBId)"), "tests are linked to the added search sets")
+        A.click(".menu summary"); A.once("dialog", lambda d: d.accept()); A.click(".menu-items >> text=NWC"); A.wait_for_timeout(800)
+        ok(A.evaluate("__bcm.state.cfg.searchSets.some((s) => s.library === 'nwc') && !__bcm.state.cfg.searchSets.some((s) => s.library === 'published-views')"), "NWC replaces the Published Views sets")
         cat = A.locator("table.find select").first
         ok("Element" in cat.inner_text(), "category dropdown lists catalog categories")
         cat.select_option("Element"); A.wait_for_timeout(200)
@@ -95,6 +101,9 @@ try:
         ok(A.evaluate("__bcm.state.cfg.clashTests.filter(t=>t.toleranceOverride && t.toleranceOverride.value==='25').length") == 1, "bulk tolerance applied to the selected test only")
         A.evaluate("(()=>{const w=g=>{g.conditions.forEach(c=>{if(!c.value)c.value='x'});g.groups.forEach(w)};__bcm.state.cfg.searchSets.forEach(s=>w(s.root))})()")
         A.evaluate("__bcm.state.cfg.codeMappings.forEach(m=>{ if(!/[HCD]$/i.test(m.code)) m.generateTest=false }); __bcm.app.changed()")
+        A.evaluate("""(()=>{const c=__bcm.state.cfg;for(const s of c.matrix.systems){ if(c.searchSets.some(x=>x.systemId===s.id)) continue;
+          c.searchSets.push({id:'ss-'+s.id,name:s.label,systemId:s.id,folder:null,guid:null,root:{mode:'All',conditions:[{id:'c-'+s.id,category:'Item',property:'Name',operator:'Contains',value:s.label,valueKind:'wstring',flags:0,exclude:false,isPlaceholder:false}],groups:[]},status:{syntacticallyValid:false,representable:false,modelVerified:false,modelHitCount:null},nativeObjectId:null}) }
+          const by=new Map(c.searchSets.filter(x=>x.systemId).map(x=>[x.systemId,x.id]));c.clashTests.forEach(t=>{t.searchSetAId=by.get(t.systemAId)??null;t.searchSetBId=by.get(t.systemBId)??null}); __bcm.app.changed()})()""")
         with A.expect_download() as dl2:
             A.click("nav a:text('التصدير')"); A.wait_for_selector("#dl-xml"); A.click("#dl-xml")
         dl2.value.save_as(f"{SHOTS}/export.xml"); ok(open(f"{SHOTS}/export.xml", encoding="utf8").read().lstrip().startswith("<?xml"), "export downloads a .xml file directly")

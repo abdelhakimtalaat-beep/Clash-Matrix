@@ -3,6 +3,7 @@ import { key, normalizeLabel, orderPair, searchSetName, testName, disciplinePref
 import { compareMeasures } from "./units.js";
 import { uid, newCondition } from "./model.js";
 import { codeActive, systemActive } from "./lod.js";
+import { linkSearchSets, relinkTests } from "./sslink.js";
 import { typeOfCode, profileForType, syncClashTypes } from "./clashtype.js";
 
 const sysById = (cfg) => new Map(cfg.matrix.systems.map((s) => [s.id, s]));
@@ -81,8 +82,7 @@ export function generateTests(cfg, { regenerateNames = false, removeStale = true
   syncClashTypes(cfg);
   const res = { created: 0, updated: 0, removedStale: 0, keptLocked: 0, searchSetsCreated: 0, interpretation: interpret(cfg) };
   const rels = res.interpretation.relationships.filter((r) => codeActive(cfg, r.code) && systemActive(cfg, r.a.label) && systemActive(cfg, r.b.label)); // LOD / discipline filters: other tests are not generated
-  const seen = new Set();
-  for (const r of rels) for (const s of [r.a, r.b]) if (!seen.has(s.id)) { seen.add(s.id); if (ensureSearchSet(cfg, s)) res.searchSetsCreated++; }
+  linkSearchSets(cfg); // search sets are never invented here: add them from the Search sets tab
 
   const live = new Set();
   let counter = cfg.clashTests.length;
@@ -94,8 +94,8 @@ export function generateTests(cfg, { regenerateNames = false, removeStale = true
     if (!existing) {
       counter++;
       cfg.clashTests.push({
-        id: uid(), name: testName(ssA.name, ssB.name, r.code, counter, cfg.naming),
-        systemAId: r.a.id, systemBId: r.b.id, searchSetAId: ssA.id, searchSetBId: ssB.id,
+        id: uid(), name: testName(ssA?.name ?? searchSetName(r.a, cfg.naming), ssB?.name ?? searchSetName(r.b, cfg.naming), r.code, counter, cfg.naming),
+        systemAId: r.a.id, systemBId: r.b.id, searchSetAId: ssA?.id ?? null, searchSetBId: ssB?.id ?? null,
         testType: r.profile.testType, toleranceOverride: null, resolvedTolerance: null, toleranceSource: null, enabled: true,
         options: { ...r.profile.options }, profileId: r.profile.id, priorityOverride: null,
         sourceCellKey: r.cellKey, sourceAddress: r.address, mirrorAddress: r.mirrorAddress, sourceCode: r.code,
@@ -104,10 +104,10 @@ export function generateTests(cfg, { regenerateNames = false, removeStale = true
       res.created++;
     } else {
       Object.assign(existing, {
-        systemAId: r.a.id, systemBId: r.b.id, searchSetAId: ssA.id, searchSetBId: ssB.id,
+        systemAId: r.a.id, systemBId: r.b.id, searchSetAId: ssA?.id ?? null, searchSetBId: ssB?.id ?? null,
         testType: r.profile.testType, profileId: r.profile.id, sourceAddress: r.address, mirrorAddress: r.mirrorAddress, sourceCode: r.code,
       });
-      if (regenerateNames) existing.name = testName(ssA.name, ssB.name, r.code, cfg.clashTests.indexOf(existing) + 1, cfg.naming);
+      if (regenerateNames) existing.name = testName(ssA?.name ?? searchSetName(r.a, cfg.naming), ssB?.name ?? searchSetName(r.b, cfg.naming), r.code, cfg.clashTests.indexOf(existing) + 1, cfg.naming);
       res.updated++;
     }
   }

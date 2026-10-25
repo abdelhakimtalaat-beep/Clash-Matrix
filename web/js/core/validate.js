@@ -79,7 +79,7 @@ export function validateConfig(cfg, dialect) {
     if (seenT.has(k)) add("Error", "DUPLICATE_TEST_NAME", `Two tests are named "${t.name}".`, t.id, "test");
     seenT.set(k, t.id);
     const a = cfg.searchSets.find((s) => s.id === t.searchSetAId), b = cfg.searchSets.find((s) => s.id === t.searchSetBId);
-    if (!a || !b) add("Error", "TEST_WITHOUT_SEARCHSET", `Test "${t.name}" refers to a search set that does not exist.`, t.id, "test");
+    if (!a || !b) add("Error", "TEST_WITHOUT_SEARCHSET", `Test "${t.name}" has no search set for Selection A and/or B. Add search sets from the Search sets tab (Published Views or NWC).`, t.id, "test");
     else {
       if (a.id === b.id) add("Warning", "SELF_CLASH", `Test "${t.name}" compares a search set with itself.`, t.id, "test");
       if (!a.status.representable || !b.status.representable) add("Warning", "TEST_SELECTION_NOT_EXPORTABLE", `Test "${t.name}" uses a search set that cannot be written in the XML; the test will be skipped.`, t.id, "test");

@@ -1,0 +1,2700 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<exchange xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://download.autodesk.com/us/navisworks/schemas/nw-exchange-12.0.xsd" units="ft" filename="" filepath="">
+  <selectionsets>
+    <viewfolder name="A-Architecture" guid="72afa55e-115c-451c-ad60-ff811a2898ed">
+      <selectionset name="A-Architecture" guid="2c07c961-26ae-4bda-a148-55f21c02da7b">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AR-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="A-Walls" guid="84c794bc-74d6-4bc9-9f38-e90e8c5443d6">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Walls</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementType">Type</name>
+              </property>
+              <value>
+                <data type="wstring">CMU</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AR-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="A-Curtain Walls" guid="3bc100b6-dd17-4ac9-bc18-9a52a8a2a407">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Curtain</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AR-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="A-Openings" guid="e45f6bdc-c2be-494c-9324-8f8baa6dd369">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Window</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="80">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Doors</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AR-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="A-Furniture" guid="f1bbcac0-304e-42a7-9706-98062fb2b36c">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Furniture</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AR-ZZ</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="80">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Casework</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AR-ZZ</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="80">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Specialty Equipment</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AR-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="A-Ceiling Suspended" guid="0a9a7ade-84df-41a7-b68e-6b6f528ccb8f">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Ceiling</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementName">Name</name>
+              </property>
+              <value>
+                <data type="wstring">GYB</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AR-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="A-Wall Finishes" guid="e19183bf-8b49-4f6f-9334-ab4ce30b0541">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Wall</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementName">Name</name>
+              </property>
+              <value>
+                <data type="wstring">Paint</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AR-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="A-Flooring" guid="2a3fa78b-8a01-4c8a-81c7-69f920c0f2c5">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Floor</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementName">Name</name>
+              </property>
+              <value>
+                <data type="wstring">FFL</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AR-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="A-Finishes" guid="d3518e05-7186-4beb-858a-d8716b8f96a7">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Wall</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementName">Name</name>
+              </property>
+              <value>
+                <data type="wstring">Paint</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AR-ZZ</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="464">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Floor</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementName">Name</name>
+              </property>
+              <value>
+                <data type="wstring">FFL</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AR-ZZ</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="464">
+              <category>
+                <name internal="LcSvf_Identity Data">Identity Data</name>
+              </category>
+              <property>
+                <name internal="Type Name">Type Name</name>
+              </property>
+              <value>
+                <data type="wstring">Paint</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Ceiling</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AR-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="A-Stair Finishes" guid="66bee7b8-5f9a-48f3-a1de-8d650044b0de">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Stairs</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AR-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+    </viewfolder>
+    <viewfolder name="I-Interiors" guid="dfa02c89-daab-488b-8c11-d175e5390e28">
+      <selectionset name="I-Interiors" guid="7a3c7b47-8f72-4a88-851c-77b5cc3bc671">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ID-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="I-Flooring" guid="690aa804-4641-40df-8379-ddeb025b78e5">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Floor</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ID-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="I-Wall Finishes" guid="3d0d7573-1afd-4603-9357-47c6c2192c86">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Wall</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ID-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="I-Walls" guid="f1a47ec3-692b-4312-9af3-5648e3c047b5">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Wall</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Identity Data">Identity Data</name>
+              </category>
+              <property>
+                <name internal="Type Name">Type Name</name>
+              </property>
+              <value>
+                <data type="wstring">Core</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ID-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="I-Openings" guid="e664e127-1df1-41e0-ae53-5bb0d806a319">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Window</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ID-ZZ</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="464">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Doors</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ID-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="I-Ceiling Suspended" guid="b0112205-c2cb-46f0-81b6-c7a3292ce961">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Ceiling</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementName">Name</name>
+              </property>
+              <value>
+                <data type="wstring">GYPB</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ID-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="I-Finishes" guid="ad8a0648-64ce-4381-81f1-9e85503a135d">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Ceiling</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementName">Name</name>
+              </property>
+              <value>
+                <data type="wstring">Paint</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ID-ZZ</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="464">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Wall</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ID-ZZ</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="464">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Floor</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ID-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="I-Furniture" guid="71352b49-fa7d-4c25-868f-826fb4d3d3fe">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Furniture</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ID-ZZ</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="80">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Casework</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ID-ZZ</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="80">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Specialty Equipment</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ID-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+    </viewfolder>
+    <viewfolder name="S-Structure" guid="6384ea04-7b77-44c9-98b2-992d543c3126">
+      <selectionset name="S-Stucture" guid="1760d4f4-26b1-4b7f-b0e2-baa862014342">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ST-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="S-Walls, Stairs and Slabs" guid="0d33dcac-4928-4753-ae8f-fbbe10781c52">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Walls</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ST-ZZ</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="80">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Floors</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ST-ZZ</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="80">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Stairs</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ST-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="S-Columns" guid="5a9f3544-9cb6-4b11-8e0f-970b955eca7c">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Structural Columns</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ST-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="S-Beams" guid="b502b60e-b610-4cc1-b2e2-1e11021ecff1">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Framing</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="S-Slabs" guid="3b0cc581-4150-4e66-a2c2-23d94bf6745d">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Floors</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ST-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="S-Foundations" guid="cd17cb4c-7f20-4c80-9c81-15e3c260f235">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Structural Foundations</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="S-Stairs" guid="7da553e4-6611-4538-8731-579599903f4d">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Stairs</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ST-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="S-Walls" guid="c3b47ab0-1338-4043-9fb9-a3746b362d18">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Walls</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">ST-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+    </viewfolder>
+    <viewfolder name="E-Electrical" guid="3de0398f-0afd-4f99-ad97-42af2ad6b2eb">
+      <selectionset name="E-Electrical" guid="f3f94601-ea7f-4d7f-a699-57a79f44fab2">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">EL-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="E-Cable Trays and Conduits" guid="8cb04e90-9867-44a6-ab36-8a411f3ec1f7">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Cable Trays</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">EL-ZZ</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="80">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Cable Tray Fittings</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">EL-ZZ</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="80">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Conduits</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="0">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">EL-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="E-Lighting Devices" guid="99250e9b-31c6-4d5f-b7ae-1f8a90e0b4c1">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Lighting Devices</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">EL-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="E-Lighting" guid="67773760-827c-411a-afa5-cbdf43100cf5">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Lighting Fixtures</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">EL-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="E-Lighting and Devices" guid="b5fdf1b6-082c-4ca2-8ede-162b71c11d14">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Lighting Fixtures</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">EL-ZZ</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="80">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Lighting Devices</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">EL-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="E-Fixtures" guid="9f48970d-e266-4b24-970a-796ae8004211">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Electrical Fixtures</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">EL-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="E-Equipment" guid="55f59425-ea08-4b6c-a6ad-fd10520fbbcb">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Electrical Equipment</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">EL-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+    </viewfolder>
+    <viewfolder name="T-Telecommunication" guid="9fd5a4a9-cf78-42aa-9dba-e8f749993257">
+      <selectionset name="T-Telecommunication" guid="0f59d623-5239-428b-97e4-6c5bcad5f83e">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">LC-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="T-Cable Trays and Conduits" guid="c9680820-4034-4a36-9493-77a6a183bb01">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Cable Trays</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">LC-ZZ</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="80">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Cable Tray Fittings</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">LC-ZZ</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="80">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Conduits</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="0">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">LC-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="T-Ceiling Devices" guid="7edd0f1e-b457-4784-8db2-56986d0d2bf5">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">devices</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">LC-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="T-Fixtures" guid="d3ee58fe-a314-419b-b667-d1766057e136">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Electrical Fixtures</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">LC-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="T-Equipment" guid="5242801a-60e0-4e4a-b3eb-3c88f06a87cd">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Electrical Equipment</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">LC-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+    </viewfolder>
+    <viewfolder name="F-Fire Protection" guid="25fda666-32a1-41d0-a539-d9a0bdb5a1f2">
+      <selectionset name="F-Fire Protection" guid="d166f7bc-8432-48d6-a6a7-371fe8f5e440">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">FP-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="F-Main Fire Pipes" guid="ac7c7d8e-1d8c-46f0-b7d3-48f7240704c7">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipes</data>
+              </value>
+            </condition>
+            <condition test="greater_equal" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="lcldrevit_parameter_-1140225">Diameter</name>
+              </property>
+              <value>
+                <data type="linear">0.196850</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">FP-ZZ</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="464">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipe Fittings</data>
+              </value>
+            </condition>
+            <condition test="greater_equal" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="lcldrevit_parameter_Nominal Diameter_PG_GEOMETRY">Nominal Diameter</name>
+              </property>
+              <value>
+                <data type="linear">0.196850</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">FP-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="F-Small Fire Pipes" guid="2bbbadef-0e2d-4c78-91a0-ca65d0ccf423">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipes</data>
+              </value>
+            </condition>
+            <condition test="less_than" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="lcldrevit_parameter_-1140225">Diameter</name>
+              </property>
+              <value>
+                <data type="linear">0.196850</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">FP-ZZ</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="464">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipe Fittings</data>
+              </value>
+            </condition>
+            <condition test="less_than" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="lcldrevit_parameter_Nominal Diameter_PG_GEOMETRY">Nominal Diameter</name>
+              </property>
+              <value>
+                <data type="linear">0.196850</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">FP-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="F-Fire Pipes" guid="d9dc211e-3de9-4f38-8706-ac20776a409f">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipes</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">FP-ZZ</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="464">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipe Fittings</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">FP-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="F-Sprinklers" guid="d5f92b24-92b0-4182-87cb-6ab590aa5ef0">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Sprinklers</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="F-Accessories" guid="69dbb36d-b3d7-423b-80a9-722bf50981bb">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipe Accessories</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">FP-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="F-Equipment" guid="c89a0000-2bfd-435b-8b4b-0a97548eff2f">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Equipment</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">FP-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+    </viewfolder>
+    <viewfolder name="H-HVAC" guid="553d5c14-dc83-43a9-a917-9b0ef3033e17">
+      <selectionset name="H-Ducts" guid="0b15ce3c-bf05-4bf4-b403-1e59b649cd00">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Ducts</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="464">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Duct Fittings</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="H-Large Ducts" guid="017b6e41-f59d-45eb-b2f5-ca16c2bbb550">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Ducts</data>
+              </value>
+            </condition>
+            <condition test="not_equals" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="lcldrevit_parameter_-1001301">Width</name>
+              </property>
+              <value>
+                <data type="wstring">100</data>
+              </value>
+            </condition>
+            <condition test="not_equals" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="lcldrevit_parameter_-1001301">Width</name>
+              </property>
+              <value>
+                <data type="wstring">150</data>
+              </value>
+            </condition>
+            <condition test="not_equals" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="lcldrevit_parameter_-1001301">Width</name>
+              </property>
+              <value>
+                <data type="wstring">200</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="464">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Duct Fittings</data>
+              </value>
+            </condition>
+            <condition test="not_equals" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="lcldrevit_parameter_Duct Width_PG_GEOMETRY">Duct Width</name>
+              </property>
+              <value>
+                <data type="wstring">100</data>
+              </value>
+            </condition>
+            <condition test="not_equals" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="lcldrevit_parameter_Duct Width_PG_GEOMETRY">Duct Width</name>
+              </property>
+              <value>
+                <data type="wstring">150</data>
+              </value>
+            </condition>
+            <condition test="not_equals" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="lcldrevit_parameter_Duct Width_PG_GEOMETRY">Duct Width</name>
+              </property>
+              <value>
+                <data type="wstring">200</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="H-Small Ducts" guid="6dee29ea-cfa6-4cfb-aa3e-ad6f300b8448">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Ducts</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="lcldrevit_parameter_-1001301">Width</name>
+              </property>
+              <value>
+                <data type="wstring">100</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="464">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="lcldrevit_parameter_-1001301">Width</name>
+              </property>
+              <value>
+                <data type="wstring">150</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="464">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="lcldrevit_parameter_-1001301">Width</name>
+              </property>
+              <value>
+                <data type="wstring">200</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="464">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Duct Fittings</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="400">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="lcldrevit_parameter_Duct Width_PG_GEOMETRY">Duct Width</name>
+              </property>
+              <value>
+                <data type="wstring">100</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="464">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="lcldrevit_parameter_Duct Width_PG_GEOMETRY">Duct Width</name>
+              </property>
+              <value>
+                <data type="wstring">150</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="464">
+              <category>
+                <name internal="LcRevitData_Element">Element</name>
+              </category>
+              <property>
+                <name internal="lcldrevit_parameter_Duct Width_PG_GEOMETRY">Duct Width</name>
+              </property>
+              <value>
+                <data type="wstring">200</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="H-Pipes" guid="25155e2f-3faa-49e5-83fd-56ccd20e312c">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipes</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AC-ZZ</data>
+              </value>
+            </condition>
+            <condition test="equals" flags="464">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipe Fittings</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AC-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="H-Air Terminals" guid="1ea60c27-f78f-4b6c-a363-919a95d0f024">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Air Terminals</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AC-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="H-Accessories" guid="33453d9b-6579-415f-8217-873daa203172">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipe Accessories</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AC-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="H-Equipment" guid="b394a3ab-fccd-46f7-8b06-78d0fad0f5f0">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Equipment</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">AC-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+    </viewfolder>
+    <viewfolder name="P-Plumbing" guid="868d313f-ee36-4021-9629-ba28efc49571">
+      <selectionset name="P-Plumbing" guid="dfd847d1-af12-4f87-9b24-9d104c6855e4">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="0">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">PL-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="P-Gravity Pipes" guid="51e6b973-5241-497b-80d2-3a32ef0089ae">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:lcldrevit_parameter_-1140324">System Name</name>
+              </property>
+              <value>
+                <data type="wstring">ACD</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipe</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="464">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipe</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:lcldrevit_parameter_-1140324">System Name</name>
+              </property>
+              <value>
+                <data type="wstring">SOIL</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="464">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:lcldrevit_parameter_-1140324">System Name</name>
+              </property>
+              <value>
+                <data type="wstring">WASTE</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipe</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="464">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipe</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:lcldrevit_parameter_-1140324">System Name</name>
+              </property>
+              <value>
+                <data type="wstring">FMP</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="464">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:lcldrevit_parameter_-1140324">System Name</name>
+              </property>
+              <value>
+                <data type="wstring">STORM</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipe</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="P-Pressurized Pipes" guid="3c7e671c-e9e3-4e6b-b16e-89056d6a7f42">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="0">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:lcldrevit_parameter_-1140324">System Name</name>
+              </property>
+              <value>
+                <data type="wstring">Domestic</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="0">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipe</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="64">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipe</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="0">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:lcldrevit_parameter_-1140324">System Name</name>
+              </property>
+              <value>
+                <data type="wstring">VENT</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="P-Horizontal Pipes" guid="6a4d1e91-8b8d-4e1e-a14c-7bd6df493b4a">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">PL-ZZ</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipe Types</data>
+              </value>
+            </condition>
+            <condition test="no_prop" flags="400">
+              <category>
+                <name internal="LcSvf_Identity Data">Identity Data</name>
+              </category>
+              <property>
+                <name internal="Comments">Comments</name>
+              </property>
+              <value>
+                <data></data>
+              </value>
+            </condition>
+            <condition test="contains" flags="464">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">PW-Navis</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipe Types</data>
+              </value>
+            </condition>
+            <condition test="no_prop" flags="400">
+              <category>
+                <name internal="LcSvf_Identity Data">Identity Data</name>
+              </category>
+              <property>
+                <name internal="Comments">Comments</name>
+              </property>
+              <value>
+                <data></data>
+              </value>
+            </condition>
+            <condition test="contains" flags="464">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">PG-Navis</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipe Types</data>
+              </value>
+            </condition>
+            <condition test="no_prop" flags="400">
+              <category>
+                <name internal="LcSvf_Identity Data">Identity Data</name>
+              </category>
+              <property>
+                <name internal="Comments">Comments</name>
+              </property>
+              <value>
+                <data></data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="P-Accessories" guid="7731a2a0-c680-4064-bce7-153822ce7e51">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Pipe Accessories</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">PL-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="P-Equipment" guid="8232412c-34f2-4e1c-8961-bf2bb4250174">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Equipment</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="400">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">PL-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+    </viewfolder>
+    <viewfolder name="L-Landscape" guid="636538e3-d2ca-4400-a4ba-5e7e5de7a356">
+      <selectionset name="L-Landscape" guid="025624db-50c6-41e6-96f9-3e986a22ab91">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="equals" flags="16">
+              <category>
+                <name internal="LcSvf_Element">Element</name>
+              </category>
+              <property>
+                <name internal="LcRevitData_Element:LcRevitPropertyElementCategory">Category</name>
+              </property>
+              <value>
+                <data type="wstring">Electrical Fixtures</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="16">
+              <category>
+                <name internal="LcSvf_Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">LC-ZZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+    </viewfolder>
+    <viewfolder name="Z-Infrastructure" guid="6ba6c4a6-4f35-4d62-8c50-56cfe4c6cc9e">
+      <selectionset name="E-Dry Utilities" guid="632e4da0-29e9-4f09-a458-c1f098b66961">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="0">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">MDL-EM</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="64">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">MDL-EN</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="64">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">MDL-EO</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="64">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">MDL-EY</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="C-Wet Utilities" guid="e0f918b7-856c-4eb4-aed6-e75fb041799f">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="0">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">MDL-CG</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="64">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">MDL-CM</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="64">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">MDL-CP</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="64">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">MDL-CW</data>
+              </value>
+            </condition>
+            <condition test="contains" flags="64">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">MDL-CJ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="E-External Lighting" guid="08a8f8c8-cca9-4cfd-9cb1-33aa169665e1">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="0">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">MDL-EA</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+      <selectionset name="R-Roads" guid="c18a1d66-3b24-4f1d-948a-d1da1138468a">
+        <findspec mode="all" disjoint="0">
+          <conditions>
+            <condition test="contains" flags="0">
+              <category>
+                <name internal="Document">Document</name>
+              </category>
+              <property>
+                <name internal="Document:Title">Title</name>
+              </property>
+              <value>
+                <data type="wstring">MDL-RZ</data>
+              </value>
+            </condition>
+          </conditions>
+          <locator>/</locator>
+        </findspec>
+      </selectionset>
+    </viewfolder>
+  </selectionsets>
+</exchange>

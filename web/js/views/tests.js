@@ -71,7 +71,7 @@ export default function render(root, rerender) {
       rows.map((x) => { const r = resolvePriority(cfg, x); return h("tr", {},
         h("td", {}, h("input", { type: "checkbox", checked: picked.has(x.id), onchange: (e) => (e.target.checked ? picked.add(x.id) : picked.delete(x.id)) })),
         h("td", {}, h("input", { value: x.name, size: 36, onchange: (e) => { x.name = e.target.value; changed(); } }), x.locked ? " 🔒" : ""),
-        h("td", {}, ss.get(x.searchSetAId)), h("td", {}, ss.get(x.searchSetBId)),
+        h("td", {}, ss.get(x.searchSetAId) ?? h("span", { class: "Warning" }, t("— بلا مجموعة", "— none"))), h("td", {}, ss.get(x.searchSetBId) ?? h("span", { class: "Warning" }, t("— بلا مجموعة", "— none"))),
         h("td", {}, x.testType), // fixed: comes from the last letter of the code
         h("td", {}, responsibilityOf(codeText(x)) ?? "—"),
         h("td", {}, r.lod ?? "—"),

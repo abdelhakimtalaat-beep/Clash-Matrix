@@ -49,6 +49,7 @@ function drawHeader() {
 
 let drawId = 0;
 async function draw() {
+  { const ae = document.activeElement, v = document.getElementById("view"); if (ae && v && v.contains(ae)) ae.blur(); } // commit a pending edit (its change handler may redraw) before the view is torn down
   const mine = ++drawId; // a newer draw supersedes this one (avoids duplicated content when two redraws overlap)
   let page = location.hash.slice(1) || "dashboard";
   if (!state.user) page = "login";
