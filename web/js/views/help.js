@@ -7,7 +7,7 @@ const STEPS = [
   ["Review the codes (Codes tab)", "Each code gets its Clash Type from its last letter (H = Hard, C = Clearance, D = Duplicates). Untick “Generate?” for a code that should not create tests."],
   ["Add the search sets (Search sets tab)", "Press “Add search sets” and choose ECG-Views or ECG-NWC. The sets are linked to the matrix systems by name, and are filled in as Selection A and B of every test automatically. You can open any set and edit its conditions."],
   ["Generate the tests (Tests tab)", "Press “Generate tests”. Every test is created or updated from the matrix, so run it again after any change to the matrix or the codes."],
-  ["Adjust the tests (Tests tab)", "Use the filters (Assigned To, Priority, Tolerance, Clash Type) to find tests, tick the ones you want, then set Tolerance or Priority for all of them at once, or Enable / Disable them. Disabled tests are not exported."],
+  ["Adjust the tests (Tests tab)", "Use the filters (Default Assignee, Priority, Tolerance, Clash Type) to find tests, tick the ones you want, then set Tolerance or Priority for all of them at once, or Enable / Disable them. Disabled tests are not exported."],
   ["Validate (Validation tab)", "Fix every Error shown here. Warnings and info messages do not block the export."],
   ["Export (Export tab)", "Choose the Navisworks version (2027 or later, or 2026 or older), then download ClashTests.xml. SearchSets.xml is optional."],
   ["Use the file in Navisworks", "Open Clash Detective, choose Import, and select ClashTests.xml. The file stays marked “Unverified” until you have imported it in Navisworks and checked the tests."],

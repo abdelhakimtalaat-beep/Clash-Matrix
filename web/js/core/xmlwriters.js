@@ -1,3 +1,4 @@
+import { responsibilityOf, codeText } from "./codes.js";
 // Writes SearchSets.xml and ClashTests.xml from the project config, driven by the dialect.
 // The structure follows one genuine Navisworks Manage 2026 batch export; it has NOT been confirmed by importing our output.
 import { x, xmlDocument } from "./xml.js";
@@ -64,7 +65,7 @@ export function toleranceInXml(t, dialect) {
 
 export const locatorOf = (ss, dialect) => dialect.selectionLocatorTemplate.replace("{path}", ss.folder ? `${ss.folder}/${ss.name}` : ss.name);
 
-/** target "2027" (default): same output as before. "2026": no priority attribute and no default_assignee element (older Navisworks). */
+/** target "2027" (default): default_assignee display_name = the test's Assigned To (4th character of its code). "2026": no priority attribute and no default_assignee element (older Navisworks). */
 export function writeClashTestsXml(cfg, dialect, { target = "2027" } = {}) {
   const old = target === "2026";
   const skipped = [];
@@ -79,7 +80,7 @@ export function writeClashTestsXml(cfg, dialect, { target = "2027" } = {}) {
     const tol = t.resolvedTolerance ? toleranceInXml(t.resolvedTolerance, dialect) : { error: "no tolerance" };
     if (!type || tol.error) { skipped.push({ id: t.id, name: t.name, reason: tol.error ?? "unknown test type" }); continue; }
     nodes.push(x("clashtest", { name: t.name, test_type: type, status: "new", tolerance: tol.text, merge_composites: t.options.mergeComposites ? "1" : "0", ...(old ? {} : { priority: priorityXml(cfg, t, dialect) }) },
-      old ? null : x("default_assignee", { display_name: "" }),
+      old ? null : x("default_assignee", { display_name: responsibilityOf(codeText(t)) ?? "", internal_id: "" }),
       x("linkage", { mode: "none" }),
       x("left", {}, x("clashselection", { selfintersect: t.options.selfIntersectA ? "1" : "0", primtypes: String(dialect.clashSelectionPrimTypes) }, x("locator", {}, locatorOf(a, dialect)))),
       x("right", {}, x("clashselection", { selfintersect: t.options.selfIntersectB ? "1" : "0", primtypes: String(dialect.clashSelectionPrimTypes) }, x("locator", {}, locatorOf(b, dialect)))),

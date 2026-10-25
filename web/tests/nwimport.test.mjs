@@ -74,7 +74,9 @@ test("export target: 2026 drops priority and default_assignee, 2027 keeps them",
   const get = (target) => find(parseXml(writeClashTestsXml(cfg, d, { target }).xml), "clashtest")[0];
   const n27 = get("2027"), n26 = get("2026");
   assert.equal(n27.attrs.priority, "1");
-  assert.ok(n27.children.some((c) => c.name === "default_assignee"));
+  const da = n27.children.find((c) => c.name === "default_assignee");
+  assert.equal(da.attrs.display_name, "A-Architecture", "default assignee = Assigned To of the code (4th character)");
+  assert.equal(da.attrs.internal_id, "", "Navisworks writes internal_id next to display_name (seen in a real export with an assignee)");
   assert.equal("priority" in n26.attrs, false);
   assert.equal(n26.children.some((c) => c.name === "default_assignee"), false);
   assert.equal(n26.attrs.tolerance, n27.attrs.tolerance);

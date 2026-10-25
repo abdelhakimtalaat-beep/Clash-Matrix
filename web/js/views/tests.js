@@ -54,7 +54,7 @@ export default function render(root, rerender) {
     // ---- row 1: filters ----
     h("div", { class: "filters" }, h("span", { class: "lbl" }, t("تصفية:", "Filter:")),
       h("input", { placeholder: t("بحث بالاسم", "Search name"), value: search, onchange: (e) => { search = e.target.value; rerender(); } }),
-      multi("assigned", "Assigned To", [...RESPONSIBILITY.map(([, n]) => [n, n]), [NONE, NONE]].map(([v, n]) => [v, n, count("assigned", v)]), F.assigned, rerender),
+      multi("assigned", "Default Assignee", [...RESPONSIBILITY.map(([, n]) => [n, n]), [NONE, NONE]].map(([v, n]) => [v, n, count("assigned", v)]), F.assigned, rerender),
       multi("priority", "Priority", [...PRIORITIES, NONE].map((v) => [v, v, count("priority", v)]), F.priority, rerender),
       multi("tolerance", "Tolerance", tolValues.map((v) => [v, v, count("tolerance", v)]), F.tolerance, rerender),
       multi("type", "Clash Type", types.map((v) => [v, v, count("type", v)]), F.type, rerender),
@@ -69,7 +69,7 @@ export default function render(root, rerender) {
       h("button", { onclick: () => each((x) => (x.enabled = true)) }, t("تفعيل", "Enable")), h("button", { onclick: () => each((x) => (x.enabled = false)) }, t("تعطيل", "Disable"))),
     h("div", { class: "card", style: { overflow: "auto" } }, h("table", {},
       h("tr", {}, h("th", {}, h("input", { type: "checkbox", checked: rows.length > 0 && rows.every((x) => picked.has(x.id)), onchange: (e) => { rows.forEach((x) => (e.target.checked ? picked.add(x.id) : picked.delete(x.id))); rerender(); } })),
-        ["Name", "A", "B", "Clash Type", "Assigned To", "LOD", "Priority", t("التفاوت", "Tolerance"), t("المصدر", "Source"), t("خلية", "Cell"), t("مفعّل", "On")].map((x) => h("th", {}, x))),
+        ["Name", "A", "B", "Clash Type", "Default Assignee", "LOD", "Priority", t("التفاوت", "Tolerance"), t("المصدر", "Source"), t("خلية", "Cell"), t("مفعّل", "On")].map((x) => h("th", {}, x))),
       rows.map((x) => { const r = resolvePriority(cfg, x); return h("tr", {},
         h("td", {}, h("input", { type: "checkbox", checked: picked.has(x.id), onchange: (e) => (e.target.checked ? picked.add(x.id) : picked.delete(x.id)) })),
         h("td", {}, h("input", { value: x.name, size: 36, onchange: (e) => { x.name = e.target.value; changed(); } })),

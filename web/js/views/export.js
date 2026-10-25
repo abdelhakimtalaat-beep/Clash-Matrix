@@ -13,8 +13,8 @@ export default function render(root, rerender) {
     h("div", { class: "card" }, h("b", {}, t("إصدار Navisworks المستهدف", "Target Navisworks version")),
       ["2027", "2026"].map((v) => h("label", { class: "row", style: { display: "flex", gap: "6px", margin: "4px 0" } },
         h("input", { type: "radio", name: "nwtarget", checked: target === v, disabled: state.readOnly, onchange: () => { state.cfg.exportTarget = v; changed(); rerender(); } }),
-        v === "2027" ? h("span", {}, h("b", {}, "Navisworks 2027 or later"), t(" (نفس الإعدادات: الأولوية و Assigned To تُكتب)", " (keep the same settings: priority and assigned-to are written)"))
-          : h("span", {}, h("b", {}, "Navisworks 2026 or older"), t(" (تُحذف الأولوية و Assigned To من الـ XML)", " (priority and assigned-to are removed from the XML)")))),
+        v === "2027" ? h("span", {}, h("b", {}, "Navisworks 2027 or later"), t(" (نفس الإعدادات: الأولوية  و Default Assignee تُكتب)", " (keep the same settings: priority and default assignee are written)"))
+          : h("span", {}, h("b", {}, "Navisworks 2026 or older"), t(" (تُحذف الأولوية  و Default Assignee من الـ XML)", " (priority and default assignee are removed from the XML)")))),
       target === "2026" ? h("p", { class: "Info" }, t("في هذا الوضع لا يحتوي الملف على priority ولا على default_assignee.", "In this mode the file has no priority attribute and no default_assignee element.")) : null),
     h("div", { class: "card" }, h("p", {}, t("الحالة: ", "Status: "), badge(ex.status, kind)),
       h("p", { class: "Info" }, t("ملف ClashTests.xml يحتوي مجموعات البحث التي تستخدمها الاختبارات، ويكفي وحده للاستيراد في Navisworks (Clash Detective ← Import).", "ClashTests.xml already contains the search sets the tests use; it is enough on its own to import in Navisworks (Clash Detective → Import).")),
