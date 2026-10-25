@@ -77,7 +77,7 @@ export function ensureSearchSet(cfg, system) {
   return true;
 }
 
-/** Mutates cfg. Keeps user edits (name, enabled, tolerance override); skips locked; removes stale generated; never touches manual tests. */
+/** Mutates cfg. Every generated test follows the matrix. Keeps user edits (name, enabled, tolerance override); removes stale generated; never touches manual tests. */
 export function generateTests(cfg, { regenerateNames = false, removeStale = true } = {}) {
   syncClashTypes(cfg);
   const res = { created: 0, updated: 0, removedStale: 0, keptLocked: 0, searchSetsCreated: 0, interpretation: interpret(cfg) };
@@ -90,7 +90,6 @@ export function generateTests(cfg, { regenerateNames = false, removeStale = true
     live.add(r.cellKey);
     const ssA = cfg.searchSets.find((s) => s.systemId === r.a.id), ssB = cfg.searchSets.find((s) => s.systemId === r.b.id);
     const existing = cfg.clashTests.find((t) => t.sourceCellKey === r.cellKey);
-    if (existing?.locked) { res.keptLocked++; continue; }
     if (!existing) {
       counter++;
       cfg.clashTests.push({
@@ -99,7 +98,7 @@ export function generateTests(cfg, { regenerateNames = false, removeStale = true
         testType: r.profile.testType, toleranceOverride: null, resolvedTolerance: null, toleranceSource: null, enabled: true,
         options: { ...r.profile.options }, profileId: r.profile.id, priorityOverride: null,
         sourceCellKey: r.cellKey, sourceAddress: r.address, mirrorAddress: r.mirrorAddress, sourceCode: r.code,
-        locked: false, status: "Unvalidated", nativeObjectId: null,
+        status: "Unvalidated", nativeObjectId: null,
       });
       res.created++;
     } else {
@@ -113,7 +112,7 @@ export function generateTests(cfg, { regenerateNames = false, removeStale = true
   }
   if (removeStale) {
     const before = cfg.clashTests.length;
-    cfg.clashTests = cfg.clashTests.filter((t) => !(t.sourceCellKey && !t.locked && !live.has(t.sourceCellKey)));
+    cfg.clashTests = cfg.clashTests.filter((t) => !(t.sourceCellKey && !live.has(t.sourceCellKey)));
     res.removedStale = before - cfg.clashTests.length;
   }
   resolveAllTolerances(cfg);

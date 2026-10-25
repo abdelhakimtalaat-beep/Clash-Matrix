@@ -8,7 +8,7 @@ const virtual = (type) => ({ id: "profile-" + type.toLowerCase(), name: type, te
 /** The project's profile for a clash type; a not-yet-stored one when none exists. */
 export const profileForType = (cfg, type) => cfg.profiles.find((p) => p.testType === type) ?? virtual(type);
 
-/** Applies the rule to code mappings and to existing unlocked tests. Mutates cfg; returns how many things changed. */
+/** Applies the rule to code mappings and to existing tests. Mutates cfg; returns how many things changed. */
 export function syncClashTypes(cfg) {
   let n = 0;
   for (const m of cfg.codeMappings) {
@@ -20,7 +20,7 @@ export function syncClashTypes(cfg) {
   }
   for (const t of cfg.clashTests) {
     const type = typeOfCode(t.sourceCode ?? codeOf(t));
-    if (!type || t.locked) continue;
+    if (!type) continue;
     const p = cfg.profiles.find((x) => x.testType === type);
     if (p && (t.testType !== type || t.profileId !== p.id)) { t.testType = type; t.profileId = p.id; n++; }
   }

@@ -43,7 +43,7 @@ test("clash type follows the last letter of the code", () => {
   assert.ok(syncClashTypes(cfg) > 0);
   assert.equal(cfg.profiles.some((p) => p.testType === "Duplicates"), true, "Duplicates profile is created");
   assert.equal(cfg.clashTests[0].testType, "Duplicates", "existing unlocked test follows");
-  assert.equal(cfg.clashTests[1].testType, "Hard", "locked test untouched");
+  assert.equal(cfg.clashTests[1].testType, "Duplicates", "there is no lock: every test follows the matrix");
   assert.equal(syncClashTypes(cfg), 0, "idempotent");
 });
 

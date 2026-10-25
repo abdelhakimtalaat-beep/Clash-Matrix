@@ -59,8 +59,7 @@ export default function render(root, rerender) {
       h("button", { class: "pri", onclick: () => { if (!parseDecimal(bulkTol.value.trim())) return toast(t("أدخل رقماً صحيحاً", "Enter a valid number")); each((x) => (x.toleranceOverride = { value: bulkTol.value.trim(), unit: bulkUnit.value })); } }, t("تطبيق", "Apply")),
       h("button", { onclick: () => each((x) => (x.toleranceOverride = null)) }, t("إزالة التجاوز", "Clear override")),
       h("span", { class: "lbl" }, "Priority"), bulkPrio, h("button", { onclick: () => each((x) => (x.priorityOverride = bulkPrio.value || null)) }, t("تطبيق", "Apply")),
-      h("button", { onclick: () => each((x) => (x.enabled = true)) }, t("تفعيل", "Enable")), h("button", { onclick: () => each((x) => (x.enabled = false)) }, t("تعطيل", "Disable")),
-      h("button", { onclick: () => each((x) => (x.locked = true)) }, t("قفل", "Lock"))),
+      h("button", { onclick: () => each((x) => (x.enabled = true)) }, t("تفعيل", "Enable")), h("button", { onclick: () => each((x) => (x.enabled = false)) }, t("تعطيل", "Disable"))),
     h("details", { class: "card" }, h("summary", {}, t("تفاوت افتراضي لكل الاختبارات التي بلا تجاوز", "Default tolerance for every test without an override")),
       h("div", { class: "row" }, defTol, defUnit, h("button", { onclick: () => { if (!parseDecimal(defTol.value.trim())) return toast(t("أدخل رقماً صحيحاً", "Enter a valid number")); cfg.tolerances.projectDefault = { value: defTol.value.trim(), unit: defUnit.value }; changed(); rerender(); } }, t("حفظ", "Save")))),
     h("details", { class: "card" }, h("summary", {}, t("قيمة الأولوية في ملف XML", "Priority value written to the XML")),
@@ -70,7 +69,7 @@ export default function render(root, rerender) {
         ["Name", "A", "B", "Clash Type", "Assigned To", "LOD", "Priority", t("التفاوت", "Tolerance"), t("المصدر", "Source"), t("خلية", "Cell"), t("مفعّل", "On")].map((x) => h("th", {}, x))),
       rows.map((x) => { const r = resolvePriority(cfg, x); return h("tr", {},
         h("td", {}, h("input", { type: "checkbox", checked: picked.has(x.id), onchange: (e) => (e.target.checked ? picked.add(x.id) : picked.delete(x.id)) })),
-        h("td", {}, h("input", { value: x.name, size: 36, onchange: (e) => { x.name = e.target.value; changed(); } }), x.locked ? " 🔒" : ""),
+        h("td", {}, h("input", { value: x.name, size: 36, onchange: (e) => { x.name = e.target.value; changed(); } })),
         h("td", {}, ss.get(x.searchSetAId) ?? h("span", { class: "Warning" }, t("— بلا مجموعة", "— none"))), h("td", {}, ss.get(x.searchSetBId) ?? h("span", { class: "Warning" }, t("— بلا مجموعة", "— none"))),
         h("td", {}, x.testType), // fixed: comes from the last letter of the code
         h("td", {}, responsibilityOf(codeText(x)) ?? "—"),
