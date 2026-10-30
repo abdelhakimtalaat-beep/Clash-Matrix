@@ -58,7 +58,7 @@ async function draw() {
   if (state.user && page === "login") page = "projects";
   const nav = document.getElementById("nav"), view = document.getElementById("view");
   drawHeader();
-  nav.replaceChildren(...(state.project ? PAGES.map(([id, ar, en]) => h("a", { class: id === page ? "on" : "", onclick: () => (location.hash = id) }, t(ar, en))) : []));
+  nav.replaceChildren(...(state.project ? PAGES.map(([id, ar, en]) => h("a", { class: id === page ? "on" : "", "data-p": id, onclick: () => (location.hash = id) }, t(ar, en))) : []));
   nav.style.display = state.project ? "" : "none";
   view.replaceChildren();
   view.append = (...n) => Element.prototype.append.call(view, ...n.flat(Infinity).filter((x) => x !== null && x !== undefined && x !== false));

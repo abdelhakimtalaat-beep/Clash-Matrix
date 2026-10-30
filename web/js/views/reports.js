@@ -5,10 +5,10 @@ import { uid } from "../core/model.js";
 import { parseReport, seriesOf, totalsByDiscipline } from "../core/report.js";
 
 const METRICS = [
-  ["total", "الإجمالي", "Total clashes", "#1f5fbf"],
-  ["open", "مفتوحة (جديدة + نشطة + مراجَعة)", "Open (new + active + reviewed)", "#c55a11"],
-  ["resolved", "محلولة", "Resolved", "#3d8b2f"],
-  ["approved", "معتمدة", "Approved", "#7030a0"],
+  ["total", "الإجمالي", "Total clashes", "#2b7be0"],
+  ["open", "مفتوحة (جديدة + نشطة + مراجَعة)", "Open (new + active + reviewed)", "#f08a24"],
+  ["resolved", "محلولة", "Resolved", "#6db6f2"],
+  ["approved", "معتمدة", "Approved", "#b4510a"],
 ];
 let staged = [];
 const load = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } };
@@ -30,9 +30,9 @@ export function lineChart(dates, lines, labels = false) {
   const X = (i) => (ms.length === 1 ? L + (W - L - R) / 2 : L + ((ms[i] - lo) / span) * (W - L - R));
   const Y = (v) => T + (1 - v / top) * (H - T - B);
   let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" style="max-width:${W}px;font:11px system-ui">`;
-  for (let v = 0; v <= top; v += nice) s += `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" stroke="#d9dde3"/><text x="${L - 6}" y="${Y(v) + 4}" text-anchor="end" fill="#555">${v}</text>`;
-  dates.forEach((d, i) => { s += `<text x="${X(i)}" y="${H - 14}" text-anchor="middle" fill="#555">${esc(d.slice(5))}</text>`; });
-  s += `<text x="${(L + W - R) / 2}" y="${H - 1}" text-anchor="middle" fill="#777">${esc(dates.length ? dates[0].slice(0, 4) + (dates.at(-1).slice(0, 4) !== dates[0].slice(0, 4) ? "–" + dates.at(-1).slice(0, 4) : "") : "")}</text>`;
+  for (let v = 0; v <= top; v += nice) s += `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" stroke="currentColor" stroke-opacity=".14"/><text x="${L - 6}" y="${Y(v) + 4}" text-anchor="end" fill="currentColor" fill-opacity=".7">${v}</text>`;
+  dates.forEach((d, i) => { s += `<text x="${X(i)}" y="${H - 14}" text-anchor="middle" fill="currentColor" fill-opacity=".7">${esc(d.slice(5))}</text>`; });
+  s += `<text x="${(L + W - R) / 2}" y="${H - 1}" text-anchor="middle" fill="currentColor" fill-opacity=".55">${esc(dates.length ? dates[0].slice(0, 4) + (dates.at(-1).slice(0, 4) !== dates[0].slice(0, 4) ? "–" + dates.at(-1).slice(0, 4) : "") : "")}</text>`;
   for (const l of lines) {
     s += `<polyline fill="none" stroke="${l.color}" stroke-width="2.2" points="${l.values.map((v, i) => `${X(i)},${Y(v)}`).join(" ")}"/>`;
     l.values.forEach((v, i) => { s += `<circle cx="${X(i)}" cy="${Y(v)}" r="3.4" fill="${l.color}"><title>${esc(l.label)} · ${esc(dates[i])}: ${v}</title></circle>`; });
@@ -49,10 +49,10 @@ export function columnChart(dates, lines, labels = false) {
   const top = Math.ceil(maxV / nice) * nice, Y = (v) => T + (1 - v / top) * (H - T - B);
   const cw = (W - L - R) / Math.max(1, dates.length), bw = Math.max(3, Math.min(22, (cw * 0.8) / Math.max(1, lines.length)));
   let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" style="max-width:${W}px;font:11px system-ui;direction:ltr">`;
-  for (let v = 0; v <= top; v += nice) s += `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" stroke="#d9dde3"/><text x="${L - 6}" y="${Y(v) + 4}" text-anchor="end" fill="#555">${v}</text>`;
+  for (let v = 0; v <= top; v += nice) s += `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" stroke="currentColor" stroke-opacity=".14"/><text x="${L - 6}" y="${Y(v) + 4}" text-anchor="end" fill="currentColor" fill-opacity=".7">${v}</text>`;
   dates.forEach((d, i) => {
     const x0 = L + i * cw + (cw - bw * lines.length) / 2;
-    s += `<text x="${L + i * cw + cw / 2}" y="${H - 14}" text-anchor="middle" fill="#555">${esc(d.slice(5))}</text>`;
+    s += `<text x="${L + i * cw + cw / 2}" y="${H - 14}" text-anchor="middle" fill="currentColor" fill-opacity=".7">${esc(d.slice(5))}</text>`;
     lines.forEach((l, j) => { const v = l.values[i], y = Y(v); s += `<rect x="${x0 + j * bw}" y="${y}" width="${bw - 1}" height="${Math.max(0, H - B - y)}" fill="${l.color}" rx="1.5"><title>${esc(l.label)} · ${esc(d)}: ${v}</title></rect>`; if (labels) s += `<text class="val" x="${x0 + j * bw + (bw - 1) / 2}" y="${y - 3}" text-anchor="middle" font-size="${bw < 9 ? 8 : 10}" fill="currentColor">${v}</text>`; });
   });
   return s + "</svg>";
@@ -63,7 +63,7 @@ export function donutChart(parts, total, labels = false) {
   const S = 220, c = S / 2, R = 78, r = 50;
   const sum = parts.reduce((a, p) => a + p.value, 0);
   let s = `<svg viewBox="0 0 ${S} ${S}" width="100%" role="img" style="max-width:${S}px;font:11px system-ui;direction:ltr;display:block;margin:auto">`;
-  if (!sum) s += `<circle cx="${c}" cy="${c}" r="${(R + r) / 2}" fill="none" stroke="#e3e6ea" stroke-width="${R - r}"/>`;
+  if (!sum) s += `<circle cx="${c}" cy="${c}" r="${(R + r) / 2}" fill="none" stroke="currentColor" stroke-opacity=".12" stroke-width="${R - r}"/>`;
   else {
     let a0 = -Math.PI / 2;
     for (const p of parts) {
@@ -77,7 +77,7 @@ export function donutChart(parts, total, labels = false) {
       a0 = a1 + (parts.filter((q) => q.value).length > 1 ? 0.012 : 0);
     }
   }
-  return s + `<text x="${c}" y="${c + 4}" text-anchor="middle" font-size="22" font-weight="600" fill="currentColor">${total}</text><text x="${c}" y="${c + 20}" text-anchor="middle" fill="#777">total</text></svg>`;
+  return s + `<text x="${c}" y="${c + 4}" text-anchor="middle" font-size="22" font-weight="600" fill="currentColor">${total}</text><text x="${c}" y="${c + 20}" text-anchor="middle" fill="currentColor" fill-opacity=".55">total</text></svg>`;
 }
 
 export default function render(root, rerender) {

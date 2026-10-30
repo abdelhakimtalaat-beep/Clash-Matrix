@@ -176,6 +176,9 @@ try:
         ok(navs.index("التقارير") == navs.index("التصدير") + 1, "Reports tab comes right after Export")
         B.click("nav a:text('التقارير')"); B.wait_for_timeout(800)
         ok(B.evaluate("__bcm.state.cfg.reports.length") == 2, "bob receives the reports live")
+        # design screenshots (shots-design)
+        for pg_, nm in (("المصفوفة", "matrix"), ("الاختبارات", "tests"), ("مجموعات البحث", "searchsets")):
+            A.click(f"nav a:text('{pg_}')"); A.wait_for_timeout(500); A.screenshot(path=f"{SHOTS}/design-{nm}.png")
         # project deletion: only an admin sees the button; the name must be typed to confirm
         B.click("button:text-is('المشاريع')"); B.wait_for_selector(".proj")
         ok(B.locator(".proj button.danger").count() == 0, "non-admin sees no delete button")
