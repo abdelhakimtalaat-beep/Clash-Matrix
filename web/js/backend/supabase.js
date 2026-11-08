@@ -65,8 +65,12 @@ export const backend = {
   },
   async members(pid) {
     const c = await sb();
-    const rows = must(await c.from("project_members").select("user_id, role, profiles(email, display_name)").eq("project_id", pid));
-    return rows.map((r) => ({ userId: r.user_id, role: r.role, email: r.profiles?.email, name: r.profiles?.display_name }));
+    // two plain queries (no embedded join: project_members.user_id references auth.users, so PostgREST knows no relationship to profiles)
+    const rows = must(await c.from("project_members").select("user_id, role").eq("project_id", pid));
+    const ids = rows.map((r) => r.user_id);
+    const profs = ids.length ? must(await c.from("profiles").select("id, email, display_name").in("id", ids)) : [];
+    const by = new Map(profs.map((p) => [p.id, p]));
+    return rows.map((r) => ({ userId: r.user_id, role: r.role, email: by.get(r.user_id)?.email ?? r.user_id, name: by.get(r.user_id)?.display_name }));
   },
   async addMember(pid, email, role) { const c = await sb(); must(await c.rpc("add_member_by_email", { p_project: pid, p_email: email, p_role: role })); },
   async setRole(pid, userId, role) { const c = await sb(); must(await c.rpc("set_member_role", { p_project: pid, p_user: userId, p_role: role })); },
