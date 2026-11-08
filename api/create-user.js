@@ -9,11 +9,12 @@ const reply = (res, status, body) => { res.statusCode = status; res.setHeader("C
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return reply(res, 405, { error: "POST only" });
-  const url = (process.env.SUPABASE_URL ?? "").replace(/\/+$/, ""), key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
+  const clean = (v) => String(v ?? "").trim().replace(/^["']|["']$/g, "").trim(); // tolerate stray spaces / quotes pasted with the value
+  const url = clean(process.env.SUPABASE_URL).replace(/\/(rest|auth)\/v1.*$/, "").replace(/\/+$/, ""), key = clean(process.env.SUPABASE_SERVICE_ROLE_KEY);
   if (!url || !key) return reply(res, 500, { error: "Server is not configured: set SUPABASE_SERVICE_ROLE_KEY in Vercel (Settings > Environment Variables) and redeploy." });
 
   const claim = (() => { try { return JSON.parse(Buffer.from(key.split(".")[1], "base64url").toString()).role; } catch { return null; } })();
-  if (key.startsWith("sb_publishable_") || claim === "anon" || key === process.env.SUPABASE_ANON_KEY)
+  if (key.startsWith("sb_publishable_") || claim === "anon" || key === clean(process.env.SUPABASE_ANON_KEY))
     return reply(res, 500, { error: "SUPABASE_SERVICE_ROLE_KEY in Vercel holds the public (anon/publishable) key. Put the secret key there (service_role or sb_secret_...) and redeploy." });
 
   let body = req.body;
@@ -33,7 +34,7 @@ export default async function handler(req, res) {
 
   try {
     // 1) who is calling?
-    const me = await fetch(`${url}/auth/v1/user`, { headers: { apikey: process.env.SUPABASE_ANON_KEY || key, Authorization: `Bearer ${token}` } });
+    const me = await fetch(`${url}/auth/v1/user`, { headers: { apikey: clean(process.env.SUPABASE_ANON_KEY) || key, Authorization: `Bearer ${token}` } });
     if (!me.ok) return reply(res, 401, { error: "Invalid or expired session" });
     const caller = await me.json();
     // 2) are they an admin of this project?
