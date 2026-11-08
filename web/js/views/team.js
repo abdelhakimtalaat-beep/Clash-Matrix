@@ -25,10 +25,10 @@ export default function render(root, rerender) {
   };
   const load = async () => {
     const ms = await backend.members(project.id);
-    box.replaceChildren(h("table", {}, h("tr", {}, ["Email", t("الصلاحية", "Role"), ""].map((x) => h("th", {}, x))),
+    box.replaceChildren(...[h("table", {}, h("tr", {}, ["Email", t("الصلاحية", "Role"), ""].map((x) => h("th", {}, x))),
       ms.map((m) => h("tr", {}, h("td", {}, m.email), h("td", {}, admin ? h("select", { onchange: async (e) => { try { await backend.setRole(project.id, m.userId, e.target.value); toast("OK"); } catch (x) { toast(x.message); } load(); } }, ["viewer", "editor", "admin"].map((r) => h("option", { selected: r === m.role }, r))) : m.role),
         h("td", {}, admin ? h("button", { onclick: async () => { try { await backend.removeMember(project.id, m.userId); } catch (x) { toast(x.message); } load(); } }, t("إزالة", "Remove")) : null)))),
-      admin ? null : h("p", { class: "Info" }, t("المدير فقط يغيّر الصلاحيات.", "Only admins change roles.")));
+      admin ? null : h("p", { class: "Info" }, t("المدير فقط يغيّر الصلاحيات.", "Only admins change roles."))].filter(Boolean));
   };
   load().catch((e) => box.replaceChildren(h("p", { class: "Error" }, e.message)));
   root.append(h("h2", {}, t("الفريق والصلاحيات", "Team & roles")),

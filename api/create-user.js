@@ -12,6 +12,10 @@ export default async function handler(req, res) {
   const url = (process.env.SUPABASE_URL ?? "").replace(/\/+$/, ""), key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
   if (!url || !key) return reply(res, 500, { error: "Server is not configured: set SUPABASE_SERVICE_ROLE_KEY in Vercel (Settings > Environment Variables) and redeploy." });
 
+  const claim = (() => { try { return JSON.parse(Buffer.from(key.split(".")[1], "base64url").toString()).role; } catch { return null; } })();
+  if (key.startsWith("sb_publishable_") || claim === "anon" || key === process.env.SUPABASE_ANON_KEY)
+    return reply(res, 500, { error: "SUPABASE_SERVICE_ROLE_KEY in Vercel holds the public (anon/publishable) key. Put the secret key there (service_role or sb_secret_...) and redeploy." });
+
   let body = req.body;
   if (typeof body === "string") { try { body = JSON.parse(body); } catch { body = null; } }
   const { projectId, email: rawEmail, password, role } = body ?? {};
@@ -34,7 +38,8 @@ export default async function handler(req, res) {
     const caller = await me.json();
     // 2) are they an admin of this project?
     const adm = await fetch(`${url}/rest/v1/project_members?project_id=eq.${projectId}&user_id=eq.${caller.id}&role=eq.admin&select=role`, { headers: svc });
-    if (!adm.ok || !(await adm.json()).length) return reply(res, 403, { error: "Only a project admin can add users" });
+    if (!adm.ok) return reply(res, 500, { error: `Could not check admin rights (Supabase answered ${adm.status}): check SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY` });
+    if (!(await adm.json()).length) return reply(res, 403, { error: "Only a project admin can add users" });
 
     // 3) create the account (already confirmed, flagged so the user must choose their own password at first sign-in)
     let userId = null, created = false;
