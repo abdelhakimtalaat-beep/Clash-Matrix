@@ -12,7 +12,7 @@ async function sb() {
   return client;
 }
 const must = ({ data, error }) => { if (error) { const e = new Error(error.message); e.code = error.code; e.conflict = error.code === "40001" || /conflict/.test(error.message); throw e; } return data; };
-const userOf = (u) => (u ? { id: u.id, email: u.email, name: (u.email ?? "").split("@")[0] } : null);
+const userOf = (u) => (u ? { id: u.id, email: u.email, name: (u.email ?? "").split("@")[0], mustChange: u.user_metadata?.must_change_password === true } : null);
 
 export const backend = {
   kind: "supabase",
@@ -21,6 +21,16 @@ export const backend = {
   async signUp(email, password) { const c = await sb(); const d = must(await c.auth.signUp({ email, password })); return userOf(d.user); },
   async signIn(email, password) { const c = await sb(); const d = must(await c.auth.signInWithPassword({ email, password })); return userOf(d.user); },
   async signOut() { const c = await sb(); await c.auth.signOut(); },
+  /** The signed-in user chooses a new password (also clears the "must change" flag set when an admin created the account). */
+  async changePassword(newPassword) { const c = await sb(); const d = must(await c.auth.updateUser({ password: newPassword, data: { must_change_password: false } })); return userOf(d.user); },
+  /** Admin: create an account (email + default password) and add it to the project. Runs on the server (/api/create-user) because it needs the service-role key. */
+  async createUser(pid, email, password, role) {
+    const c = await sb(); const { data } = await c.auth.getSession(); const tok = data.session?.access_token;
+    const res = await fetch("/api/create-user", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${tok}` }, body: JSON.stringify({ projectId: pid, email, password, role }) });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(out.error ?? `HTTP ${res.status}`);
+    return out;
+  },
 
   async listProjects() {
     const c = await sb(); const me = (await c.auth.getUser()).data.user;

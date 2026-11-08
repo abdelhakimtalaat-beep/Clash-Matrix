@@ -10,7 +10,7 @@ export function createDevServer() {
   const proj = (id) => { const p = projects.get(id); if (!p) throw fail("42501", "forbidden", 403); return p; };
   const roleOf = (p, u) => p.members.get(u.id) ?? null;
   const need = (p, u, roles) => { const r = roleOf(p, u); if (!r || (roles && !roles.includes(r))) throw fail("42501", "forbidden", 403); return r; };
-  const pub = (u) => ({ id: u.id, email: u.email, name: u.email.split("@")[0] });
+  const pub = (u) => ({ id: u.id, email: u.email, name: u.email.split("@")[0], mustChange: !!u.mustChange });
   const emit = (p, row) => { for (const r of p.sse) r.write(`event: entity\ndata: ${JSON.stringify(row)}\n\n`); };
   const presenceBroadcast = (p) => { const list = [...p.presence.values()].map((x) => ({ id: x.user.id, name: x.name, page: x.page })); for (const r of p.sse2) r.write(`event: presence\ndata: ${JSON.stringify(list)}\n\n`); };
 
@@ -27,6 +27,19 @@ export function createDevServer() {
       const token = randomUUID(); tokens.set(token, u); return { token, user: pub(u) };
     },
     me: (_a, u) => pub(u),
+    changePassword: ({ newPassword }, u) => {
+      if (!newPassword || newPassword.length < 8) throw fail("400", "Password must be at least 8 characters");
+      u.password = newPassword; u.mustChange = false; return pub(u);
+    },
+    createUser: ({ pid, email, password, role }, u) => {
+      const p = proj(pid); need(p, u, ["admin"]);
+      if (!["viewer", "editor", "admin"].includes(role)) throw fail("400", "Invalid role");
+      if (!password || password.length < 8) throw fail("400", "The default password must be at least 8 characters");
+      const em = String(email ?? "").trim().toLowerCase(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) throw fail("400", "Invalid email address");
+      let t = [...users.values()].find((x) => x.email === em), created = false;
+      if (!t) { t = { id: randomUUID(), email: em, password, mustChange: true }; users.set(t.id, t); created = true; }
+      p.members.set(t.id, role); return { ok: true, created, userId: t.id };
+    },
     listProjects: (_a, u) => [...projects.values()].filter((p) => p.members.has(u.id)).map((p) => ({ id: p.id, name: p.name, role: p.members.get(u.id) })),
     deleteProject: ({ pid }, u) => { const p = proj(pid); need(p, u, ["admin"]); projects.delete(pid); return {}; },
     createProject: ({ name }, u) => {

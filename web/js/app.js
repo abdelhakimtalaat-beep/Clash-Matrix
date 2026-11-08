@@ -8,7 +8,7 @@ const PAGES = [
   ["validation", "التحقق", "Validation"], ["export", "التصدير", "Export"], ["reports", "التقارير", "Reports"], ["team", "الفريق", "Team"], ["activity", "النشاط", "Activity"],
   ["settings", "الإعدادات", "Settings"], ["help", "المساعدة", "Help"],
 ];
-const OUTSIDE = ["login", "projects"];
+const OUTSIDE = ["login", "projects", "account"];
 const WRITE_PAGES = new Set(["import", "matrix", "mappings", "searchsets", "tests", "reports", "naming", "settings"]);
 const cache = {};
 const save = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
@@ -42,7 +42,7 @@ function drawHeader() {
       syncBadge(), state.sync.conflicts.length ? h("span", { class: "badge warn", title: state.sync.conflicts.map((c) => c.key).join("\n") }, `${state.sync.conflicts.length} ${t("تعارض دُمج", "merged conflicts")}`) : null,
       h("button", { onclick: async () => { await app.closeProject(); save("bcm-project", null); location.hash = "projects"; } }, t("المشاريع", "Projects")));
   }
-  if (state.user) bits.push(h("span", { class: "Info" }, state.user.email), h("button", { onclick: async () => { await app.closeProject(); await state.backend.signOut(); state.user = null; save("bcm-project", null); location.hash = "login"; draw(); } }, t("خروج", "Sign out")));
+  if (state.user) bits.push(h("a", { class: "Info", href: "#account", id: "acct", title: t("تغيير كلمة المرور", "Change password") }, state.user.email), h("button", { onclick: async () => { await app.closeProject(); await state.backend.signOut(); state.user = null; save("bcm-project", null); location.hash = "login"; draw(); } }, t("خروج", "Sign out")));
   bits.push(h("button", { onclick: () => { setLang(lang.current === "ar" ? "en" : "ar"); draw(); } }, lang.current === "ar" ? "English" : "العربية"));
   document.getElementById("top").replaceChildren(...bits.filter((b) => b));
 }
@@ -53,9 +53,11 @@ async function draw() {
   const mine = ++drawId; // a newer draw supersedes this one (avoids duplicated content when two redraws overlap)
   let page = location.hash.slice(1) || "dashboard";
   if (!state.user) page = "login";
-  else if (!state.project && page !== "projects") page = "projects";
+  else if (state.user.mustChange) page = "account"; // admin-created account: choose your own password first
+  else if (!state.project && page !== "projects" && page !== "account") page = "projects";
   else if (state.project && !PAGES.some((p) => p[0] === page) && !OUTSIDE.includes(page)) page = "dashboard";
   if (state.user && page === "login") page = "projects";
+  if (state.user?.mustChange && location.hash.slice(1) !== "account") location.hash = "account";
   const nav = document.getElementById("nav"), view = document.getElementById("view");
   drawHeader();
   nav.replaceChildren(...(state.project ? PAGES.map(([id, ar, en]) => h("a", { class: id === page ? "on" : "", "data-p": id, onclick: () => (location.hash = id) }, t(ar, en))) : []));

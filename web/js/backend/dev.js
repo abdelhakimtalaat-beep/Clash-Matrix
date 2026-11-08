@@ -21,6 +21,8 @@ return {
   async signUp(email, password) { const r = await call("signUp", { email, password }); setToken(r.token, r.user); return r.user; },
   async signIn(email, password) { const r = await call("signIn", { email, password }); setToken(r.token, r.user); return r.user; },
   async signOut() { setToken(null, null); },
+  async changePassword(newPassword) { return call("changePassword", { newPassword }); },
+  createUser: (pid, email, password, role) => call("createUser", { pid, email, password, role }),
   listProjects: () => call("listProjects"),
   createProject: (name) => call("createProject", { name }).then((r) => r.id),
   deleteProject: (pid) => call("deleteProject", { pid }),
