@@ -1,5 +1,5 @@
 import { h, t, toast } from "../ui.js";
-import { app } from "../store.js";
+import { app, state } from "../store.js";
 
 export default function render(root, rerender, ctx) {
   const email = h("input", { type: "email", placeholder: "Email", autocomplete: "username" });
@@ -10,6 +10,7 @@ export default function render(root, rerender, ctx) {
   };
   root.append(h("div", { class: "card auth" }, h("h2", {}, t("تسجيل الدخول", "Sign in")), email, pass,
     h("div", { class: "row" }, h("button", { class: "pri", onclick: go((e, p) => ctx.signIn(e, p)) }, t("دخول", "Sign in")),
-      h("button", { onclick: go((e, p) => ctx.signUp(e, p)) }, t("إنشاء حساب", "Create account"))),
-    h("p", { class: "Info" }, t("قد يطلب Supabase تأكيد البريد الإلكتروني قبل أول دخول، بحسب إعدادات مشروعك.", "Supabase may require email confirmation before the first sign-in, depending on your project settings."))));
+      // Self-registration exists only in the local dev/test backend. On Supabase, accounts are created by a project admin (Team tab).
+      state.backend?.kind === "dev" ? h("button", { onclick: go((e, p) => ctx.signUp(e, p)) }, t("إنشاء حساب", "Create account")) : null),
+    state.backend?.kind === "dev" ? null : h("p", { class: "Info" }, t("لا يوجد تسجيل ذاتي. اطلب من مدير المشروع إنشاء حساب لك.", "There is no self sign-up. Ask a project admin to create an account for you."))));
 }
